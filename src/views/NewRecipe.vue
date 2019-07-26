@@ -17,7 +17,7 @@
                     <v-text-field v-model="title" :counter="50" label="Tittel" required></v-text-field>
                   </div>
                   <div class="formField">
-                    <v-text-field label="Kort Beskrivelse" name="Description" textarea></v-text-field>
+                    <v-textarea label="Kort Beskrivelse" name="Description"></v-textarea>
                   </div>
                 </v-form>
               </div>
