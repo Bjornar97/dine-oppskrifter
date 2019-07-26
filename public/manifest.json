@@ -1,6 +1,6 @@
 {
-  "name": "dine-oppskrifter3",
-  "short_name": "dine-oppskrifter3",
+  "name": "Dine Oppskrifter",
+  "short_name": "Dine Oppskrifter",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
@@ -13,8 +13,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#4DBA87"
+  "background_color": "#FFFFFF",
+  "theme_color": "#49A84D"
 }

@@ -5,7 +5,7 @@ module.exports = {
     node: true
   },
 
-  extends: ["plugin:vue/essential", "@vue/prettier"],
+  extends: ["plugin:vue/essential"],
 
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
@@ -14,7 +14,5 @@ module.exports = {
 
   parserOptions: {
     parser: "babel-eslint"
-  },
-
-  'extends': 'vuetify'
+  }
 };
