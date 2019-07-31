@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Discover from "./views/Discover.vue";
+import Construction from "./views/Construction.vue";
 
 Vue.use(Router);
 
@@ -11,7 +12,7 @@ export default new Router({
     {
       path: "/",
       name: "discover",
-      component: Discover
+      component: Construction
     },
     {
       path: "/ny",

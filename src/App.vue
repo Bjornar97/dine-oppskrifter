@@ -1,65 +1,114 @@
 <template>
   <v-app>
-    <div id="vueApp">
-      <div class="topBar elevation-3">
-        <router-link to="/">
-          <div class="logoContainer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              viewBox="2 14 34 38"
-              id="logoNew"
-            >
-              <defs>
-                <clipPath id="clip-path">
-                  <rect width="44" height="69.016" fill="none" />
-                </clipPath>
-              </defs>
-              <g id="ShorterLogo" clip-path="url(#clip-path)">
-                <text
-                  id="O"
-                  transform="translate(9 49)"
-                  font-size="40"
-                  font-family="Roboto-Regular, Roboto"
-                >
-                  <tspan x="0" y="0">O</tspan>
-                </text>
-                <text
-                  id="D"
-                  transform="translate(0 43)"
-                  fill="#49A84D"
-                  font-size="40"
-                  font-family="Roboto-Regular, Roboto"
-                >
-                  <tspan x="0" y="0">D</tspan>
-                </text>
-                <path
-                  id="Subtraction"
-                  data-name="Subtraction"
-                  d="M-75.295,89h-5.352a10.187,10.187,0,0,1,2.411-2.158,10.869,10.869,0,0,1,5.967-1.67,11.074,11.074,0,0,1,6.025,1.651A9.991,9.991,0,0,1-63.81,89l-5.366,0a7.586,7.586,0,0,0-3.093-.606A7.315,7.315,0,0,0-75.295,89Z"
-                  transform="translate(95 -65)"
-                  stroke="rgba(0,0,0,0)"
-                  stroke-width="1"
-                />
-              </g>
-            </svg>
-          </div>
-        </router-link>
-
-        <h1 class="heading">{{ currentTitle }}</h1>
-
-        <div class="logout" v-if="loginFeature">
-          <v-btn v-if="loggedIn" @click="logout" text medium color="error">Logg ut</v-btn>
-          <v-btn v-if="!loggedIn" @click="login" text medium color="#3C5A99">Logg inn</v-btn>
+    <v-app-bar class="topBar" app elevate-on-scroll collapse>
+      <router-link to="/">
+        <div class="logoContainer">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="2 14 34 38"
+            id="logoNew"
+          >
+            <defs>
+              <clipPath id="clip-path">
+                <rect width="44" height="69.016" fill="none" />
+              </clipPath>
+            </defs>
+            <g id="ShorterLogo" clip-path="url(#clip-path)">
+              <text
+                id="O"
+                transform="translate(9 49)"
+                font-size="40"
+                font-family="Roboto-Regular, Roboto"
+              >
+                <tspan x="0" y="0">O</tspan>
+              </text>
+              <text
+                id="D"
+                transform="translate(0 43)"
+                fill="#49A84D"
+                font-size="40"
+                font-family="Roboto-Regular, Roboto"
+              >
+                <tspan x="0" y="0">D</tspan>
+              </text>
+              <path
+                id="Subtraction"
+                data-name="Subtraction"
+                d="M-75.295,89h-5.352a10.187,10.187,0,0,1,2.411-2.158,10.869,10.869,0,0,1,5.967-1.67,11.074,11.074,0,0,1,6.025,1.651A9.991,9.991,0,0,1-63.81,89l-5.366,0a7.586,7.586,0,0,0-3.093-.606A7.315,7.315,0,0,0-75.295,89Z"
+                transform="translate(95 -65)"
+                stroke="rgba(0,0,0,0)"
+                stroke-width="1"
+              />
+            </g>
+          </svg>
         </div>
-      </div>
+      </router-link>
 
-      <div class="loading">
-        <v-progress-linear indeterminate rounded color="primary" :active="loading"></v-progress-linear>
-      </div>
+      <h1 v-if="loginFeature" class="heading">{{ currentTitle }}</h1>
 
+      <div class="logout" v-if="loginFeature">
+        <v-btn v-if="loggedIn" @click="logout" text medium color="error">Logg ut</v-btn>
+        <v-btn v-if="!loggedIn" @click="login" text medium color="#3C5A99">Logg inn</v-btn>
+      </div>
+    </v-app-bar>
+
+    <div class="loading">
+      <v-progress-linear indeterminate rounded color="primary" :active="loading"></v-progress-linear>
+    </div>
+
+    <v-container class="oldBrowserWarning">
+      <v-banner
+        v-if="!hideOldBrowserWarning"
+        elevation="2"
+        icon="mdi-alert"
+        icon-color="warning"
+        max-width="95%"
+      >
+        Vi ser at du bruker en eldre nettleser. Siden fungerer greit, men for å få den beste opplevelsen anbefaler vi å bruke en nyere nettleser, som for eksempel chrome eller firefox.
+        Eldre enheter fra Apple kan dessverre ikke oppgradere nettleseren (gjelder blant annet iPad 3 og eldre).
+        <template
+          v-slot:actions
+        >
+          <v-btn text @click="hideBrowserWarning" color="error">Lukk</v-btn>
+        </template>
+      </v-banner>
+    </v-container>
+
+    <v-bottom-navigation
+      v-if="loginFeature"
+      style="position: fixed;"
+      app
+      grow
+      :value="activeRoute"
+      color="primary"
+    >
+      <v-btn to="/">
+        <span>Utforsk</span>
+        <v-icon>mdi-compass</v-icon>
+      </v-btn>
+
+      <v-btn to="/favoritter">
+        <span>Favoritter</span>
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+
+      <v-btn color="white" to="/dine-oppskrifter">
+        <span>Dine Oppskrifter</span>
+        <v-icon>mdi-book-open-page-variant</v-icon>
+      </v-btn>
+      <v-btn color="white" to="/konto">
+        <span>Konto</span>
+        <v-icon>mdi-account</v-icon>
+      </v-btn>
+    </v-bottom-navigation>
+
+    <v-content>
       <div id="contentContainer">
-        <div class="cookieContainer" v-if="!acceptedCookies && !hiddenCookies && !loggedIn">
+        <div
+          class="cookieContainer"
+          v-if="!acceptedCookies && !hiddenCookies && !loggedIn && loginFeature"
+        >
           <v-sheet elevation="2" class="cookieSheet">
             <div class="cookieAccept">
               <h2 class="title">Akseptere bruk av informasjonskapsler?</h2>
@@ -72,9 +121,80 @@
             </div>
           </v-sheet>
         </div>
-        <router-view />
+        <transition name="fade" mode="out-in">
+          <router-view />
+        </transition>
       </div>
-    </div>
+    </v-content>
+
+    <v-footer color="white" class="elevation-4 mt-8" padless>
+      <v-layout justify-center wrap>
+        <v-btn to="/" color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
+
+        <v-btn
+          v-if="isFacebookPage"
+          color="primary darken-2"
+          text
+          rounded
+          class="my-2"
+        >Besøk Facebook-siden vår</v-btn>
+        <v-btn
+          v-if="!construction"
+          color="primary darken-2"
+          text
+          rounded
+          class="my-2"
+        >Ingredienskalkulator</v-btn>
+        <v-btn
+          v-if="construction"
+          color="primary darken-2"
+          href="mailto:brukerstotte@dine-oppskrifter.no"
+          target="_blank"
+          text
+          rounded
+          class="my-2"
+        >Send epost</v-btn>
+        <v-btn
+          v-if="!construction"
+          color="primary darken-2"
+          text
+          rounded
+          class="my-2"
+          to="/kontakt"
+        >Kontakt oss</v-btn>
+
+        <div class="footerDev py-8 text-center">
+          <p class="devText primary--text text--darken-2 ma-0 mr-4">Utviklet av</p>
+          <v-chip pill color="accent darken-2">
+            <v-avatar left class="devAvatar">
+              <v-img src="@/assets/dev-profile-pic.jpg"></v-img>
+            </v-avatar>Bjørnar Hetlesæther
+          </v-chip>
+        </div>
+
+        <v-btn
+          v-if="!construction"
+          color="primary darken-2"
+          to="/personvernerklaering"
+          text
+          rounded
+          class="my-2"
+        >Personvernerklæring</v-btn>
+        <v-btn
+          v-if="!construction"
+          color="primary darken-2"
+          text
+          rounded
+          class="my-2"
+          to="/vilkarforbruk"
+        >Vilkår for bruk</v-btn>
+
+        <v-flex grey lighten-4 py-4 text-center black--text xs12>
+          {{ new Date().getFullYear() }} —
+          <strong>Dine Oppskrifter</strong>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-app>
 </template>
 
@@ -100,6 +220,9 @@ export default {
     },
     hideCookies() {
       this.hiddenCookies = true;
+    },
+    hideBrowserWarning() {
+      this.$store.commit("hideBrowserWarning");
     }
   },
   data() {
@@ -109,7 +232,7 @@ export default {
   },
   computed: {
     loggedIn() {
-      return this.$store.state.account.loggedIn;
+      return this.$store.state.accountModule.loggedIn;
     },
     currentTitle() {
       return this.$store.state.currentTitle;
@@ -121,7 +244,19 @@ export default {
       return this.$store.state.loading;
     },
     loginFeature() {
-      return this.$store.state.activeFeatures.login;
+      return this.$store.state.featuresModule.login;
+    },
+    hideOldBrowserWarning() {
+      return this.$store.state.hideOldBrowserWarning;
+    },
+    activeRoute() {
+      return this.$router.currentRoute;
+    },
+    construction() {
+      return this.$store.state.underConstruction;
+    },
+    isFacebookPage() {
+      return this.$store.state.featuresModule.facebookPage;
     }
   },
   created() {
@@ -143,32 +278,12 @@ export default {
 </script>
 
 <style lang="scss">
-#vueApp {
-  display: grid;
-  width: 100%;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas:
-    "bar bar bar"
-    "loading loading loading"
-    "content content content";
-}
-
 .topBar {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas: "logoCont title logout";
-  z-index: 50;
-  grid-area: bar;
-  background-color: rgba(255, 255, 255, 0.8);
-  position: sticky;
-  padding: 5px;
-  top: 0;
-  left: 0;
-
   #logoNew {
-    width: 100px;
+    width: 50px;
+    margin-top: 10px;
     max-height: 100px;
-    transition: max-height 0.25s ease-in;
+    margin-left: 10px;
   }
 
   .logoContainer {
@@ -202,6 +317,24 @@ export default {
   padding: 0;
 }
 
+.footerDev {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.devAvatar {
+  margin-left: 30px;
+}
+
+.devText {
+  margin-right: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  align-self: center;
+  text-transform: uppercase;
+}
+
 .cookieContainer {
   display: flex;
   justify-content: center;
@@ -222,21 +355,29 @@ export default {
 
 #contentContainer {
   grid-area: content;
-  width: 100%;
   text-align: center;
   margin-top: 0;
 }
 
-html:not([data-scroll="0"]) {
-  #logoNew {
-    max-height: 50px;
-    transition: max-height 0.25s ease-out;
-  }
-  .topBar {
-    background-color: #fff;
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.3s;
+  transition-property: opacity;
+  transition-timing-function: ease;
 }
 
-@media only screen and (max-width: 800px) {
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
+.oldBrowserWarning {
+  margin-top: 80px;
+}
+
+@supports (display: grid) {
+  .oldBrowserWarning {
+    display: none;
+  }
 }
 </style>

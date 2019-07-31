@@ -12,21 +12,22 @@
       max="24"
       min="1"
     ></v-slider>
-
-    <v-simple-table>
-      <thead>
-        <tr>
-          <th class="text-xs-left">Ingrediens</th>
-          <th class="text-xs-left">Mengde</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in ingredients" :key="item.name">
-          <td>{{ item.name }}</td>
-          <td>{{ +(Math.round((item.unitAmount * portions) + "e+2") + "e-2") }} {{ item.unit }}</td>
-        </tr>
-      </tbody>
-    </v-simple-table>
+    <v-expand-transition>
+      <v-simple-table>
+        <thead>
+          <tr>
+            <th class="text-xs-left">Ingrediens</th>
+            <th class="text-xs-left">Mengde</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in ingredients" :key="item.id">
+            <td>{{ item.name }}</td>
+            <td>{{ +(Math.round((item.unitAmount * portions) + "e+2") + "e-2") }} {{ item.unit }}</td>
+          </tr>
+        </tbody>
+      </v-simple-table>
+    </v-expand-transition>
   </div>
 </template>
 
@@ -45,7 +46,11 @@ export default {
   margin-bottom: 50px;
 }
 
+.portions {
+  margin-top: 20px;
+}
+
 .portionsSlider {
-  max-width: 90%;
+  width: 100%;
 }
 </style>
