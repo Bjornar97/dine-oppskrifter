@@ -58,6 +58,7 @@ const accountModule = {
   },
   actions: {
     loginWithFacebook({ state, commit }) {
+      console.log("logging in");
       commit("startLoading");
       let provider = new firebase.auth.FacebookAuthProvider();
       provider.addScope("email");

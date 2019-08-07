@@ -1,70 +1,38 @@
 <template>
   <div>
-    <h1 class="heading">
-      <span class="greenWord">Ny</span> Oppskrift
-    </h1>
-    <div class="gridContainer">
-      <div class="newRecipePanel">
-        <v-expansion-panel v-model="panelInformation" expand>
-          <v-expansion-panel-content>
-            <template v-slot:header>
-              <div class="panelHeader">Informasjon</div>
-            </template>
-            <v-card>
-              <div class="card">
-                <v-form>
-                  <div>
-                    <v-text-field v-model="title" :counter="50" label="Tittel" required></v-text-field>
-                  </div>
-                  <div class="formField">
-                    <v-textarea label="Kort Beskrivelse" name="Description"></v-textarea>
-                  </div>
-                </v-form>
-              </div>
-            </v-card>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </div>
-
-      <div class="newRecipePanel">
-        <v-expansion-panel v-model="panelIngredients" expand>
-          <v-expansion-panel-content>
-            <template v-slot:header>
-              <div class="panelHeader">Ingredienser</div>
-            </template>
-            <v-card>
-              <div class="card">
-                <h1>test</h1>
-              </div>
-            </v-card>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </div>
-
-      <div class="newRecipePanel">
-        <v-expansion-panel v-model="panelApproach" expand>
-          <v-expansion-panel-content>
-            <template v-slot:header>
-              <div class="panelHeader">Fremgangsmåte</div>
-            </template>
-            <v-card>
-              <div class="card">
-                <h1>test</h1>
-              </div>
-            </v-card>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </div>
-      <!-- <div class="dropdown" v-bind:class="{ open: expanded[0] }">
-      <h3 class="subtitle">Informasjon</h3>
-    </div>
-    <div class="dropdown" v-bind:class="{ open: expanded[1] }">
-      <h3 class="subtitle">Ingredienser</h3>
-    </div>
-    <div class="dropdown" v-bind:class="{ open: expanded[2] }">
-      <h3 class="subtitle">Fremgangsmåte</h3>
-      </div>-->
-    </div>
+    <h2 class="headline ma-4 text-left primary--text">Ny Oppskrift</h2>
+    <v-form ref="newRecipe">
+      <v-stepper v-model="activeStep" vertical class="pb-4">
+        <v-stepper-step editable :complete="activeStep > 1" step="1">Generell informasjon</v-stepper-step>
+        <v-stepper-content step="1">
+          <v-text-field name="title" v-model="recipe.title" label="Tittel" id="1"></v-text-field>
+          <v-textarea
+            outlined
+            auto-grow
+            name="description"
+            v-model="recipe.description"
+            label="Kort Beskrivelse"
+            id="2"
+            counter="500"
+          ></v-textarea>
+          <v-select :items="categoryList" v-model="recipe.categorySelected" label="Kategori"></v-select>
+          <v-btn class="nextButton mb-2" @click="activeStep += 1" color="success">Videre</v-btn>
+        </v-stepper-content>
+        <v-stepper-step editable :complete="activeStep > 2" step="2">Ingredienser</v-stepper-step>
+        <v-stepper-content step="2">
+          <v-btn class="nextButton mb-2" @click="activeStep += 1" color="success">Videre</v-btn>
+        </v-stepper-content>
+        <v-stepper-step editable step="3">Fremgangsmåte</v-stepper-step>
+        <v-stepper-content step="3">
+          <v-btn class="nextButton mb-2" @click="activeStep += 1" color="success">Videre</v-btn>
+        </v-stepper-content>
+        <v-stepper-step step="4">Koke/Steketider</v-stepper-step>
+        <v-stepper-content step="4"></v-stepper-content>
+        <v-btn color="error" class="mt-6 mx-2">Slett</v-btn>
+        <v-btn color="info" class="mt-6 mx-2">Lagre</v-btn>
+        <v-btn color="success" class="mt-6 mx-2">Publiser</v-btn>
+      </v-stepper>
+    </v-form>
   </div>
 </template>
 
@@ -73,61 +41,26 @@ export default {
   name: "new-recipe",
   data() {
     return {
-      panelInformation: [false],
-      panelIngredients: [false],
-      panelApproach: [false],
-      title: ""
+      activeStep: 0,
+      categoryList: [
+        "Frokost",
+        "Lunch",
+        "Middag",
+        "Tilbehør",
+        "Småretter",
+        "Dessert"
+      ],
+      recipe: {
+        title: "",
+        description: ""
+      }
     };
-  },
-  created() {
-    // If the browser is wide enough so all 3 divs is in its own column, they start opened.
-    let windowWidth = window.innerWidth;
-    if (windowWidth >= 1216) {
-      this.expanded = [true, true, true];
-    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.heading {
-  grid-column: 1/3;
-  margin: 5px 40px;
-  text-align: center;
-}
-
-.newRecipePanel {
-  width: 100%;
-}
-
-.card {
-  background-color: #eeeeee;
-  padding: 5px 20px;
-}
-
-.dropdown {
-  overflow: hidden;
-
-  transition: all 0.4s ease-in-out;
-
-  :hover {
-    cursor: pointer;
-  }
-}
-
-.formField {
-  margin-top: 10px;
-}
-
-.open {
-  overflow: visible;
-  transition: all 0.4s ease-in-out;
-}
-
-.gridContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  grid-column-gap: 10px;
-  padding: 10px;
+.nextButton {
+  text-align: left;
 }
 </style>

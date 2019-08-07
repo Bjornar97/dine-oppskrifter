@@ -1,5 +1,9 @@
 <template>
-  <div></div>
+  <div>
+    <welcome-screen v-if="!loggedIn"></welcome-screen>
+    <v-divider v-if="!loggedIn" class="mt-8"></v-divider>
+    <recipe-list></recipe-list>
+  </div>
 </template>
 
 <script>
@@ -7,16 +11,13 @@ export default {
   name: "Discover",
   computed: {
     loggedIn() {
-      return this.$store.state.account.loggedIn;
-    },
-    showWelcome() {
-      return this.$store.state.showWelcome;
+      return this.$store.state.accountModule.loggedIn;
     },
     name() {
-      return this.$store.state.account.name;
+      return this.$store.state.accountModule.name;
     },
     email() {
-      return this.$store.state.account.email;
+      return this.$store.state.accountModule.email;
     },
     loading() {
       return this.$store.state.loading;
@@ -24,6 +25,10 @@ export default {
     loginFeature() {
       return this.$store.state.activeFeatures.login;
     }
+  },
+  components: {
+    "welcome-screen": () => import("@/components/WelcomeScreen"),
+    "recipe-list": () => import("@/components/RecipeList")
   }
 };
 </script>

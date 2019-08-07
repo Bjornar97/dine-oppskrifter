@@ -13,7 +13,7 @@ export default new Vuex.Store({
     featuresModule
   },
   state: {
-    underConstruction: true,
+    underConstruction: false,
     loading: true,
     hideOldBrowserWarning: false,
     acceptedCookies: null,

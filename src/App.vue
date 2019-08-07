@@ -44,14 +44,12 @@
           </svg>
         </div>
       </router-link>
-
-      <h1 v-if="loginFeature" class="heading">{{ currentTitle }}</h1>
-
-      <div class="logout" v-if="loginFeature">
-        <v-btn v-if="loggedIn" @click="logout" text medium color="error">Logg ut</v-btn>
-        <v-btn v-if="!loggedIn" @click="login" text medium color="#3C5A99">Logg inn</v-btn>
-      </div>
     </v-app-bar>
+
+    <div class="logout" v-if="!$vuetify.breakpoint.smAndDown && loginFeature">
+      <v-btn v-if="loggedIn" @click="logout" text medium color="error">Logg ut</v-btn>
+      <facebook-login-button loginText="Logg inn" v-if="!loggedIn"></facebook-login-button>
+    </div>
 
     <div class="loading">
       <v-progress-linear indeterminate rounded color="primary" :active="loading"></v-progress-linear>
@@ -79,7 +77,6 @@
       v-if="loginFeature"
       style="position: fixed;"
       app
-      grow
       :value="activeRoute"
       color="primary"
     >
@@ -133,6 +130,8 @@
 
         <v-btn
           v-if="isFacebookPage"
+          href="https://www.facebook.com/DineOppskrifter"
+          target="_blank"
           color="primary darken-2"
           text
           rounded
@@ -140,6 +139,7 @@
         >Besøk Facebook-siden vår</v-btn>
         <v-btn
           v-if="!construction"
+          to="/ingrediens-kalkulator"
           color="primary darken-2"
           text
           rounded
@@ -149,7 +149,6 @@
           v-if="construction"
           color="primary darken-2"
           href="mailto:brukerstotte@dine-oppskrifter.no"
-          target="_blank"
           text
           rounded
           class="my-2"
@@ -164,8 +163,8 @@
         >Kontakt oss</v-btn>
 
         <div class="footerDev py-8 text-center">
-          <p class="devText primary--text text--darken-2 ma-0 mr-4">Utviklet av</p>
-          <v-chip pill color="accent darken-2">
+          <p class="devText secondary--text text--darken-2 ma-0 mr-4">Utviklet av</p>
+          <v-chip pill color="secondary darken-2">
             <v-avatar left class="devAvatar">
               <v-img src="@/assets/dev-profile-pic.jpg"></v-img>
             </v-avatar>Bjørnar Hetlesæther
@@ -175,7 +174,7 @@
         <v-btn
           v-if="!construction"
           color="primary darken-2"
-          to="/personvernerklaering"
+          to="/personvern-erklaering"
           text
           rounded
           class="my-2"
@@ -186,7 +185,7 @@
           text
           rounded
           class="my-2"
-          to="/vilkarforbruk"
+          to="/vilkaar-for-bruk"
         >Vilkår for bruk</v-btn>
 
         <v-flex grey lighten-4 py-4 text-center black--text xs12>
@@ -201,6 +200,7 @@
 <script>
 /* eslint-disable */
 import * as firebase from "firebase/app";
+import FacebookLoginButton from "./components/FacebookLoginButton.vue";
 
 // Add the Firebase services that you want to use
 import "firebase/auth";
@@ -259,6 +259,9 @@ export default {
       return this.$store.state.featuresModule.facebookPage;
     }
   },
+  components: {
+    "facebook-login-button": FacebookLoginButton
+  },
   created() {
     console.log("Checking status");
     var user = firebase.auth().currentUser;
@@ -299,15 +302,6 @@ export default {
     justify-self: center;
     font-size: 1.4em;
   }
-
-  .logout {
-    grid-area: logout;
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-self: right;
-    margin-right: 10px;
-  }
 }
 
 .loading {
@@ -315,6 +309,16 @@ export default {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.logout {
+  position: fixed;
+  top: 0;
+  right: 0;
+  text-align: right;
+
+  margin-right: 10px;
+  margin-top: -10px;
 }
 
 .footerDev {
@@ -379,5 +383,8 @@ export default {
   .oldBrowserWarning {
     display: none;
   }
+}
+
+@media only screen and (min-width: 800px) {
 }
 </style>
