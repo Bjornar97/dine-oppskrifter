@@ -8,7 +8,7 @@ module.exports = {
     https: true,
     hotOnly: false
   },
-  transpileDependencies: ["vuetify"],
+  transpileDependencies: ["vuetify", "vuex-persist"],
   pwa: {
     name: "Dine Oppskrifter",
     themeColor: "#49A84D",

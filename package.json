@@ -10,11 +10,13 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "firebase": "^6.3.3",
+    "lodash": "^4.17.15",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
-    "vuetify": "^2.0.4",
-    "vuex": "^3.0.1"
+    "vuetify": "^2.0.5",
+    "vuex": "^3.0.1",
+    "vuex-persist": "^2.0.1"
   },
   "devDependencies": {
     "@mdi/js": "^3.8.95",

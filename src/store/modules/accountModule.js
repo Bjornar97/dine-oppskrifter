@@ -54,10 +54,13 @@ const accountModule = {
       state.loginError.email = error.email;
       state.loginError.credential = error.credential;
       state.loginError.error = true;
+    },
+    setLoginProcess(state, status) {
+      state.loginProcess = status;
     }
   },
   actions: {
-    loginWithFacebook({ state, commit }) {
+    loginWithFacebook({ _, commit }) {
       console.log("logging in");
       commit("startLoading");
       let provider = new firebase.auth.FacebookAuthProvider();
@@ -68,18 +71,22 @@ const accountModule = {
         .signInWithPopup(provider)
         .then(result => {
           // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-          state.account.facebookAccessToken = result.credential.accessToken;
+          commit("setFacebookAccessToken", result.credential.accessToken);
           // The signed-in user info.
           let user = result.user;
           console.log("Logged in user: ");
           console.dir(user);
           commit("addUserInfo", user);
           commit("stopLoading");
+          commit("setLoginProcess", false);
         })
         .catch(error => {
           // Handle Errors here.
+          console.log("Error: ");
+          console.log(error);
           commit("setLoginError", error);
           commit("stopLoading");
+          commit("setLoginProcess", false);
           commit("resetAccount");
         });
     },
@@ -96,6 +103,7 @@ const accountModule = {
           console.log("Logging out of facebook");
           commit("showWelcome");
           commit("stopLoading");
+          commit("setLoginProcess", false);
         })
         .catch(error => {
           console.log("Something bad happened: " + error);
@@ -106,6 +114,7 @@ const accountModule = {
           };
           commit("setLoginError", errorObject);
           commit("stopLoading");
+          commit("setLoginProcess", false);
         });
     }
   }

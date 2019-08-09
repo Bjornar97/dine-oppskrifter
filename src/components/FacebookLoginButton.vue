@@ -19,9 +19,18 @@ export default {
   props: ["disabled", "loginText"],
   data() {
     return {
-      svgFacebook: mdiFacebookBox,
-      loading: false
+      svgFacebook: mdiFacebookBox
     };
+  },
+  computed: {
+    loading: {
+      get() {
+        return this.$store.state.accountModule.loginProcess;
+      },
+      set(loadingStatus) {
+        this.$store.commit("setLoginProcess", loadingStatus);
+      }
+    }
   },
   methods: {
     login() {
