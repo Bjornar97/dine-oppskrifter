@@ -52,7 +52,7 @@
     </div>
 
     <div class="loading">
-      <v-progress-linear indeterminate rounded color="primary" :active="loading"></v-progress-linear>
+      <v-progress-linear indeterminate rounded fixed color="primary" :active="loading"></v-progress-linear>
     </div>
 
     <v-container class="oldBrowserWarning">
@@ -264,13 +264,17 @@ export default {
   },
   created() {
     console.log("Checking status");
-    var user = firebase.auth().currentUser;
-    if (user) {
-      this.$store.commit("addUserInfo", user);
-      this.$store.commit("stopLoading");
-    } else {
-      this.$store.commit("showWelcome");
-    }
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        // User is signed in.
+        this.$store.commit("addUserInfo", user);
+        this.$store.commit("stopLoading");
+      } else {
+        // No user is signed in.
+        this.$store.commit("showWelcome");
+      }
+    });
+
     this.$store.commit("stopLoading");
     let cookieAccept = this.$cookies.get("cookieAccept");
     if (cookieAccept == "true") {

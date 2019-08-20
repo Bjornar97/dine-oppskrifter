@@ -20,6 +20,12 @@ export default new Router({
         import(/* webpackChunkName: "newRecipe" */ "./views/NewRecipe.vue")
     },
     {
+      path: "/endre-oppskrift/:recipeId",
+      name: "editRecipe",
+      component: () =>
+        import(/* webpackChunkName: "editRecipe" */ "./views/NewRecipe.vue")
+    },
+    {
       path: "/ingrediens-kalkulator",
       name: "ingredientsCalculator",
       component: () =>

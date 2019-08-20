@@ -3,7 +3,7 @@
     <v-dialog :value="open" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline secondary--text">Steg nummer {{stepNumber}}</span>
+          <span class="headline secondary--text">{{ !editing ? "Nytt s": "S" }}teg</span>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
@@ -37,7 +37,7 @@
 <script>
 export default {
   name: "new-step",
-  props: ["open", "stepNumber"],
+  props: ["open"],
   data() {
     return {
       stepText: "",

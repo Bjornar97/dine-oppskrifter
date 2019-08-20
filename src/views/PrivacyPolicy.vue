@@ -9,9 +9,7 @@
 
       <p>
         Vi bruker din data for å operere og forbedre Dine Oppskrifter. Ved å bruker Dine Oppskrifter, aksepterer du at vi samler inn og bruker informasjon som samsvarer med denne personverkerklæringen. Dersom ikke annet er skrevet, så har uttrykkene brukt i denne personvernerklæringen samme betydning som i
-        <a
-          href="/vilkaar-for-bruk"
-        >vilkår for bruk</a>.
+        <router-link to="/vilkaar-for-bruk">vilkår for bruk</router-link>.
       </p>
 
       <h2 class="secondary--text headline mb-4 mt-8">Innsamling og bruk av informasjon</h2>
@@ -42,10 +40,10 @@
       <p>Det er mulig å gjøre slik at nettleseren din nekter å lagre Informasjonskapsler eller vise når en kapsel blir sendt.</p>
       <p>
         <strong>NB!</strong> Dersom du ikke aksepterer Informasjonskapsler, vil du ikke kunne bruke alle funksjonene til Dine Oppskrifter. Du kan lære mer om Informasjonskapsler i
-        <a
-          href="https://privacypolicies.com/blog/how-to-delete-cookies/"
+        <router-link
+          to="https://privacypolicies.com/blog/how-to-delete-cookies/"
           target="_blank"
-        >Browser Cookies Guide</a>
+        >Browser Cookies Guide</router-link>
       </p>Eksempler på Informasjonskapsler vi bruker:
       <ul>
         <li>

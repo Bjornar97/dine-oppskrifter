@@ -1,6 +1,11 @@
 <template>
   <div>
-    <h2 class="headline ma-4 text-left primary--text">Ny Oppskrift</h2>
+    <h2 class="headline ma-4 text-left primary--text" v-if="!editing">Ny Oppskrift</h2>
+    <h2
+      class="headline ma-4 text-left primary--text"
+      v-if="editing"
+    >Endre Oppskriften "{{recipeTitle}}"</h2>
+
     <v-stepper @change="changedStep" v-model="activeStep" vertical class="pb-4">
       <p class="mt-8 mb-0">Felt markert med * er påkrevd</p>
       <v-stepper-step
@@ -34,6 +39,22 @@
             counter="500"
             hint="En kort beskrivelse av hva oppskriften er. Skal ikke inneholde fremgangsmåte eller ingrediensliste"
           ></v-textarea>
+          <v-file-input
+            label="Bilde"
+            v-model="inputImage"
+            :loading="imageLoading"
+            :success="imageSuccess"
+            :success-messages="imageSuccess ? 'Bildet er lagt til': ''"
+            :error="imageError"
+            accept="image/png, image/jpeg"
+            placeholder="Legg til Bilde"
+            :error-messages="imageErrorMessage"
+            prepend-icon="mdi-camera"
+          ></v-file-input>
+          <v-btn v-if="editing" @click="resetImage" class="mt-2" color="info">Hent bilde</v-btn>
+          <p
+            class="caption mb-8"
+          >Tilbakestiller bildet til det som var før du begynte å redigere oppskriften</p>
           <v-select
             :disabled="loading"
             :items="categoryList"
@@ -160,9 +181,9 @@
           <v-card v-if="recipeSteps.length != 0" class="ma-2">
             <v-list>
               <v-subheader>Steg</v-subheader>
-              <v-list-item v-for="(step, index) in recipeSteps" :key="step.number">
+              <v-list-item v-for="(step, index) in recipeSteps" :key="index">
                 <v-list-item-content class="listItem">
-                  <v-flex class="pr-2" xs1>{{step.number}}.</v-flex>
+                  <v-flex class="pr-2" xs1>{{index + 1}}.</v-flex>
                   <v-flex xs9>{{step.text}}</v-flex>
                   <v-flex xs2>
                     <v-btn
@@ -198,7 +219,6 @@
           <new-step
             ref="newStep"
             :open="newStepOpen"
-            :stepNumber="recipeStepNumber"
             :key="recipeSteps.length"
             @save="saveNewStep"
             @close="closeStep"
@@ -220,17 +240,41 @@
         </v-card>
       </v-dialog>
     </v-layout>
-    <p class="mt-6">Sist lagret for {{Math.round(timeSinceLastSave / 1000)}} sekunder siden</p>
+    <p class="mt-6">Sist lagret: TODO: Legg til klokkeslett</p>
     <p class="error--text" v-if="error">{{errorMessage}}</p>
     <v-btn :disabled="loading" @click="openDeleteRecipe" color="error" class="mt-2 mx-2">Slett</v-btn>
-    <v-btn :disabled="loading" color="info" class="mt-2 mx-2">Lagre</v-btn>
+    <v-btn :disabled="loading" v-if="!editing" color="info" class="mt-2 mx-2">Lagre</v-btn>
+    <v-btn
+      :disabled="loading"
+      @click="resetRecipeOriginal"
+      v-if="editing"
+      color="info"
+      class="mt-2 mx-2"
+    >Tilbakestill</v-btn>
     <v-btn
       :disabled="loading && !publishing"
-      :loading="loading"
+      :loading="loading && publishing"
+      v-if="!editing"
       @click="publishRecipe"
       color="success"
       class="mt-2 mx-2"
     >Publiser</v-btn>
+    <v-btn
+      :disabled="loading && !publishing"
+      :loading="loading && publishing"
+      v-if="editing"
+      @click="publishRecipe(true)"
+      color="success"
+      class="mt-8 mx-2"
+    >Lagre endringer</v-btn>
+    <p v-if="publishing">{{publishMessage}}</p>
+    <v-progress-linear
+      v-model="imageUploadProgress"
+      class="mt-4"
+      v-if="publishing"
+      rounded
+      color="primary"
+    ></v-progress-linear>
   </div>
 </template>
 
@@ -239,14 +283,28 @@ import * as firebase from "firebase/app"; // Required for side-effects
 import "firebase/firestore";
 var db = firebase.firestore();
 
+import "firebase/storage";
+var storage = firebase.storage();
+
+import imageCompression from "browser-image-compression";
+import { Promise } from "q";
+
 export default {
   name: "new-recipe",
   data() {
     return {
       timeSinceLastSave: undefined,
+      editing: false,
       timeClosed: false,
       loading: false,
       publishing: false,
+      publishMessage: "",
+      imageLoading: false,
+      imageError: false,
+      imageErrorMessage: "",
+      imageSuccess: false,
+      imageChanged: false,
+      imageUploadProgress: 0,
       error: false,
       errorStep: undefined,
       errorMessage: "",
@@ -295,6 +353,9 @@ export default {
       ingredientsError: false,
       stepsError: false,
       stepFormValid: [undefined, false, false, false],
+      inputImage: undefined,
+      isCompressed: false,
+      imageMaxSize: 500000, // bytes
       categoryList: [
         "Frokost",
         "Lunch",
@@ -309,6 +370,14 @@ export default {
     };
   },
   computed: {
+    recipeId: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.recipeId;
+      },
+      set(id) {
+        this.$store.commit("setRecipeId", id);
+      }
+    },
     recipeTitle: {
       get() {
         return this.$store.state.currentRecipeModule.recipe.title;
@@ -325,6 +394,25 @@ export default {
         this.$store.commit("setRecipeDescription", description);
       }
     },
+    imageCompressed() {
+      return this.$store.state.currentRecipeModule.recipe.imageCompressed;
+    },
+    recipeImagePath: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.imagePath;
+      },
+      set(path) {
+        this.$store.commit("setRecipeImagePath", path);
+      }
+    },
+    originalImage: {
+      get() {
+        return this.$store.state.currentRecipeModule.originalImage;
+      },
+      set(image) {
+        this.$store.commit("setRecipeOriginalImage", image);
+      }
+    },
     recipeCategory: {
       get() {
         return this.$store.state.currentRecipeModule.recipe.category;
@@ -339,14 +427,6 @@ export default {
       },
       set(newValue) {
         this.$store.commit("setRecipeVisibility", newValue);
-      }
-    },
-    recipeStepNumber: {
-      get() {
-        return this.$store.state.currentRecipeModule.recipeStepNumber;
-      },
-      set(newStep) {
-        this.$store.commit("setRecipeStep", newStep);
       }
     },
     recipePortions: {
@@ -379,6 +459,9 @@ export default {
     },
     visitedSteps() {
       return this.$store.state.currentRecipeModule.visitedSteps;
+    },
+    user() {
+      return this.$store.state.accountModule;
     }
   },
   components: {
@@ -417,7 +500,6 @@ export default {
     },
     openStep() {
       this.newStepOpen = true;
-      this.stepNumber = this.recipeSteps.length + 1;
     },
     editStep(index) {
       this.$refs.newStep.edit(this.recipeSteps[index], index);
@@ -452,11 +534,168 @@ export default {
         this.scrollToStep(currentStep);
       }
     },
+    displayError(errorMessage) {
+      this.loading = false;
+      this.error = true;
+      this.errorMessage = errorMessage;
+    },
     changedStep() {
       this.getValidator(this.prevStep)();
       this.$store.dispatch("switchStep", this.activeStep);
     },
-    publishRecipe() {
+    async uploadImage() {
+      const imageRef = storage
+        .ref()
+        .child(`recipeImages/${this.recipeId}/${this.imageCompressed.name}`);
+
+      const imageMeta = {
+        recipe: this.recipeId,
+        userID: this.user.uid,
+        visibility: this.visibility
+      };
+      let imageUpload = imageRef.put(this.imageCompressed, imageMeta);
+      this.publishMessage = "Laster opp bildet";
+
+      imageUpload.on(
+        "state_changed",
+        snapshot => {
+          this.imageUploadProgress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        },
+        error => {
+          console.log("Error in uploading of image");
+          switch (error.code) {
+            case "storage/unauthorized":
+              this.displayError(
+                "Du har ikke tilgang, sjekk at du er logget inn med riktig bruker"
+              );
+              break;
+
+            case "storage/canceled":
+              this.displayError("Opplastingen av bildet ble avbrutt");
+              break;
+
+            case "storage/unknown":
+              // Unknown error occurred, inspect error.serverResponse
+              this.displayError("En ukjent feil oppstod");
+              console.log(error.serverResponse);
+              break;
+
+            case "quota-exceeded":
+              this.displayError("Vi har høy pågang, prøv igjen senere");
+
+            case "unauthenticated":
+              this.displayError("Du er ikke logget in. Vennligst logg inn");
+
+            case "retry-limit-exceeded":
+              this.displayError("Kunne ikke laste opp bildet, prøv igjen");
+
+            case "invalid-checksum":
+              this.displayError(
+                "Bildet ble ikke lastet opp skikkelig, prøv igjen"
+              );
+
+            case "invalid-argument":
+              this.displayError(
+                "Filen du valgte er ikke gyldig. Bildet må være av typen png eller jpg"
+              );
+
+            case "server-file-wrong-size":
+              this.displayError(
+                "En feil skjedde under opplasting av bildet, vennligst prøv igjen"
+              );
+          }
+        },
+        () => {
+          this.error = false;
+          this.recipeImagePath = imageRef.fullPath;
+        }
+      );
+      await Promise.all([imageUpload]);
+    },
+    retrieveRecipe() {
+      const route = this.$route;
+      this.loading = true;
+      this.$store.commit("startLoading");
+      this.$store.dispatch("deleteRecipe");
+      this.recipeId = route.params.recipeId;
+      try {
+        const recipeRef = db.collection("recipes").doc(route.params.recipeId);
+        recipeRef.get().then(doc => {
+          console.log("Got data, inserting...");
+          const data = doc.data();
+          this.$store.dispatch("editRecipe", data).then(() => {
+            this.loading = false;
+            this.$store.commit("stopLoading");
+            if (data.imagePath != null) {
+              this.imageLoading = true;
+              this.recipeImagePath = data.imagePath;
+
+              try {
+                const storageRef = storage.ref(data.imagePath);
+                storageRef.getDownloadURL().then(url => {
+                  console.log("Url: " + url);
+                  fetch(url, {
+                    method: "GET"
+                  })
+                    .then(r => {
+                      console.dir(r);
+                      return r.blob();
+                    })
+                    .then(imageBlob => {
+                      console.dir(imageBlob);
+                      storageRef.getMetadata().then(meta => {
+                        this.inputImage = new File([imageBlob], meta.name);
+                        this.originalImage = this.inputImage;
+                        this.imageSuccess = true;
+                        this.isCompressed = true;
+                        this.imageLoading = false;
+                      });
+                    });
+                });
+              } catch (error) {
+                console.log("Error while getting image");
+                console.dir(error);
+                this.imageLoading = false;
+                this.inputImage = undefined;
+              }
+            }
+          });
+        });
+
+        this.$store.commit("visitStep", 1);
+        this.$store.commit("visitStep", 2);
+        this.$store.commit("visitStep", 3);
+      } catch (error) {
+        console.log("Error occured while getting recipe");
+        console.dir(error);
+        this.loading = false;
+        this.$store.commit("stopLoading");
+        this.displayError(
+          "Noe gikk galt under henting av oppskriften, prøv å oppdatere siden"
+        );
+      }
+    },
+    async resetRecipeOriginal() {
+      this.retrieveRecipe();
+    },
+    async saveRecipe() {
+      console.log("Saving recipe");
+      // TODO: Set oppskriften med nye verdier i firestore som draft
+    },
+    published(edit = false) {
+      this.error = false;
+      if (edit) {
+        this.publishMessage = "Oppskriften ble endret";
+        this.$store.dispatch("saveEditedRecipe");
+      } else {
+        this.publishMessage = "Oppskriften ble publisert";
+        this.$store.dispatch("saveNewRecipe");
+      }
+      this.$router.go(-1);
+    },
+    async publishRecipe(edit = false) {
+      console.log("Publishing recipe");
       this.loading = true;
       this.publishing = true;
       this.error = false;
@@ -465,110 +704,201 @@ export default {
       this.getValidator(2)();
       this.getValidator(3)();
 
+      // Checking that the title is not empty
       if (this.recipeTitle.trim() == "") {
-        this.error = true;
-        this.loading = false;
+        this.displayError("Tittelen kan ikke være tom");
         this.$store.dispatch("switchStep", 1);
-        this.errorMessage = "Tittelen kan ikke være tom";
         return;
       }
 
+      // Checking that a category is selected
       if (this.recipeCategory == "") {
-        this.error = true;
-        this.loading = false;
+        this.displayError("Du må velge en kategori for oppskriften");
         this.$store.dispatch("switchStep", 1);
-        this.errorMessage = "Du må velge en kategori for oppskriften";
         return;
       }
 
+      // Checking that portions is not empty
       if (!this.recipePortions) {
-        this.error = true;
-        this.loading = false;
+        this.displayError("Du må legge til antall porsjoner");
         this.$store.dispatch("switchStep", 1);
-        this.errorMessage = "Du må legge til antall porsjoner";
+        return;
       }
 
+      // Checking that there is more than 0 ingredients
       if (this.recipeIngredients.length === 0) {
-        this.error = true;
-        this.loading = false;
+        this.displayError(
+          "Du har ikke lagt til noen ingredienser. Legg til minst en ingrediens."
+        );
         this.$store.dispatch("switchStep", 2);
-        this.errorMessage =
-          "Du har ikke lagt til noen ingredienser. Legg til minst en ingrediens.";
         return;
       }
 
+      // Checking that there is more than 0 steps in the recipe
       if (this.recipeSteps.length === 0) {
-        this.error = true;
-        this.loading = false;
+        this.displayError(
+          "Du har ikke lagt til noen steg i fremgangsmåten. Legg til minst et steg."
+        );
         this.$store.dispatch("switchStep", 3);
-        this.errorMessage =
-          "Du har ikke lagt til noen steg i fremgangsmåten. Legg til minst et steg.";
         return;
       }
 
-      for (let i = 1; i < 4; i++) {
-        if (this.visitedSteps[i] === false) {
-          if (i === 3 && this.activeStep == 3) {
-            break;
-          }
-          this.error = true;
-          this.loading = false;
-          this.$store.dispatch("switchStep", i);
-          this.errorMessage = `Du har glemt ${this.stepNames[i]}, gå til det steget og sjekk at du har lagt inn alt`;
-          return;
-        }
+      if (!this.stepFormValid[1]) {
+        this.displayError(`Det er noe galt i ${this.stepNames[1]}`);
+        this.$store.dispatch("switchStep", 1);
+        return;
+      }
 
-        if (!this.stepFormValid[i]) {
-          this.loading = false;
-          this.$store.dispatch("switchStep", i);
-          this.error = true;
-          this.errorMessage = `Det er noe galt i ${this.stepNames[i]}`;
-          return;
+      if (!edit) {
+        // Checking that all steps has been visited
+        for (let i = 1; i < 4; i++) {
+          if (this.visitedSteps[i] === false) {
+            if (i === 3 && this.activeStep == 3) {
+              break;
+            }
+            this.displayError(
+              `Du har glemt ${this.stepNames[i]}, gå til det steget og sjekk at du har lagt inn alt`
+            );
+            this.$store.dispatch("switchStep", i);
+            return;
+          }
         }
       }
 
-      // TODO: Publish to firestore
-      var user = firebase.auth().currentUser;
+      // Getting the currently signed in user from the store
+      let user = this.user;
 
-      if (user) {
+      // Checking if user is signed in
+      if (user.loggedIn) {
         // User is signed in.
-        console.log(`User name: ${user.displayName}, uid: ${user.uid}`);
-        db.collection("recipes")
-          .add({
-            title: this.recipeTitle,
-            description: this.recipeDescription,
-            ingredients: this.recipeIngredients,
-            steps: this.recipeSteps,
-            visibility: this.visibility,
-            category: this.recipeCategory,
-            portions: this.recipePortions,
-            authorID: user.uid,
-            authorName: user.displayName
-          })
-          .then(() => {
-            console.log("Successfully uploaded recipe");
-            this.loading = false;
-            this.error = false;
-            this.$store.commit("saveRecipe");
-            this.$router.go(-1);
-          })
-          .catch(err => {
-            console.log("An error occured");
-            console.log(err);
-            this.loading = false;
-            this.error = true;
-            this.errorMessage =
-              "Noe gikk galt under opplasting, prøv igjen senere";
-          });
+        // Uploading image
+        let isImage = false;
+        try {
+          // Checks that there is an image, and that if it is an edit, it needs to have changed from the original
+          if (this.imageCompressed && (!edit || this.imageChanged)) {
+            if (edit && this.imageChanged) {
+              const storageRef = storage.ref(this.recipeImagePath);
+              await storageRef.delete();
+            }
+            await this.uploadImage().then(() => {
+              isImage = true;
+            });
+          } else if (edit && this.originalImage) {
+            isImage = true;
+          }
+        } catch (error) {
+          console.log("An error occured while uploading image:");
+          console.dir(error);
+          this.displayError(
+            "Noe gikk galt under opplasting av bilde, det må være av typen png eller jpg"
+          );
+        }
+
+        if (this.error) {
+          return;
+        }
+        console.log(this.visibility);
+        const recipeData = {
+          title: this.recipeTitle,
+          description: this.recipeDescription,
+          imagePath: isImage ? this.recipeImagePath : null, // Adds the path if isImage is true, else it will be null
+          ingredients: this.recipeIngredients,
+          steps: this.recipeSteps,
+          visibility: this.visibility,
+          status: "published",
+          category: this.recipeCategory,
+          portions: this.recipePortions,
+          dateCreated: Date.now(),
+          authorID: user.uid,
+          authorName: user.name
+        };
+        console.dir(recipeData);
+
+        // Adding the recipe to the firestore
+        this.publishMessage = "Laster opp oppskrift";
+        // Checks if the recipe has a recipeId on the firestore (has been uploaded before)
+        //    If not, it will add it to firestore and get an id
+        if (this.recipeId === undefined && !edit) {
+          try {
+            db.collection("recipes")
+              .add(recipeData)
+              .then(ref => {
+                this.recipeId = ref.id;
+                this.publishMessage = "Laster opp bilde";
+                if (this.imageCompressed) {
+                  try {
+                    // Since there is no recipeId from before, the image needs to be uploaded after getting the recipeId
+                    this.uploadImage().then(() => {
+                      ref
+                        .update({
+                          imagePath: this.recipeImagePath
+                        })
+                        .then(() => {
+                          this.published();
+                        })
+                        .catch(error => {
+                          console.log("Error while adding imagePath to recipe");
+                          this.displayError(
+                            "Noe gikk galt under opplasting av bilde"
+                          );
+                        });
+                    });
+                  } catch (error) {
+                    console.log("An error occured");
+                    this.displayError(
+                      "Noe gikk galt under opplasting av bilde, prøv igjen senere"
+                    );
+                  }
+                } else {
+                  this.published();
+                }
+              })
+              .catch(err => {
+                console.log("An error occured");
+                this.displayError(
+                  "Noe gikk galt under publisering, prøv igjen senere"
+                );
+              });
+          } catch (error) {
+            console.log("Something bad happened");
+            console.dir(error);
+            this.displayError("Noe gikk galt, prøv igjen");
+          }
+        } else if (this.recipeId) {
+          // If it has an id on firestore, it updates that
+          try {
+            db.collection("recipes")
+              .doc(this.recipeId)
+              .set(recipeData)
+              .then(() => {
+                this.published(edit);
+              });
+          } catch (error) {
+            console.log("Something bad happened: 2");
+            console.dir(error);
+            this.displayError("Noe gikk galt, prøv igjen");
+          }
+        } else {
+          console.log(
+            "Edited recipe does not have recipeId, somthing went horribly wrong"
+          );
+          this.displayError("Noe gikk galt under lagring, prøv igjen senere");
+        }
       } else {
         // No user is signed in.
         console.log("Not signed in");
+        this.displayError("Du er ikke logget inn, vennligst logg inn først");
       }
     },
     openDeleteRecipe() {
       this.deleteDialogOpen = true;
     },
-    deleteRecipe() {
+    async deleteRecipe() {
+      const doc = db.collection("recipes").doc(this.recipeId);
+      await doc.delete().catch(error => {
+        console.log("Error occured while deleting recipe");
+        this.displayError("Noe galt skjedde under sletting av oppskrift");
+      });
       this.$store.dispatch("deleteRecipe");
       this.deleteDialogOpen = false;
     },
@@ -578,6 +908,20 @@ export default {
     scrollToStep(step) {
       let scrollTo = document.getElementById("step" + step);
       this.$vuetify.goTo(scrollTo);
+    },
+    async compressImage(image) {
+      const options = {
+        maxSizeMB: this.imageMaxSize / 1000000,
+        maxWidthOrHeight: 1000,
+        useWebWorker: true
+      };
+      console.log(`Size before compress: ${image.size / 1000} KB`);
+
+      return imageCompression(image, options);
+    },
+    resetImage() {
+      this.inputImage = this.originalImage;
+      this.isCompressed = true;
     }
   },
   watch: {
@@ -595,13 +939,89 @@ export default {
           offset: 100
         });
       }, 500);
+    },
+    inputImage(newImage, oldImage) {
+      if (this.isCompressed) {
+        this.isCompressed = false;
+        return;
+      }
+      if (newImage == undefined) {
+        console.log("Image is undefined");
+        this.$store.commit("removeRecipeImage");
+        return;
+      }
+
+      this.imageLoading = true;
+
+      this.compressImage(newImage)
+        .then(compressedImage => {
+          console.log(`Size after compress: ${compressedImage.size / 1000} KB`);
+
+          this.$store.commit("setRecipeImage", compressedImage);
+          this.imageLoading = false;
+          this.imageSuccess = true;
+          this.imageChanged = true;
+          return compressedImage;
+        })
+        .catch(error => {
+          console.log(error.message);
+          this.imageError = true;
+          this.imageLoading = false;
+          this.imageErrorMessage =
+            "Noe gikk galt under komprimering, prøv et annet bilde.";
+          return;
+        });
     }
   },
   created() {
-    this.$store.commit("saveRecipe");
+    const route = this.$route;
     setInterval(() => {
       this.timeSinceLastSave = Date.now() - this.lastSaveTime;
     }, 1000);
+
+    if (route.name == "newRecipe" && this.recipeId === undefined) {
+      const user = this.$store.state.accountModule;
+      console.log(user);
+      const data = {
+        title: this.recipeTitle || null,
+        description: this.recipeDescription,
+        ingredients: this.recipeIngredients,
+        steps: this.recipeSteps,
+        visibility: this.visibility,
+        status: "draft",
+        category: this.recipeCategory || null,
+        portions: this.recipePortions || null,
+        authorID: user.uid,
+        authorName: user.name
+      };
+
+      console.dir(data);
+      if (user.loggedIn) {
+        db.collection("recipes")
+          .add(data)
+          .then(ref => {
+            this.recipeId = ref.id;
+            this.loading = false;
+            this.error = false;
+          })
+          .catch(err => {
+            console.log(err);
+            console.log(
+              "An error occured while creating the recipe in firestore"
+            );
+            this.displayError(
+              "Noe gikk galt under oppretting av oppskriften, prøv igjen senere"
+            );
+          });
+      } else {
+        this.error = true;
+        this.errorMessage = "Du er ikke logget inn, logg inn først";
+      }
+    } else if (route.name == "editRecipe") {
+      this.editing = true;
+      console.log(this.recipeId);
+      this.retrieveRecipe();
+    }
   }
 };
 </script>
