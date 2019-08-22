@@ -46,13 +46,14 @@
       </router-link>
     </v-app-bar>
 
-    <div class="logout" v-if="!$vuetify.breakpoint.smAndDown && loginFeature">
-      <v-btn v-if="loggedIn" @click="logout" text medium color="error">Logg ut</v-btn>
-      <facebook-login-button loginText="Logg inn" v-if="!loggedIn"></facebook-login-button>
+    <div class="login" v-if="!loggedIn">
+      <facebook-login-button loginText="Logg inn"></facebook-login-button>
     </div>
 
-    <div class="loading">
-      <v-progress-linear indeterminate rounded fixed color="primary" :active="loading"></v-progress-linear>
+    <div class="eventLine">
+      <div class="event elevation-4" v-if="loading">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </div>
     </div>
 
     <v-container class="oldBrowserWarning">
@@ -80,7 +81,7 @@
       :value="activeRoute"
       color="primary"
     >
-      <v-btn to="/">
+      <v-btn to="/" exact>
         <span>Utforsk</span>
         <v-icon>mdi-compass</v-icon>
       </v-btn>
@@ -104,7 +105,7 @@
       <div id="contentContainer">
         <div
           class="cookieContainer"
-          v-if="!acceptedCookies && !hiddenCookies && !loggedIn && loginFeature"
+          v-if="!acceptedCookies && !closedCookies && !loggedIn && loginFeature"
         >
           <v-sheet elevation="2" class="cookieSheet">
             <div class="cookieAccept">
@@ -216,29 +217,30 @@ export default {
     },
     acceptCookies() {
       this.$store.commit("acceptCookies");
-      this.$cookies.set("cookieAccept", true, new Date("2099"));
+    },
+    denyCookies() {
+      this.$store.commit("denyCookies");
     },
     hideCookies() {
-      this.hiddenCookies = true;
+      this.$store.commit("closeCookies");
     },
     hideBrowserWarning() {
       this.$store.commit("hideBrowserWarning");
     }
   },
-  data() {
-    return {
-      hiddenCookies: false
-    };
-  },
   computed: {
     loggedIn() {
       return this.$store.state.accountModule.loggedIn;
     },
-    currentTitle() {
-      return this.$store.state.currentTitle;
+    activeRoute() {
+      console.log(this.$route.name);
+      return this.$route.path;
     },
     acceptedCookies() {
       return this.$store.state.acceptedCookies;
+    },
+    closedCookies() {
+      return this.$store.state.closedCookies;
     },
     loading() {
       return this.$store.state.loading;
@@ -248,9 +250,6 @@ export default {
     },
     hideOldBrowserWarning() {
       return this.$store.state.hideOldBrowserWarning;
-    },
-    activeRoute() {
-      return this.$router.currentRoute;
     },
     construction() {
       return this.$store.state.underConstruction;
@@ -268,18 +267,14 @@ export default {
       if (user) {
         // User is signed in.
         this.$store.commit("addUserInfo", user);
-        this.$store.commit("stopLoading");
       } else {
         // No user is signed in.
         this.$store.commit("showWelcome");
       }
     });
-
+  },
+  mounted() {
     this.$store.commit("stopLoading");
-    let cookieAccept = this.$cookies.get("cookieAccept");
-    if (cookieAccept == "true") {
-      this.hideCookies();
-    }
   }
 };
 </script>
@@ -292,27 +287,19 @@ export default {
     max-height: 100px;
     margin-left: 10px;
   }
-
-  .logoContainer {
-    width: min-content;
-    grid-area: logoCont;
-    justify-self: center;
-  }
-
-  .heading {
-    grid-area: title;
-    font-family: "Montserrat", sans-serif;
-    align-self: center;
-    justify-self: center;
-    font-size: 1.4em;
-  }
 }
 
-.loading {
-  grid-area: loading;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+.eventLine {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 99;
+
+  .event {
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+  }
 }
 
 .logout {

@@ -5,7 +5,7 @@ Vue.use(Router);
 
 export default new Router({
   mode: "history",
-  base: process.env.BASE_URL,
+  base: "/",
   routes: [
     {
       path: "/",
@@ -36,6 +36,10 @@ export default new Router({
     {
       path: "/personvern-erklaering",
       name: "privacyPolicy",
+      beforeEnter(to, from, next) {
+        console.log(`Came from ${from.name} and going to ${to.name}`);
+        next();
+      },
       component: () =>
         import(
           /* webpackChunkName: "privacyPolicy" */ "./views/PrivacyPolicy.vue"

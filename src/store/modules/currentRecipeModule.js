@@ -5,6 +5,7 @@ const currentRecipeModule = {
       imagePath: undefined,
       title: "",
       description: "",
+      status: "",
       imageCompressed: undefined,
       category: "",
       portions: "",
@@ -13,6 +14,7 @@ const currentRecipeModule = {
       visibility: "Private"
     },
     recipeStepNumber: 1,
+    newRecipe: null,
     lastSaveTime: undefined,
     prevStep: 1,
     activeStep: 1,
@@ -23,17 +25,20 @@ const currentRecipeModule = {
     setRecipeId(state, recipeId) {
       state.recipe.recipeId = recipeId;
     },
+    setRecipeNew(state, newValue) {
+      state.newRecipe = newValue;
+    },
     setRecipeImagePath(state, imagePath) {
       state.recipe.imagePath = imagePath;
-    },
-    setRawImage(state, image) {
-      state.rawImage = image;
     },
     setRecipeTitle(state, title) {
       state.recipe.title = title;
     },
     setRecipeDescription(state, description) {
       state.recipe.description = description;
+    },
+    setRecipeStatus(state, status) {
+      state.recipe.status = status;
     },
     setRecipeImage(state, image) {
       state.recipe.imageCompressed = image;
@@ -94,7 +99,7 @@ const currentRecipeModule = {
     visitStep(state, recipeStepNumber) {
       state.visitedSteps[recipeStepNumber] = true;
     },
-    saveRecipe(state) {
+    saveTime(state) {
       state.lastSaveTime = Date.now();
     },
     resetRecipe(state) {
@@ -135,6 +140,7 @@ const currentRecipeModule = {
       console.log("VueX currentRecipeModule: Editing recipe");
       commit("setRecipeTitle", data.title);
       commit("setRecipeDescription", data.description);
+      commit("setRecipeStatus", data.status);
       commit("setRecipeIngredients", data.ingredients);
       commit("setRecipeSteps", data.steps);
       commit("setRecipeVisibility", data.visibility);

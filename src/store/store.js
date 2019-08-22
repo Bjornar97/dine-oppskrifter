@@ -37,28 +37,18 @@ export default new Vuex.Store({
     loading: true,
     hideOldBrowserWarning: false,
     acceptedCookies: null,
-    currentTitle: "Utforsk",
-    showWelcome: null
-  },
-  getters: {
-    getCurrentTitle(state) {
-      return state.currentTitle;
-    }
+    closedCookies: false,
+    currentTitle: "Utforsk"
   },
   mutations: {
-    closeWelcome(state) {
-      console.log("Closing welcome box");
-      state.showWelcome = false;
-    },
-    showWelcome(state) {
-      console.log("Opening welcome box");
-      state.showWelcome = true;
-    },
     acceptCookies(state) {
       state.acceptedCookies = true;
     },
     denyCookies(state) {
       state.acceptedCookies = false;
+    },
+    closeCookies(state) {
+      state.closedCookies = true;
     },
     startLoading(state) {
       state.loading = true;

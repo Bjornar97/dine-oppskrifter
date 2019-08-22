@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <h2 class="headline ma-4 text-left primary--text" v-if="!editing">Ny Oppskrift</h2>
+  <v-container class="px-0 px-md-8 px-lg-12" id="main">
+    <h2 class="headline ma-4 mb-8 text-left primary--text" v-if="!editing">Ny Oppskrift</h2>
     <h2
-      class="headline ma-4 text-left primary--text"
+      class="headline ma-4 mb-8 text-left primary--text"
       v-if="editing"
     >Endre Oppskriften "{{recipeTitle}}"</h2>
 
-    <v-stepper @change="changedStep" v-model="activeStep" vertical class="pb-4">
+    <v-stepper @change="changedStep" v-model="activeStep" vertical class="pb-4 stepper">
       <p class="mt-8 mb-0">Felt markert med * er påkrevd</p>
       <v-stepper-step
         editable
@@ -18,75 +18,91 @@
       >Generell informasjon</v-stepper-step>
 
       <v-stepper-content step="1">
-        <v-form v-model="stepFormValid[1]" ref="step1">
-          <v-text-field
-            :disabled="loading"
-            name="title"
-            class="mb-4"
-            v-model="recipeTitle"
-            label="Tittel*"
-            :rules="[rules.required, rules.counter100]"
-            counter="100"
-          ></v-text-field>
-          <v-textarea
-            :disabled="loading"
-            outlined
-            auto-grow
-            name="description"
-            v-model="recipeDescription"
-            label="Kort Beskrivelse"
-            :rules="[rules.counter500]"
-            counter="500"
-            hint="En kort beskrivelse av hva oppskriften er. Skal ikke inneholde fremgangsmåte eller ingrediensliste"
-          ></v-textarea>
-          <v-file-input
-            label="Bilde"
-            v-model="inputImage"
-            :loading="imageLoading"
-            :success="imageSuccess"
-            :success-messages="imageSuccess ? 'Bildet er lagt til': ''"
-            :error="imageError"
-            accept="image/png, image/jpeg"
-            placeholder="Legg til Bilde"
-            :error-messages="imageErrorMessage"
-            prepend-icon="mdi-camera"
-          ></v-file-input>
-          <v-btn v-if="editing" @click="resetImage" class="mt-2" color="info">Hent bilde</v-btn>
-          <p
-            class="caption mb-8"
-          >Tilbakestiller bildet til det som var før du begynte å redigere oppskriften</p>
-          <v-select
-            :disabled="loading"
-            :items="categoryList"
-            :rules="[rules.required]"
-            v-model="recipeCategory"
-            label="Kategori*"
-          ></v-select>
-          <v-text-field
-            :disabled="loading"
-            name="portions"
-            class="mb-4"
-            v-model="recipePortions"
-            label="Antall porsjoner*"
-            :rules="[rules.required, rules.onlyNumber, rules.counter2]"
-            hint="Hvor mange porsjoner denne oppskriften gir"
-            persistent-hint
-            counter="2"
-            suffix="porsjoner"
-          ></v-text-field>
-          <h3 class="ml-2 subtitle-1 text-left grey--text">Visning</h3>
-          <v-radio-group
-            row
-            hint="Ved privat vil ingen andre enn deg kunne se oppskriften. Ved offentlig kan alle se oppskriften"
-            mandatory
-            v-model="visibility"
-            class="ml-2"
-            name="visibility"
-            persistent-hint
-          >
-            <v-radio color="primary" value="Private" label="Privat" ripple></v-radio>
-            <v-radio color="primary" label="Offentlig" value="Public" ripple></v-radio>
-          </v-radio-group>
+        <v-form v-model="stepFormValid[1]" class="generalForm" ref="step1">
+          <div class="recipeInfo">
+            <v-text-field
+              :disabled="loading"
+              name="title"
+              class="mb-4 recipeTitle recipeTextField"
+              v-model="recipeTitle"
+              label="Tittel*"
+              :rules="[rules.required, rules.counter100]"
+              counter="100"
+            ></v-text-field>
+            <v-textarea
+              :disabled="loading"
+              outlined
+              auto-grow
+              name="description"
+              class="recipeDescription recipeTextField"
+              v-model="recipeDescription"
+              label="Kort Beskrivelse"
+              :rules="[rules.counter500]"
+              counter="500"
+              hint="En kort beskrivelse av hva oppskriften er. Skal ikke inneholde fremgangsmåte eller ingrediensliste"
+            ></v-textarea>
+          </div>
+
+          <div class="recipeImageDiv">
+            <v-file-input
+              label="Bilde"
+              class="recipeImage recipeTextField"
+              v-model="inputImage"
+              :disabled="loading"
+              :loading="imageLoading"
+              :success="imageSuccess"
+              :success-messages="imageSuccess ? 'Bildet er lagt til': ''"
+              :error="imageError"
+              accept="image/png, image/jpeg"
+              placeholder="Legg til Bilde"
+              :error-messages="imageErrorMessage"
+              prepend-icon="mdi-camera"
+            ></v-file-input>
+            <v-btn v-if="editing" @click="resetImage" class="mt-2" color="info">Hent bilde</v-btn>
+            <p
+              class="caption mb-8"
+              v-if="editing"
+            >Tilbakestiller bildet til det som var før du begynte å redigere oppskriften</p>
+          </div>
+          <div class="recipeMoreInfo">
+            <v-select
+              :disabled="loading"
+              :items="categoryList"
+              :rules="[rules.required]"
+              v-model="recipeCategory"
+              label="Kategori*"
+              class="recipeCategory recipeTextField"
+            ></v-select>
+            <v-text-field
+              :disabled="loading"
+              name="portions"
+              class="mb-4 recipePortions recipeTextField"
+              v-model="recipePortions"
+              label="Antall porsjoner*"
+              :rules="[rules.required, rules.onlyNumber, rules.counter2]"
+              hint="Hvor mange porsjoner denne oppskriften gir"
+              persistent-hint
+              counter="2"
+              suffix="porsjoner"
+            ></v-text-field>
+          </div>
+
+          <div class="recipeVisibility">
+            <h3 class="ml-2 subtitle-1 text-left grey--text">Visning</h3>
+            <v-radio-group
+              row
+              hint="Ved privat vil ingen andre enn deg kunne se oppskriften. Ved offentlig kan alle se oppskriften"
+              mandatory
+              v-model="visibility"
+              class="ml-2"
+              name="visibility"
+              persistent-hint
+            >
+              <v-radio color="primary" value="Private" label="Privat" ripple></v-radio>
+              <v-radio color="primary" label="Offentlig" value="Public" ripple></v-radio>
+            </v-radio-group>
+          </div>
+
           <v-btn class="nextButton mb-2 mt-4" @click="nextSection(1)" color="success">Videre</v-btn>
         </v-form>
       </v-stepper-content>
@@ -104,22 +120,22 @@
 
       <v-stepper-content step="2">
         <v-form ref="step2" v-model="stepFormValid[2]">
-          <v-card class="ma-1" v-if="recipeIngredients.length != 0">
+          <v-card class="ma-1 recipeIngredientsCard" v-if="recipeIngredients.length != 0">
             <v-list>
               <v-subheader>Ingrediensliste</v-subheader>
               <v-list-item v-for="(ingredient, index) in recipeIngredients" :key="index">
                 <v-list-item-content class="listItem">
-                  <v-flex xs8>
+                  <v-flex xs8 sm10>
                     <p
                       align-center
                       class="ma-0 text-left ingredient"
                     >{{ ingredient.amount }} {{ingredient.unit}} {{ingredient.name}}</p>
                   </v-flex>
-                  <v-flex xs2>
+                  <v-flex xs2 sm1>
                     <v-btn
                       :disabled="loading"
                       @click="editIngredient(index)"
-                      small
+                      :small="$vuetify.breakpoint.smAndDown"
                       icon
                       color="warning"
                       text
@@ -127,11 +143,11 @@
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                   </v-flex>
-                  <v-flex xs2>
+                  <v-flex xs2 sm1>
                     <v-btn
                       :disabled="loading"
                       @click="deleteIngredient(index)"
-                      small
+                      :small="$vuetify.breakpoint.smAndDown"
                       icon
                       color="error"
                       text
@@ -174,11 +190,11 @@
         :complete="visitedSteps[2]"
       >
         Fremgangsmåte
-        <small v-if="stepsError">Du må ha minst en ingrediens</small>
+        <small v-if="stepsError">Du må ha minst ett steg</small>
       </v-stepper-step>
-      <v-stepper-content step="3" class="pa-0 pl-4 ma-0">
+      <v-stepper-content step="3">
         <v-form ref="step3">
-          <v-card v-if="recipeSteps.length != 0" class="ma-2">
+          <v-card v-if="recipeSteps.length != 0" class="ma-2 recipeStepsCard">
             <v-list>
               <v-subheader>Steg</v-subheader>
               <v-list-item v-for="(step, index) in recipeSteps" :key="index">
@@ -230,8 +246,13 @@
     <v-layout row justify-center>
       <v-dialog v-model="deleteDialogOpen" persistent max-width="290">
         <v-card>
-          <v-card-title class="headline">Sikker på at du vil slette oppskriften?</v-card-title>
-          <v-card-text>Dette vil slette oppskriften permanent.</v-card-text>
+          <v-card-title
+            class="headline"
+          >Sikker på at du vil {{editing ? "tilbakestille": "slette"}} oppskriften?</v-card-title>
+          <v-card-text v-if="editing">Dette vil slette oppskriften permanent.</v-card-text>
+          <v-card-text
+            v-if="!editing"
+          >Dette vil tilbakestille alle felt i oppskriften, og du må begynne på nytt</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="error" text @click.native="closeDeleteDialog">Nei</v-btn>
@@ -240,24 +261,50 @@
         </v-card>
       </v-dialog>
     </v-layout>
-    <p class="mt-6">Sist lagret: TODO: Legg til klokkeslett</p>
-    <p class="error--text" v-if="error">{{errorMessage}}</p>
-    <v-btn :disabled="loading" @click="openDeleteRecipe" color="error" class="mt-2 mx-2">Slett</v-btn>
-    <v-btn :disabled="loading" v-if="!editing" color="info" class="mt-2 mx-2">Lagre</v-btn>
+    <v-expand-transition>
+      <p
+        class="mt-6"
+        v-if="$store.state.currentRecipeModule.lastSaveTime"
+      >Sist lagret: {{lastSaveTime}}</p>
+    </v-expand-transition>
+    <v-expand-transition>
+      <p class="error--text" v-if="error">{{errorMessage}}</p>
+    </v-expand-transition>
+    <v-btn
+      :disabled="loading"
+      @click="openDeleteRecipe"
+      v-if="editing"
+      color="error"
+      class="my-2 mx-2"
+    >Slett</v-btn>
+    <v-btn
+      :disabled="loading"
+      @click="openDeleteRecipe"
+      v-if="!editing"
+      color="error"
+      class="my-2 mx-2"
+    >Tilbakestill</v-btn>
+    <v-btn
+      :disabled="loading"
+      @click="saveRecipe"
+      v-if="!editing"
+      color="info"
+      class="my-2 mx-2"
+    >Lagre</v-btn>
     <v-btn
       :disabled="loading"
       @click="resetRecipeOriginal"
       v-if="editing"
-      color="info"
-      class="mt-2 mx-2"
-    >Tilbakestill</v-btn>
+      color="warning"
+      class="my-2 mx-2"
+    >Tilbakestill til orginal</v-btn>
     <v-btn
       :disabled="loading && !publishing"
       :loading="loading && publishing"
       v-if="!editing"
-      @click="publishRecipe"
+      @click="publishRecipe(false)"
       color="success"
-      class="mt-2 mx-2"
+      class="my-2 mx-2"
     >Publiser</v-btn>
     <v-btn
       :disabled="loading && !publishing"
@@ -265,17 +312,17 @@
       v-if="editing"
       @click="publishRecipe(true)"
       color="success"
-      class="mt-8 mx-2"
+      class="my-2 mx-2"
     >Lagre endringer</v-btn>
     <p v-if="publishing">{{publishMessage}}</p>
     <v-progress-linear
       v-model="imageUploadProgress"
-      class="mt-4"
+      class="my-4"
       v-if="publishing"
       rounded
       color="primary"
     ></v-progress-linear>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -293,7 +340,6 @@ export default {
   name: "new-recipe",
   data() {
     return {
-      timeSinceLastSave: undefined,
       editing: false,
       timeClosed: false,
       loading: false,
@@ -378,6 +424,14 @@ export default {
         this.$store.commit("setRecipeId", id);
       }
     },
+    recipeNew: {
+      get() {
+        return this.$store.state.currentRecipeModule.newRecipe;
+      },
+      set(newValue) {
+        this.$store.commit("setRecipeNew", newValue);
+      }
+    },
     recipeTitle: {
       get() {
         return this.$store.state.currentRecipeModule.recipe.title;
@@ -396,6 +450,9 @@ export default {
     },
     imageCompressed() {
       return this.$store.state.currentRecipeModule.recipe.imageCompressed;
+    },
+    imageJson() {
+      return this.$store.state.currentRecipeModule.imageJson;
     },
     recipeImagePath: {
       get() {
@@ -444,7 +501,14 @@ export default {
       return this.$store.state.currentRecipeModule.recipe.ingredients;
     },
     lastSaveTime() {
-      return this.$store.state.currentRecipeModule.lastSaveTime;
+      const timeMilliseconds = this.$store.state.currentRecipeModule
+        .lastSaveTime;
+      let date = new Date(timeMilliseconds);
+      let hours = date.getHours();
+      hours < 10 ? (hours = `0${hours}`) : hours;
+      let minutes = date.getMinutes();
+      minutes < 10 ? (minutes = `0${minutes}`) : minutes;
+      return `${hours}:${minutes}`;
     },
     prevStep() {
       return this.$store.state.currentRecipeModule.prevStep;
@@ -543,6 +607,14 @@ export default {
       this.getValidator(this.prevStep)();
       this.$store.dispatch("switchStep", this.activeStep);
     },
+    saved() {
+      this.$store.commit("saveTime");
+      this.publishMessage = "Lagret";
+      this.loading = false;
+      setTimeout(() => {
+        this.publishing = false;
+      }, 2000);
+    },
     async uploadImage() {
       const imageRef = storage
         .ref()
@@ -621,47 +693,69 @@ export default {
       this.recipeId = route.params.recipeId;
       try {
         const recipeRef = db.collection("recipes").doc(route.params.recipeId);
-        recipeRef.get().then(doc => {
-          console.log("Got data, inserting...");
-          const data = doc.data();
-          this.$store.dispatch("editRecipe", data).then(() => {
-            this.loading = false;
-            this.$store.commit("stopLoading");
-            if (data.imagePath != null) {
-              this.imageLoading = true;
-              this.recipeImagePath = data.imagePath;
+        recipeRef
+          .get()
+          .then(doc => {
+            console.log("Got data, inserting...");
+            const data = doc.data();
+            this.$store.dispatch("editRecipe", data).then(() => {
+              this.loading = false;
+              this.$store.commit("stopLoading");
+              if (data.imagePath != null) {
+                this.imageLoading = true;
+                this.recipeImagePath = data.imagePath;
 
-              try {
-                const storageRef = storage.ref(data.imagePath);
-                storageRef.getDownloadURL().then(url => {
-                  console.log("Url: " + url);
-                  fetch(url, {
-                    method: "GET"
-                  })
-                    .then(r => {
-                      console.dir(r);
-                      return r.blob();
+                try {
+                  const storageRef = storage.ref(data.imagePath);
+                  storageRef.getDownloadURL().then(url => {
+                    console.log("Url: " + url);
+                    fetch(url, {
+                      method: "GET"
                     })
-                    .then(imageBlob => {
-                      console.dir(imageBlob);
-                      storageRef.getMetadata().then(meta => {
-                        this.inputImage = new File([imageBlob], meta.name);
-                        this.originalImage = this.inputImage;
-                        this.imageSuccess = true;
-                        this.isCompressed = true;
-                        this.imageLoading = false;
+                      .then(r => {
+                        console.dir(r);
+                        return r.blob();
+                      })
+                      .then(imageBlob => {
+                        console.dir(imageBlob);
+                        storageRef.getMetadata().then(meta => {
+                          this.inputImage = new File([imageBlob], meta.name);
+                          this.originalImage = this.inputImage;
+                          this.imageSuccess = true;
+                          this.isCompressed = true;
+                          this.imageLoading = false;
+                        });
                       });
-                    });
-                });
-              } catch (error) {
-                console.log("Error while getting image");
-                console.dir(error);
-                this.imageLoading = false;
-                this.inputImage = undefined;
+                  });
+                } catch (error) {
+                  console.log("Error while getting image");
+                  console.dir(error);
+                  this.imageLoading = false;
+                  this.inputImage = undefined;
+                }
               }
+            });
+          })
+          .catch(error => {
+            console.log(`Error code: ${error.code}`);
+            switch (error.code) {
+              case "unauthenticated":
+                this.displayError("Du er ikke logget inn, vennligst logg inn");
+                break;
+
+              case "permission-denied":
+                this.displayError(
+                  "Du har ikke tilgang til å endre denne oppskriften"
+                );
+                break;
+
+              default:
+                this.displayError(
+                  "Noe galt skjedde under henting av oppskriften, prøv igjen senere"
+                );
+                break;
             }
           });
-        });
 
         this.$store.commit("visitStep", 1);
         this.$store.commit("visitStep", 2);
@@ -682,6 +776,66 @@ export default {
     async saveRecipe() {
       console.log("Saving recipe");
       // TODO: Set oppskriften med nye verdier i firestore som draft
+      const user = this.user;
+      this.loading = true;
+
+      this.publishing = true;
+      this.publishMessage = "Lagrer";
+
+      const recipeData = {
+        title: this.recipeTitle,
+        description: this.recipeDescription,
+        imagePath: this.imageCompressed ? this.recipeImagePath : null, // Adds the path if there is an image, else it will be null
+        ingredients: this.recipeIngredients,
+        steps: this.recipeSteps,
+        visibility: this.visibility,
+        status: "draft",
+        category: this.recipeCategory,
+        portions: this.recipePortions,
+        dateCreated: Date.now(),
+        authorID: user.uid,
+        authorName: user.name
+      };
+      const ref = db.collection("recipes").doc(this.recipeId);
+      ref
+        .set(recipeData)
+        .then(() => {
+          this.publishMessage = "Laster opp bilde";
+          if (this.imageCompressed) {
+            try {
+              // Since there is no recipeId from before, the image needs to be uploaded after getting the recipeId
+              this.uploadImage().then(() => {
+                ref
+                  .update({
+                    imagePath: this.recipeImagePath
+                  })
+                  .then(() => {
+                    this.saved();
+                  })
+                  .catch(error => {
+                    console.log("Error while adding imagePath to recipe");
+                    console.dir(error);
+                    this.displayError(
+                      "Noe gikk galt under opplasting av bilde"
+                    );
+                  });
+              });
+            } catch (error) {
+              console.log("An error occured");
+              this.displayError(
+                "Noe gikk galt under opplasting av bilde, prøv igjen senere"
+              );
+            }
+          } else {
+            this.saved();
+          }
+        })
+        .catch(err => {
+          console.log("An error occured");
+          this.displayError(
+            "Noe gikk galt under opplasting, prøv igjen senere"
+          );
+        });
     },
     published(edit = false) {
       this.error = false;
@@ -696,6 +850,7 @@ export default {
     },
     async publishRecipe(edit = false) {
       console.log("Publishing recipe");
+      console.log(`Edit: ${edit}`);
       this.loading = true;
       this.publishing = true;
       this.error = false;
@@ -894,11 +1049,13 @@ export default {
       this.deleteDialogOpen = true;
     },
     async deleteRecipe() {
-      const doc = db.collection("recipes").doc(this.recipeId);
-      await doc.delete().catch(error => {
-        console.log("Error occured while deleting recipe");
-        this.displayError("Noe galt skjedde under sletting av oppskrift");
-      });
+      if (this.recipeId) {
+        const doc = db.collection("recipes").doc(this.recipeId);
+        await doc.delete().catch(error => {
+          console.log("Error occured while deleting recipe");
+          this.displayError("Noe galt skjedde under sletting av oppskrift");
+        });
+      }
       this.$store.dispatch("deleteRecipe");
       this.deleteDialogOpen = false;
     },
@@ -975,11 +1132,11 @@ export default {
   },
   created() {
     const route = this.$route;
-    setInterval(() => {
-      this.timeSinceLastSave = Date.now() - this.lastSaveTime;
-    }, 1000);
-
     if (route.name == "newRecipe" && this.recipeId === undefined) {
+      if (this.recipeNew === false) {
+        this.$store.dispatch("deleteRecipe");
+        this.recipeNew = true;
+      }
       const user = this.$store.state.accountModule;
       console.log(user);
       const data = {
@@ -1017,10 +1174,23 @@ export default {
         this.error = true;
         this.errorMessage = "Du er ikke logget inn, logg inn først";
       }
+      this.$store.commit("setRecipeImage", undefined);
     } else if (route.name == "editRecipe") {
-      this.editing = true;
-      console.log(this.recipeId);
+      if (this.recipeNew === true) {
+        this.$store.dispatch("deleteRecipe");
+        this.recipeNew = false;
+      }
       this.retrieveRecipe();
+      if (this.status === "draft") this.editing = false;
+      else this.editing = true;
+
+      console.log(this.recipeId);
+    } else {
+      if (this.recipeNew === false) {
+        this.$store.dispatch("deleteRecipe");
+        this.recipeNew = true;
+      }
+      this.$store.commit("setRecipeImage", undefined);
     }
   }
 };
@@ -1031,13 +1201,99 @@ export default {
   text-align: left;
 }
 
+v-container {
+  max-width: 1100px;
+}
+
 .ingredient {
   overflow: hidden;
   min-height: 1.1em;
 }
 
+.recipeIngredientsCard {
+  max-width: 700px;
+}
+
+.recipeStepsCard {
+  max-width: 1000px;
+}
+
 .editBtnRow {
   float: right;
   width: 50px;
+}
+
+@supports (display: grid) {
+  .generalForm {
+    display: grid;
+    max-width: 500px;
+    margin: 0 auto;
+    justify-self: center;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "info"
+      "image"
+      "moreInfo"
+      "visibility";
+  }
+  .recipeTextField {
+    max-width: 500px;
+  }
+
+  .recipeInfo {
+    grid-area: info;
+  }
+
+  .recipeMoreInfo {
+    grid-area: moreInfo;
+  }
+
+  .recipeImage {
+    grid-area: image;
+  }
+
+  .recipeVisibility {
+    grid-area: visibility;
+  }
+
+  @media only screen and (min-width: 1000px) {
+    .recipeIngredientsCard {
+      margin: 10px auto !important;
+    }
+
+    .recipeStepsCard {
+      margin: 10px auto !important;
+    }
+
+    .recipeVisibility,
+    .recipeImage {
+      margin-right: 30px;
+    }
+
+    .generalForm {
+      max-width: max-content;
+      grid-gap: 10px;
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "info image"
+        "moreInfo visibility"
+        "moreInfo visibility"
+        "nextButton nextButton";
+
+      @media only screen and (max-width: 1600px) {
+        margin: 0 auto;
+      }
+
+      @media only screen and (min-width: 1265px) {
+        grid-template-columns: 3fr 2fr;
+      }
+
+      .nextButton {
+        grid-area: nextButton;
+        max-width: 80px;
+        justify-self: center;
+      }
+    }
+  }
 }
 </style>
