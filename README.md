@@ -1,53 +1,47 @@
 # Dine Oppskrifter
 
-[Dine Oppskrifter](https://www.google.com "Nettsiden til DIne Oppskrifter")
+[Gå til nettsiden vår](https://www.google.com "Nettsiden til Dine Oppskrifter")
 
-En nettside hor du kan legge oppskriftene dine, dele dem med hvem som helst, og se andres oppskrifter.
+En nettside hvor du kan legge oppskriftene dine, dele dem med hvem som helst, og se andres oppskrifter.
 
-Teknisk info på engelsk følger:
+Teknisk info følger:
 
-## Project setup
+## Sette opp prosjektet
 
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Kjører development versjonen av nettsiden lokalt, med hot-reload
 
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Kompilerer og optimalisere for produksjon
 
 ```
 npm run build
 ```
 
-### Run your tests
+### Kjør tester
 
 ```
 npm run test
 ```
 
-### Lints and fixes files
+### Linter og fikser filer
 
 ```
 npm run lint
 ```
 
-### Run your end-to-end tests
-
-```
-npm run test:e2e
-```
-
-### Run your unit tests
+### Kjør unit-tester
 
 ```
 npm run test:unit
 ```
 
-### Customize configuration
+### Tilpass konfigurasjon
 
 See [Configuration Reference](https://cli.vuejs.org/config/).

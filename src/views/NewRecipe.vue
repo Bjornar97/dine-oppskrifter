@@ -6,6 +6,27 @@
       v-if="editing"
     >Endre Oppskriften "{{recipeTitle}}"</h2>
 
+    <v-banner
+      sticky
+      :icon="accessError.icon"
+      v-if="accessError.error"
+      icon-color="error"
+      color="white"
+      elevation="4"
+      class="mb-4"
+    >
+      {{accessError.message}}
+      <template v-slot:actions>
+        <v-btn
+          text
+          color="success"
+          v-if="accessError.errorType == 'goBack'"
+          @click="router.go(-1)"
+        >Gå tilbake</v-btn>
+        <facebook-login-button v-if="accessError.type == 'notLoggedIn'" loginText="Logg inn"></facebook-login-button>
+      </template>
+    </v-banner>
+
     <v-stepper @change="changedStep" v-model="activeStep" vertical class="pb-4 stepper">
       <p class="mt-8 mb-0">Felt markert med * er påkrevd</p>
       <v-stepper-step
@@ -21,7 +42,7 @@
         <v-form v-model="stepFormValid[1]" class="generalForm" ref="step1">
           <div class="recipeInfo">
             <v-text-field
-              :disabled="loading"
+              :disabled="loading || disableAll"
               name="title"
               class="mb-4 recipeTitle recipeTextField"
               v-model="recipeTitle"
@@ -30,7 +51,7 @@
               counter="100"
             ></v-text-field>
             <v-textarea
-              :disabled="loading"
+              :disabled="loading || disableAll"
               outlined
               auto-grow
               name="description"
@@ -48,7 +69,7 @@
               label="Bilde"
               class="recipeImage recipeTextField"
               v-model="inputImage"
-              :disabled="loading"
+              :disabled="loading || disableAll"
               :loading="imageLoading"
               :success="imageSuccess"
               :success-messages="imageSuccess ? 'Bildet er lagt til': ''"
@@ -58,7 +79,13 @@
               :error-messages="imageErrorMessage"
               prepend-icon="mdi-camera"
             ></v-file-input>
-            <v-btn v-if="editing" @click="resetImage" class="mt-2" color="info">Hent bilde</v-btn>
+            <v-btn
+              v-if="editing"
+              @click="resetImage"
+              :disabled="loading || disableAll"
+              class="mt-2"
+              color="info"
+            >Hent bilde</v-btn>
             <p
               class="caption mb-8"
               v-if="editing"
@@ -66,7 +93,7 @@
           </div>
           <div class="recipeMoreInfo">
             <v-select
-              :disabled="loading"
+              :disabled="loading || disableAll"
               :items="categoryList"
               :rules="[rules.required]"
               v-model="recipeCategory"
@@ -74,7 +101,7 @@
               class="recipeCategory recipeTextField"
             ></v-select>
             <v-text-field
-              :disabled="loading"
+              :disabled="loading || disableAll"
               name="portions"
               class="mb-4 recipePortions recipeTextField"
               v-model="recipePortions"
@@ -85,6 +112,18 @@
               counter="2"
               suffix="porsjoner"
             ></v-text-field>
+            <v-text-field
+              :disabled="loading || disableAll"
+              name="totalTime"
+              class="mb-4 recipeTotalTime recipeTextField"
+              v-model="recipeTotalTime"
+              label="Tid*"
+              :rules="[rules.required, rules.onlyNumber, rules.counter3]"
+              hint="Cirka hvor lang tid tar det å lage retten i minutter"
+              persistent-hint
+              counter="3"
+              suffix="minutter"
+            ></v-text-field>
           </div>
 
           <div class="recipeVisibility">
@@ -93,6 +132,7 @@
               row
               hint="Ved privat vil ingen andre enn deg kunne se oppskriften. Ved offentlig kan alle se oppskriften"
               mandatory
+              :disabled="loading || disableAll"
               v-model="visibility"
               class="ml-2"
               name="visibility"
@@ -133,7 +173,7 @@
                   </v-flex>
                   <v-flex xs2 sm1>
                     <v-btn
-                      :disabled="loading"
+                      :disabled="loading || disableAll"
                       @click="editIngredient(index)"
                       :small="$vuetify.breakpoint.smAndDown"
                       icon
@@ -145,7 +185,7 @@
                   </v-flex>
                   <v-flex xs2 sm1>
                     <v-btn
-                      :disabled="loading"
+                      :disabled="loading || disableAll"
                       @click="deleteIngredient(index)"
                       :small="$vuetify.breakpoint.smAndDown"
                       icon
@@ -160,7 +200,13 @@
             </v-list>
           </v-card>
 
-          <v-btn :disabled="loading" color="info" class="mb-4" text @click="openNewIngredient">
+          <v-btn
+            :disabled="loading || disableAll"
+            color="info"
+            class="mb-4"
+            text
+            @click="openNewIngredient"
+          >
             <v-icon class="mr-2">mdi-plus</v-icon>Legg til ingrediens
           </v-btn>
 
@@ -176,7 +222,7 @@
           <v-btn
             class="nextButton mb-2"
             @click="nextSection(2)"
-            :disabled="loading"
+            :disabled="loading || disableAll"
             color="success"
           >Videre</v-btn>
         </v-form>
@@ -204,7 +250,7 @@
                   <v-flex xs2>
                     <v-btn
                       @click="editStep(index)"
-                      :disabled="loading"
+                      :disabled="loading || disableAll"
                       small
                       icon
                       color="warning"
@@ -214,7 +260,7 @@
                     </v-btn>
                     <v-btn
                       @click="deleteStep(index)"
-                      :disabled="loading"
+                      :disabled="loading || disableAll"
                       small
                       icon
                       color="error"
@@ -229,7 +275,7 @@
             </v-list>
           </v-card>
 
-          <v-btn :disabled="loading" color="info" @click="openStep" text>
+          <v-btn :disabled="loading || disableAll" color="info" @click="openStep" text>
             <v-icon class="mr-2">mdi-plus</v-icon>Legg til steg
           </v-btn>
           <new-step
@@ -268,38 +314,38 @@
       >Sist lagret: {{lastSaveTime}}</p>
     </v-expand-transition>
     <v-expand-transition>
-      <p class="error--text" v-if="error">{{errorMessage}}</p>
+      <p class="error--text mt-4" v-if="error">{{errorMessage}}</p>
     </v-expand-transition>
     <v-btn
-      :disabled="loading"
+      :disabled="loading || disableAll"
       @click="openDeleteRecipe"
       v-if="editing"
       color="error"
       class="my-2 mx-2"
     >Slett</v-btn>
     <v-btn
-      :disabled="loading"
+      :disabled="loading || disableAll"
       @click="openDeleteRecipe"
       v-if="!editing"
       color="error"
       class="my-2 mx-2"
     >Tilbakestill</v-btn>
     <v-btn
-      :disabled="loading"
+      :disabled="loading || disableAll"
       @click="saveRecipe"
       v-if="!editing"
       color="info"
       class="my-2 mx-2"
     >Lagre</v-btn>
     <v-btn
-      :disabled="loading"
+      :disabled="loading || disableAll"
       @click="resetRecipeOriginal"
       v-if="editing"
       color="warning"
       class="my-2 mx-2"
     >Tilbakestill til orginal</v-btn>
     <v-btn
-      :disabled="loading && !publishing"
+      :disabled="(loading && !publishing) || disableAll"
       :loading="loading && publishing"
       v-if="!editing"
       @click="publishRecipe(false)"
@@ -307,7 +353,7 @@
       class="my-2 mx-2"
     >Publiser</v-btn>
     <v-btn
-      :disabled="loading && !publishing"
+      :disabled="(loading && !publishing) || disableAll"
       :loading="loading && publishing"
       v-if="editing"
       @click="publishRecipe(true)"
@@ -318,7 +364,7 @@
     <v-progress-linear
       v-model="imageUploadProgress"
       class="my-4"
-      v-if="publishing"
+      v-if="(publishing && (!editing || imageChanged)) || disableAll"
       rounded
       color="primary"
     ></v-progress-linear>
@@ -343,6 +389,7 @@ export default {
       editing: false,
       timeClosed: false,
       loading: false,
+      disableAll: false,
       publishing: false,
       publishMessage: "",
       imageLoading: false,
@@ -354,6 +401,12 @@ export default {
       error: false,
       errorStep: undefined,
       errorMessage: "",
+      accessError: {
+        error: false,
+        type: "",
+        message: "",
+        icon: ""
+      },
       stepNames: [
         undefined,
         "Generell informasjon",
@@ -365,6 +418,8 @@ export default {
         onlyNumber: v =>
           !isNaN(v) || "Må være et tall, bruk punktum i stedet for komma",
         counter2: v => v.length <= 2 || "Kan ikke innholde mer enn 2 tegn",
+        counter3: v => v.length <= 3 || "Kan ikke innholde mer enn 3 tegn",
+
         counter100: v =>
           v.length <= 100 || "Kan ikke innholde mer enn 100 tegn",
         counter500: v =>
@@ -494,11 +549,24 @@ export default {
         this.$store.commit("setRecipePortions", portions);
       }
     },
+    recipeTotalTime: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.totalTime;
+      },
+      set(time) {
+        this.$store.commit("setRecipeTotalTime", time);
+      }
+    },
     recipeSteps() {
       return this.$store.state.currentRecipeModule.recipe.steps;
     },
     recipeIngredients() {
       return this.$store.state.currentRecipeModule.recipe.ingredients;
+    },
+    recipeData() {
+      return {
+        
+      }
     },
     lastSaveTime() {
       const timeMilliseconds = this.$store.state.currentRecipeModule
@@ -525,17 +593,35 @@ export default {
       return this.$store.state.currentRecipeModule.visitedSteps;
     },
     user() {
-      return this.$store.state.accountModule;
+      const user = this.$store.state.accountModule;
+      this.userChanged(user);
+      return user;
     }
   },
   components: {
     "new-ingredient": () => import("@/components/NewIngredient"),
-    "new-step": () => import("@/components/NewStep")
+    "new-step": () => import("@/components/NewStep"),
+    "facebook-login-button": () => import("@/components/FacebookLoginButton")
   },
   methods: {
     saveNewIngredient(ingredient) {
       this.$store.commit("addRecipeIngredient", ingredient);
       this.newIngredientOpen = false;
+    },
+    userChanged(user) {
+      console.log("User changed: ");
+      console.dir(user);
+      if (user.loggedIn) {
+        this.disableAll = false;
+        this.accessError.error = false;
+      } else if (!user.loggedIn) {
+        this.disableAll = true;
+        this.accessError.error = true;
+        this.accessError.type = "notLoggedIn";
+        this.accessError.icon = "mdi-account-alert";
+        this.accessError.message =
+          "Du er for øyeblikket ikke logget inn, vennligst logg inn";
+      }
     },
     closeIngredient() {
       this.newIngredientOpen = false;
@@ -603,6 +689,23 @@ export default {
       this.error = true;
       this.errorMessage = errorMessage;
     },
+    displayAccessError(errorMessage, errorType) {
+      this.disableAll = true;
+      this.accessError.type = errorType;
+      this.accessError.errorMessage = errorMessage;
+      switch (errorType) {
+        case "notLoggedIn":
+          this.accessError.icon = "mdi-account-alert";
+          break;
+        case "noPermission":
+          this.accessError.icon = "mdi-cancel";
+          break;
+
+        default:
+          this.accessError.icon = "mdi-circle-outline";
+          break;
+      }
+    },
     changedStep() {
       this.getValidator(this.prevStep)();
       this.$store.dispatch("switchStep", this.activeStep);
@@ -618,7 +721,9 @@ export default {
     async uploadImage() {
       const imageRef = storage
         .ref()
-        .child(`recipeImages/${this.recipeId}/${this.imageCompressed.name}`);
+        .child(
+          `recipeImages/${this.user.uid}/${this.recipeId}/${this.imageCompressed.name}`
+        );
 
       const imageMeta = {
         recipe: this.recipeId,
@@ -740,18 +845,23 @@ export default {
             console.log(`Error code: ${error.code}`);
             switch (error.code) {
               case "unauthenticated":
-                this.displayError("Du er ikke logget inn, vennligst logg inn");
+                this.displayAccessError(
+                  "Du er ikke logget inn, vennligst logg inn før du kan redigere oppskriften",
+                  "notLoggedIn"
+                );
                 break;
 
               case "permission-denied":
-                this.displayError(
-                  "Du har ikke tilgang til å endre denne oppskriften"
+                this.displayAccessError(
+                  "Du har ikke tilgang til å endre denne oppskriften. Du kan bare endre dine egne oppskrifter",
+                  "noAccess"
                 );
                 break;
 
               default:
-                this.displayError(
-                  "Noe galt skjedde under henting av oppskriften, prøv igjen senere"
+                this.displayAccessError(
+                  "Noe galt skjedde under henting av oppskriften, prøv igjen senere",
+                  "unspecified"
                 );
                 break;
             }
@@ -775,7 +885,6 @@ export default {
     },
     async saveRecipe() {
       console.log("Saving recipe");
-      // TODO: Set oppskriften med nye verdier i firestore som draft
       const user = this.user;
       this.loading = true;
 
@@ -792,6 +901,7 @@ export default {
         status: "draft",
         category: this.recipeCategory,
         portions: this.recipePortions,
+        totalTime: this.recipeTotalTime,
         dateCreated: Date.now(),
         authorID: user.uid,
         authorName: user.name
@@ -963,6 +1073,7 @@ export default {
           status: "published",
           category: this.recipeCategory,
           portions: this.recipePortions,
+          totalTime: this.recipeTotalTime,
           dateCreated: Date.now(),
           authorID: user.uid,
           authorName: user.name
@@ -1128,7 +1239,8 @@ export default {
             "Noe gikk galt under komprimering, prøv et annet bilde.";
           return;
         });
-    }
+    },
+    user(newData, oldData) {}
   },
   created() {
     const route = this.$route;
@@ -1148,6 +1260,7 @@ export default {
         status: "draft",
         category: this.recipeCategory || null,
         portions: this.recipePortions || null,
+        totalTime: this.recipeTotalTime || null,
         authorID: user.uid,
         authorName: user.name
       };
@@ -1171,8 +1284,12 @@ export default {
             );
           });
       } else {
-        this.error = true;
-        this.errorMessage = "Du er ikke logget inn, logg inn først";
+        this.disableAll = true;
+        this.accessError.error = true;
+        this.accessError.type = "notLoggedIn";
+        this.accessError.icon = "mdi-account-alert";
+        this.accessError.message =
+          "Du er for øyeblikket ikke logget inn, vennligst logg inn";
       }
       this.$store.commit("setRecipeImage", undefined);
     } else if (route.name == "editRecipe") {

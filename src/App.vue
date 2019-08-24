@@ -46,15 +46,7 @@
       </router-link>
     </v-app-bar>
 
-    <div class="login" v-if="!loggedIn">
-      <facebook-login-button loginText="Logg inn"></facebook-login-button>
-    </div>
-
-    <div class="eventLine">
-      <div class="event elevation-4" v-if="loading">
-        <v-progress-circular indeterminate color="primary"></v-progress-circular>
-      </div>
-    </div>
+    <event-line class="eventLine"></event-line>
 
     <v-container class="oldBrowserWarning">
       <v-banner
@@ -259,7 +251,8 @@ export default {
     }
   },
   components: {
-    "facebook-login-button": FacebookLoginButton
+    "facebook-login-button": FacebookLoginButton,
+    "event-line": () => import("@/components/eventLine")
   },
   created() {
     console.log("Checking status");
@@ -269,7 +262,7 @@ export default {
         this.$store.commit("addUserInfo", user);
       } else {
         // No user is signed in.
-        this.$store.commit("showWelcome");
+        this.$store.dispatch("loggedOut");
       }
     });
   },
@@ -293,23 +286,7 @@ export default {
   position: fixed;
   top: 10px;
   right: 10px;
-  z-index: 99;
-
-  .event {
-    background-color: white;
-    border-radius: 50%;
-    padding: 5px;
-  }
-}
-
-.logout {
-  position: fixed;
-  top: 0;
-  right: 0;
-  text-align: right;
-
-  margin-right: 10px;
-  margin-top: -10px;
+  z-index: 12;
 }
 
 .footerDev {

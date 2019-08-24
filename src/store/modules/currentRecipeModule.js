@@ -9,6 +9,7 @@ const currentRecipeModule = {
       imageCompressed: undefined,
       category: "",
       portions: "",
+      totalTime: "",
       ingredients: [],
       steps: [],
       visibility: "Private"
@@ -54,6 +55,9 @@ const currentRecipeModule = {
     },
     setRecipePortions(state, portions) {
       state.recipe.portions = portions;
+    },
+    setRecipeTotalTime(state, time) {
+      state.recipe.totalTime = time;
     },
     setRecipeVisibility(state, visibility) {
       state.recipe.visibility = visibility;

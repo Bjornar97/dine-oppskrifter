@@ -35,15 +35,13 @@ const accountModule = {
       state.uid = user.uid;
     },
     resetAccount(state) {
-      state = {
-        loginProcess: null,
-        loggedIn: null,
-        name: "",
-        email: "",
-        uid: null,
-        profilePictureUrl: "",
-        facebookAccessToken: ""
-      };
+      state.loginProcess = null;
+      state.loggedIn = null;
+      state.name = "";
+      state.email = "";
+      state.uid = null;
+      state.profilePictureUrl = "";
+      state.facebookAccessToken = "";
     },
     setFacebookAccessToken(state, facebookAccessToken) {
       state.facebookAccessToken = facebookAccessToken;
@@ -90,21 +88,13 @@ const accountModule = {
           commit("resetAccount");
         });
     },
-    logout({ _, commit }) {
+    logout({ _, commit, dispatch }) {
       console.log("Logging out");
       commit("startLoading");
       firebase
         .auth()
         .signOut()
-        .then(() => {
-          console.log("Successfully logged out");
-          commit("resetAccount");
-
-          console.log("Logging out of facebook");
-          commit("showWelcome");
-          commit("stopLoading");
-          commit("setLoginProcess", false);
-        })
+        .then(() => {})
         .catch(error => {
           console.log("Something bad happened: " + error);
           let errorObject = {
@@ -116,6 +106,12 @@ const accountModule = {
           commit("stopLoading");
           commit("setLoginProcess", false);
         });
+    },
+    loggedOut({ _, commit }) {
+      console.log("Successfully logged out");
+      commit("resetAccount");
+      commit("stopLoading");
+      commit("setLoginProcess", false);
     }
   }
 };
