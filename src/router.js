@@ -14,6 +14,12 @@ export default new Router({
         import(/* webpackChunkName: "discover" */ "./views/Discover.vue")
     },
     {
+      path: "/dine-oppskrifter",
+      name: "yourRecipes",
+      component: () =>
+        import(/* webpackChunkName: "yourRecipes" */ "./views/YourRecipes.vue")
+    },
+    {
       path: "/ny-oppskrift",
       name: "newRecipe",
       component: () =>

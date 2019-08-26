@@ -24,21 +24,26 @@ const currentRecipeModule = {
   },
   mutations: {
     setRecipeId(state, recipeId) {
+      if (recipeId == null) return;
       state.recipe.recipeId = recipeId;
     },
     setRecipeNew(state, newValue) {
       state.newRecipe = newValue;
     },
     setRecipeImagePath(state, imagePath) {
+      if (imagePath == null) return;
       state.recipe.imagePath = imagePath;
     },
     setRecipeTitle(state, title) {
+      if (title == null) return;
       state.recipe.title = title;
     },
     setRecipeDescription(state, description) {
+      if (description == null) return;
       state.recipe.description = description;
     },
     setRecipeStatus(state, status) {
+      if (status == null) return;
       state.recipe.status = status;
     },
     setRecipeImage(state, image) {
@@ -51,18 +56,23 @@ const currentRecipeModule = {
       state.recipe.imageCompressed = undefined;
     },
     setRecipeCategory(state, category) {
+      if (category == null) return;
       state.recipe.category = category;
     },
     setRecipePortions(state, portions) {
+      if (portions == null) return;
       state.recipe.portions = portions;
     },
     setRecipeTotalTime(state, time) {
+      if (time == null) return;
       state.recipe.totalTime = time;
     },
     setRecipeVisibility(state, visibility) {
+      if (visibility == null) return;
       state.recipe.visibility = visibility;
     },
     setRecipeIngredients(state, ingredients) {
+      if (ingredients == null) return;
       state.recipe.ingredients = ingredients;
     },
     addRecipeIngredient(state, ingredient) {
@@ -75,6 +85,7 @@ const currentRecipeModule = {
       state.recipe.ingredients.splice(index, 1);
     },
     setRecipeSteps(state, steps) {
+      if (steps == null) return;
       state.recipe.steps = steps;
     },
     addRecipeStep(state, step) {
@@ -115,6 +126,7 @@ const currentRecipeModule = {
         imageCompressed: undefined,
         category: "",
         portions: "",
+        totalTime: "",
         ingredients: [],
         steps: [],
         visibility: "Private"
@@ -145,10 +157,12 @@ const currentRecipeModule = {
       commit("setRecipeTitle", data.title);
       commit("setRecipeDescription", data.description);
       commit("setRecipeStatus", data.status);
+      commit("setRecipeImagePath", data.imagePath);
       commit("setRecipeIngredients", data.ingredients);
       commit("setRecipeSteps", data.steps);
       commit("setRecipeVisibility", data.visibility);
       commit("setRecipePortions", data.portions);
+      commit("setRecipeTotalTime", data.totalTime);
       commit("setRecipeCategory", data.category);
     },
     saveNewRecipe({ state, commit, dispatch }) {

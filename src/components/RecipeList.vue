@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="headline secondary--text">Finn Oppskrifter</h2>
-    <v-expansion-panels v-model="expanded" popout>
+    <v-expansion-panels class="recipeFilter mx-auto" v-model="expanded" popout>
       <v-expansion-panel>
         <v-expansion-panel-header>
           Filter
@@ -46,7 +46,7 @@
       <v-card
         v-for="recipe in recipes"
         :key="recipe.id"
-        class="mx-auto"
+        class="mx-auto recipeCard"
         :to="`/oppskrift/${recipe.id}`"
       >
         <v-img class="white--text" height="150px" src="@/assets/BakingPhoto.jpg"></v-img>
@@ -230,5 +230,13 @@ h3 {
       }
     }
   }
+
+  .recipeCard {
+    max-width: 300px;
+  }
+}
+
+.recipeFilter {
+  max-width: 350px !important;
 }
 </style>

@@ -81,14 +81,12 @@ export default {
       if (this.editing) {
         this.$emit("saveEdit", {
           step: {
-            number: this.stepNumber,
             text: this.stepText
           },
           index: this.index
         });
       } else {
         this.$emit("save", {
-          number: this.stepNumber,
           text: this.stepText
         });
       }
@@ -97,7 +95,6 @@ export default {
       this.editing = true;
       this.index = index;
       this.stepText = step.text;
-      this.stepNumber = index + 1;
     },
     close() {
       this.$emit("close");

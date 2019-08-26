@@ -558,6 +558,9 @@ export default {
         this.$store.commit("setRecipeTotalTime", time);
       }
     },
+    recipeStatus() {
+      return this.$store.state.currentRecipeModule.recipe.status;
+    },
     recipeSteps() {
       return this.$store.state.currentRecipeModule.recipe.steps;
     },
@@ -802,6 +805,12 @@ export default {
           .then(doc => {
             console.log("Got data, inserting...");
             const data = doc.data();
+            if (data.status === "draft") {
+              this.editing = false;
+              this.recipeNew = true;
+            } else {
+              this.editing = true;
+            }
             this.$store.dispatch("editRecipe", data).then(() => {
               this.loading = false;
               this.$store.commit("stopLoading");
@@ -893,7 +902,7 @@ export default {
       const recipeData = {
         title: this.recipeTitle,
         description: this.recipeDescription,
-        imagePath: this.imageCompressed ? this.recipeImagePath : null, // Adds the path if there is an image, else it will be null
+        imagePath: this.recipeImagePath ? this.recipeImagePath : null, // Adds the path if there is an image, else it will be null
         ingredients: this.recipeIngredients,
         steps: this.recipeSteps,
         visibility: this.visibility,
@@ -905,6 +914,7 @@ export default {
         authorID: user.uid,
         authorName: user.name
       };
+      console.dir(recipeData);
       const ref = db.collection("recipes").doc(this.recipeId);
       ref
         .set(recipeData)
@@ -1297,8 +1307,6 @@ export default {
         this.recipeNew = false;
       }
       this.retrieveRecipe();
-      if (this.status === "draft") this.editing = false;
-      else this.editing = true;
 
       console.log(this.recipeId);
     } else {
