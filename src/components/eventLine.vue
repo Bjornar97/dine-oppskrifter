@@ -7,7 +7,7 @@
     </transition>
 
     <transition name="eventAnimation">
-      <div class="event eventItem elevation-4" v-show="!onLine || showBackOnline">
+      <div class="event onlineContainer eventItem elevation-4" v-show="!onLine || showBackOnline">
         <v-icon
           class="onLine"
           :class="onLine ? 'isOnline': 'isOffline'"
@@ -59,12 +59,15 @@ export default {
 .event {
   background-color: white;
   border-radius: 50%;
+  padding: 5px;
+}
+
+.onlineContainer {
   display: flex;
   align-items: center;
   text-align: center;
   width: 40px;
   height: 40px;
-  padding: 5px;
 }
 
 .onLine {

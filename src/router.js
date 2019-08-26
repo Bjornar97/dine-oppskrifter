@@ -40,6 +40,12 @@ export default new Router({
         )
     },
     {
+      path: "/konto",
+      name: "account",
+      component: () =>
+        import(/* webpackChunkName: "account" */ "./views/Account.vue")
+    },
+    {
       path: "/personvern-erklaering",
       name: "privacyPolicy",
       beforeEnter(to, from, next) {

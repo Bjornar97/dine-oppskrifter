@@ -2,7 +2,7 @@
   <div>
     <welcome-screen v-if="!loggedIn"></welcome-screen>
     <v-divider v-if="!loggedIn" class="mt-8"></v-divider>
-    <v-btn text color="primary">
+    <v-btn text color="primary" @click="$router.push('ny-oppskrift')">
       <v-icon>mdi-plus</v-icon>Lag en ny oppskrift
     </v-btn>
     <recipe-list></recipe-list>

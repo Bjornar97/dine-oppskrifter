@@ -13,7 +13,7 @@ module.exports = {
     name: "Dine Oppskrifter",
     themeColor: "#49A84D",
     msTileColor: "49A84D",
-    assetsVersion: "v1",
+    assetsVersion: "v2",
     manifestOptions: {
       name: "Dine Oppskrifter",
       short_name: "Dine Oppskrifter",

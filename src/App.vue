@@ -119,7 +119,7 @@
 
     <v-footer color="white" class="elevation-4 mt-8" padless>
       <v-layout justify-center wrap>
-        <v-btn to="/" color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
+        <v-btn to="/" exact color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
 
         <v-btn
           v-if="isFacebookPage"
