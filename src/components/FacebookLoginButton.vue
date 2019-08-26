@@ -3,7 +3,7 @@
     <div>
       <v-btn id="theButton" :disabled="disabled" @click="login" color="#3C5A99" :loading="loading">
         <v-icon color="#FFF" class="fabButton">{{svgFacebook}}</v-icon>
-        <span id="facebookText">{{ loginText }} med Facebook</span>
+        <span id="facebookText">{{ loginText || "Fortsett" }} med Facebook</span>
       </v-btn>
     </div>
   </div>

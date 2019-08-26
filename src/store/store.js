@@ -35,6 +35,8 @@ export default new Vuex.Store({
   state: {
     underConstruction: false,
     loading: true,
+    onLine: navigator.onLine,
+    showBackOnline: false,
     hideOldBrowserWarning: false,
     acceptedCookies: null,
     closedCookies: false,
@@ -55,6 +57,15 @@ export default new Vuex.Store({
     },
     stopLoading(state) {
       state.loading = false;
+    },
+    setOnLineStatus(state, v) {
+      state.onLine = v;
+      if (v) {
+        state.showBackOnline = true;
+        setTimeout(() => {
+          state.showBackOnline = false;
+        }, 4000);
+      }
     },
     hideBrowserWarning(state) {
       state.hideOldBrowserWarning = true;

@@ -256,6 +256,8 @@ export default {
   },
   created() {
     console.log("Checking status");
+
+    // Event listner for login and logout
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         // User is signed in.

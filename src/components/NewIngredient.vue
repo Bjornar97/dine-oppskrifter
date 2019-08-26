@@ -6,42 +6,34 @@
           <span class="headline secondary--text">{{ !editing ? "Ny ": "" }}Ingrediens</span>
         </v-card-title>
         <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-form v-model="valid">
-                <v-flex xs12 sm6 md8>
-                  <v-text-field
-                    label="Navn på ingrediens*"
-                    counter="50"
-                    v-model="name"
-                    :rules="[rules.required, rules.counter50]"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm3 md2>
-                  <v-text-field
-                    label="Mengde*"
-                    persistent-hint
-                    required
-                    v-model="amount"
-                    :rules="[rules.required, rules.onlyNumber, rules.counter5]"
-                    counter="5"
-                    hint="Hvor mye av ingrediensen trengs, må være et tall"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm3 md2>
-                  <v-text-field
-                    label="Enhet"
-                    v-model="unit"
-                    counter="10"
-                    :rules="[rules.counter10]"
-                    hint="Hvilken enhet som skal brukes. For eksempel dl for desiliter, eller ss for spiseskjeer"
-                    persistent-hint
-                    required
-                  ></v-text-field>
-                </v-flex>
-              </v-form>
-            </v-layout>
-          </v-container>
+          <v-form v-model="valid">
+            <v-text-field
+              label="Navn på ingrediens*"
+              counter="50"
+              v-model="name"
+              :rules="[rules.required, rules.counter50]"
+            ></v-text-field>
+
+            <v-text-field
+              label="Mengde*"
+              persistent-hint
+              required
+              v-model="amount"
+              :rules="[rules.required, rules.onlyNumber, rules.counter5]"
+              counter="5"
+              hint="Hvor mye av ingrediensen trengs, må være et tall"
+            ></v-text-field>
+
+            <v-text-field
+              label="Enhet"
+              v-model="unit"
+              counter="10"
+              :rules="[rules.counter10]"
+              hint="Hvilken enhet som skal brukes. For eksempel dl for desiliter, eller ss for spiseskjeer"
+              persistent-hint
+              required
+            ></v-text-field>
+          </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

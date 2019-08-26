@@ -438,6 +438,7 @@ export default {
             this.ingredientsError = true;
             return "Du må ha minst en ingrediens";
           } else {
+            this.ingredientsError = false;
             return true;
           }
         },
@@ -564,9 +565,7 @@ export default {
       return this.$store.state.currentRecipeModule.recipe.ingredients;
     },
     recipeData() {
-      return {
-        
-      }
+      return {};
     },
     lastSaveTime() {
       const timeMilliseconds = this.$store.state.currentRecipeModule
