@@ -20,4 +20,4 @@ yarn-error.log*
 *.sln
 *.sw?
 
-firbaseConfig.js
+firebaseConfig.js
