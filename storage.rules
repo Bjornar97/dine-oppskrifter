@@ -2,7 +2,9 @@ service firebase.storage {
   match /b/{bucket}/o {
 
     match /recipeImages/{userID} {
-      allow write: if request.auth.uid == userID;
+      match /{allImages=**} {
+        allow write: if request.auth.uid == userID;
+      }
       
       match /{recipeId}/{imageName} {
         allow read: if resource.metadata.visibility == "public" || request.auth.uid == resource.metadata.userID;
