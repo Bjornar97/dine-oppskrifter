@@ -514,7 +514,7 @@ export default {
 
     .steps {
       grid-area: steps;
-      max-width: fit-content;
+      max-width: 80%;
       margin-left: 30px !important;
       margin-right: 30px !important;
     }
