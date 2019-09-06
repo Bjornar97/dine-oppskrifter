@@ -97,6 +97,7 @@
               :items="categoryList"
               :rules="[rules.required]"
               v-model="recipeCategory"
+              :menu-props="{offsetY: true, closeOnClick: true}"
               label="Kategori*"
               class="recipeCategory recipeTextField"
             ></v-select>
@@ -105,6 +106,7 @@
               name="portions"
               class="mb-4 recipePortions recipeTextField"
               v-model="recipePortions"
+              type="number"
               label="Antall porsjoner*"
               :rules="[rules.required, rules.onlyNumber, rules.counter2]"
               hint="Hvor mange porsjoner denne oppskriften gir"
@@ -117,6 +119,7 @@
               name="totalTime"
               class="mb-4 recipeTotalTime recipeTextField"
               v-model="recipeTotalTime"
+              type="number"
               label="Tid*"
               :rules="[rules.required, rules.onlyNumber, rules.counter3]"
               hint="Cirka hvor lang tid tar det å lage retten i minutter"
@@ -124,6 +127,16 @@
               counter="3"
               suffix="minutter"
             ></v-text-field>
+            <v-select
+              :disabled="loading || disableAll"
+              :items="['Enkel', 'Medium', 'Vanskelig']"
+              :rules="[rules.required]"
+              :menu-props="{offsetY: true, closeOnClick: true}"
+              v-model="recipeDifficulty"
+              label="Vannskelighetsgrad*"
+              hint="Omtrent hvor vanskelig vil du si denne retten er å lage?"
+              class="recipeDifficulty recipeTextField"
+            ></v-select>
           </div>
 
           <div class="recipeVisibility">
@@ -139,6 +152,7 @@
               persistent-hint
             >
               <v-radio color="primary" value="Private" label="Privat" ripple></v-radio>
+              <v-radio color="primary" value="OnlyLink" label="Ikke Oppført" ripple></v-radio>
               <v-radio color="primary" label="Offentlig" value="Public" ripple></v-radio>
             </v-radio-group>
           </div>
@@ -234,58 +248,20 @@
         id="step3"
         :rules="[rules.stepsRules]"
         :complete="visitedSteps[2]"
-      >
-        Fremgangsmåte
-        <small v-if="stepsError">Du må ha minst ett steg</small>
-      </v-stepper-step>
+      >Fremgangsmåte</v-stepper-step>
       <v-stepper-content step="3">
         <v-form ref="step3">
-          <v-card v-if="recipeSteps.length != 0" class="ma-2 recipeStepsCard">
-            <v-list>
-              <v-subheader>Steg</v-subheader>
-              <v-list-item v-for="(step, index) in recipeSteps" :key="index">
-                <v-list-item-content class="listItem">
-                  <v-flex class="pr-2" xs1>{{index + 1}}.</v-flex>
-                  <v-flex xs9>{{step.text}}</v-flex>
-                  <v-flex xs2>
-                    <v-btn
-                      @click="editStep(index)"
-                      :disabled="loading || disableAll"
-                      small
-                      icon
-                      color="warning"
-                      text
-                    >
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn
-                      @click="deleteStep(index)"
-                      :disabled="loading || disableAll"
-                      small
-                      icon
-                      color="error"
-                      text
-                    >
-                      <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                  </v-flex>
-                  <v-divider class="mt-4" v-if="recipeSteps.length != index + 1"></v-divider>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card>
-
-          <v-btn :disabled="loading || disableAll" color="info" @click="openStep" text>
-            <v-icon class="mr-2">mdi-plus</v-icon>Legg til steg
-          </v-btn>
-          <new-step
-            ref="newStep"
-            :open="newStepOpen"
-            :key="recipeSteps.length"
-            @save="saveNewStep"
-            @close="closeStep"
-            @saveEdit="saveEditedStep"
-          ></new-step>
+          <v-textarea
+            :disabled="loading || disableAll"
+            outlined
+            auto-grow
+            name="recipeSteps"
+            class="recipeSteps my-2"
+            messages
+            v-model="recipeSteps"
+            label="Skriv fremgangsmåten her"
+            hint="Skal være en fullstendig fremgangsmåte. Bruk gjerne tall og avsnitt for å gi leserne bedre oversikt"
+          ></v-textarea>
         </v-form>
       </v-stepper-content>
     </v-stepper>
@@ -360,11 +336,11 @@
       color="success"
       class="my-2 mx-2"
     >Lagre endringer</v-btn>
-    <p v-if="publishing">{{publishMessage}}</p>
+    <p v-if="publishing && !error">{{publishMessage}}</p>
     <v-progress-linear
       v-model="imageUploadProgress"
       class="my-4"
-      v-if="(publishing && (!editing || imageChanged)) || disableAll"
+      v-if="(((publishing && !error) && (!editing || imageChanged))) && !disableAll"
       rounded
       color="primary"
     ></v-progress-linear>
@@ -558,11 +534,24 @@ export default {
         this.$store.commit("setRecipeTotalTime", time);
       }
     },
+    recipeDifficulty: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.difficulty;
+      },
+      set(difficulty) {
+        this.$store.commit("setRecipeDifficulty", difficulty);
+      }
+    },
     recipeStatus() {
       return this.$store.state.currentRecipeModule.recipe.status;
     },
-    recipeSteps() {
-      return this.$store.state.currentRecipeModule.recipe.steps;
+    recipeSteps: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.steps;
+      },
+      set(v) {
+        this.$store.commit("setRecipeSteps", v);
+      }
     },
     recipeIngredients() {
       return this.$store.state.currentRecipeModule.recipe.ingredients;
@@ -602,7 +591,6 @@ export default {
   },
   components: {
     "new-ingredient": () => import("@/components/NewIngredient"),
-    "new-step": () => import("@/components/NewStep"),
     "facebook-login-button": () => import("@/components/FacebookLoginButton")
   },
   methods: {
@@ -642,27 +630,6 @@ export default {
     deleteIngredient(index) {
       this.$store.commit("removeRecipeIngredient", index);
     },
-    saveNewStep(step) {
-      this.$store.commit("addRecipeStep", step);
-      this.newStepOpen = false;
-    },
-    saveEditedStep({ step, index }) {
-      this.$store.commit("editRecipeStep", { index, step });
-      this.newStepOpen = false;
-    },
-    openStep() {
-      this.newStepOpen = true;
-    },
-    editStep(index) {
-      this.$refs.newStep.edit(this.recipeSteps[index], index);
-      this.newStepOpen = true;
-    },
-    closeStep() {
-      this.newStepOpen = false;
-    },
-    deleteStep(index) {
-      this.$store.commit("removeRecipeStep", index);
-    },
     getValidator(step) {
       if (step == 1) {
         return this.$refs.step1.validate;
@@ -687,12 +654,14 @@ export default {
       }
     },
     displayError(errorMessage) {
+      this.$store.commit("stopLoading");
       this.loading = false;
       this.error = true;
       this.errorMessage = errorMessage;
     },
     displayAccessError(errorMessage, errorType) {
       this.disableAll = true;
+      this.$store.commit("stopLoading");
       this.accessError.type = errorType;
       this.accessError.errorMessage = errorMessage;
       switch (errorType) {
@@ -716,6 +685,7 @@ export default {
       this.$store.commit("saveTime");
       this.publishMessage = "Lagret";
       this.loading = false;
+      this.error = false;
       setTimeout(() => {
         this.publishing = false;
       }, 2000);
@@ -728,9 +698,11 @@ export default {
         );
 
       const imageMeta = {
-        recipe: this.recipeId,
-        userID: this.user.uid,
-        visibility: this.visibility
+        customMetadata: {
+          recipe: this.recipeId,
+          userID: this.user.uid,
+          visibility: this.visibility
+        }
       };
       let imageUpload = imageRef.put(this.imageCompressed, imageMeta);
       this.publishMessage = "Laster opp bildet";
@@ -821,16 +793,13 @@ export default {
                 try {
                   const storageRef = storage.ref(data.imagePath);
                   storageRef.getDownloadURL().then(url => {
-                    console.log("Url: " + url);
                     fetch(url, {
                       method: "GET"
                     })
                       .then(r => {
-                        console.dir(r);
                         return r.blob();
                       })
                       .then(imageBlob => {
-                        console.dir(imageBlob);
                         storageRef.getMetadata().then(meta => {
                           this.inputImage = new File([imageBlob], meta.name);
                           this.originalImage = this.inputImage;
@@ -850,7 +819,7 @@ export default {
             });
           })
           .catch(error => {
-            console.log(`Error code: ${error.code}`);
+            console.log(`Error code: ${error}`);
             switch (error.code) {
               case "unauthenticated":
                 this.displayAccessError(
@@ -899,6 +868,15 @@ export default {
       this.publishing = true;
       this.publishMessage = "Lagrer";
 
+      let author = this.$store.state.currentRecipeModule.recipe.author;
+      if (author == null) {
+        author = {
+          id: user.uid,
+          name: user.name,
+          profilePictureUrl: user.profilePictureUrl || ""
+        };
+      }
+
       const recipeData = {
         title: this.recipeTitle,
         description: this.recipeDescription,
@@ -909,52 +887,69 @@ export default {
         status: "draft",
         category: this.recipeCategory,
         portions: this.recipePortions,
-        totalTime: this.recipeTotalTime,
-        dateCreated: Date.now(),
-        authorID: user.uid,
-        authorName: user.name
+        totalTime: parseInt(this.recipeTotalTime),
+        author: author
       };
       console.dir(recipeData);
-      const ref = db.collection("recipes").doc(this.recipeId);
-      ref
-        .set(recipeData)
-        .then(() => {
-          this.publishMessage = "Laster opp bilde";
-          if (this.imageCompressed) {
-            try {
-              // Since there is no recipeId from before, the image needs to be uploaded after getting the recipeId
-              this.uploadImage().then(() => {
-                ref
-                  .update({
-                    imagePath: this.recipeImagePath
-                  })
-                  .then(() => {
-                    this.saved();
-                  })
-                  .catch(error => {
-                    console.log("Error while adding imagePath to recipe");
-                    console.dir(error);
-                    this.displayError(
-                      "Noe gikk galt under opplasting av bilde"
-                    );
-                  });
-              });
-            } catch (error) {
-              console.log("An error occured");
-              this.displayError(
-                "Noe gikk galt under opplasting av bilde, prøv igjen senere"
-              );
+      const setData = ref => {
+        ref
+          .set(recipeData)
+          .then(() => {
+            this.publishMessage = "Laster opp bilde";
+            if (this.imageCompressed) {
+              try {
+                // Since there is no recipeId from before, the image needs to be uploaded after getting the recipeId
+                this.uploadImage().then(() => {
+                  ref
+                    .update({
+                      imagePath: this.recipeImagePath
+                    })
+                    .then(() => {
+                      this.saved();
+                    })
+                    .catch(error => {
+                      console.log("Error while adding imagePath to recipe");
+                      console.dir(error);
+                      this.displayError(
+                        "Noe gikk galt under opplasting av bilde"
+                      );
+                    });
+                });
+              } catch (error) {
+                console.log("An error occured");
+                this.displayError(
+                  "Noe gikk galt under opplasting av bilde, prøv igjen senere"
+                );
+              }
+            } else {
+              this.saved();
             }
-          } else {
-            this.saved();
-          }
-        })
-        .catch(err => {
-          console.log("An error occured");
-          this.displayError(
-            "Noe gikk galt under opplasting, prøv igjen senere"
-          );
-        });
+          })
+          .catch(err => {
+            console.dir(err);
+            console.log("An error occured");
+            this.displayError(
+              "Noe gikk galt under opplasting, prøv igjen senere"
+            );
+          });
+      };
+      if (this.recipeId) {
+        const ref = db.collection("recipes").doc(this.recipeId);
+        setData(ref);
+      } else {
+        const ref = db
+          .collection("recipes")
+          .add(recipeData)
+          .then(ref => {
+            this.recipeId = ref.id;
+            setData(ref);
+          })
+          .catch(error => {
+            this.displayError(
+              "Noe gikk galt under opplasting, prøv igjen senere"
+            );
+          });
+      }
     },
     published(edit = false) {
       this.error = false;
@@ -1050,7 +1045,8 @@ export default {
         try {
           // Checks that there is an image, and that if it is an edit, it needs to have changed from the original
           if (this.imageCompressed && (!edit || this.imageChanged)) {
-            if (edit && this.imageChanged) {
+            if (edit && this.imageChanged && this.recipeImagePath) {
+              console.log("ImagePath: " + this.recipeImagePath);
               const storageRef = storage.ref(this.recipeImagePath);
               await storageRef.delete();
             }
@@ -1072,22 +1068,38 @@ export default {
           return;
         }
         console.log(this.visibility);
-        const recipeData = {
+
+        let author = this.$store.state.currentRecipeModule.recipe.author;
+        if (author == null) {
+          author = {
+            id: user.uid,
+            name: user.name,
+            profilePictureUrl: user.profilePictureUrl
+          };
+          this.$store.commit("setRecipeAuthor", author);
+        }
+
+        let recipeData = {
           title: this.recipeTitle,
           description: this.recipeDescription,
           imagePath: isImage ? this.recipeImagePath : null, // Adds the path if isImage is true, else it will be null
           ingredients: this.recipeIngredients,
           steps: this.recipeSteps,
           visibility: this.visibility,
+          difficulty: this.recipeDifficulty,
           status: "published",
           category: this.recipeCategory,
-          portions: this.recipePortions,
-          totalTime: this.recipeTotalTime,
-          dateCreated: Date.now(),
-          authorID: user.uid,
-          authorName: user.name
+          portions: parseInt(this.recipePortions),
+          totalTime: parseInt(this.recipeTotalTime),
+          author: author
         };
         console.dir(recipeData);
+
+        if (edit) {
+          recipeData = { ...recipeData, dateUpdated: Date.now() };
+        } else {
+          recipeData = { ...recipeData, dateCreated: Date.now() };
+        }
 
         // Adding the recipe to the firestore
         this.publishMessage = "Laster opp oppskrift";
@@ -1258,7 +1270,17 @@ export default {
         this.$store.dispatch("deleteRecipe");
         this.recipeNew = true;
       }
-      const user = this.$store.state.accountModule;
+      const user = this.user;
+      let author = null;
+      if (user.loggedIn) {
+        author = {
+          id: user.uid,
+          name: user.name,
+          profilePictureUrl: user.profilePictureUrl
+        };
+        this.$store.commit("setRecipeAuthor", author);
+      }
+
       console.log(user);
       const data = {
         title: this.recipeTitle || null,
@@ -1268,10 +1290,10 @@ export default {
         visibility: this.visibility,
         status: "draft",
         category: this.recipeCategory || null,
+        difficulty: this.recipeDifficulty || null,
         portions: this.recipePortions || null,
         totalTime: this.recipeTotalTime || null,
-        authorID: user.uid,
-        authorName: user.name
+        author: author
       };
 
       console.dir(data);
@@ -1316,6 +1338,7 @@ export default {
       }
       this.$store.commit("setRecipeImage", undefined);
     }
+    this.$store.commit("stopLoading");
   }
 };
 </script>
@@ -1323,6 +1346,10 @@ export default {
 <style lang="scss" scoped>
 .nextButton {
   text-align: left;
+}
+
+.headline {
+  margin-top: 50px !important;
 }
 
 v-container {

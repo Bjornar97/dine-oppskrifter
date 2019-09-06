@@ -1,6 +1,6 @@
 # Dine Oppskrifter
 
-[Gå til nettsiden vår](https://www.google.com "Nettsiden til Dine Oppskrifter")
+[Gå til nettsiden vår](https://dine-oppskrifter.no "Nettsiden til Dine Oppskrifter")
 
 En nettside hvor du kan legge oppskriftene dine, dele dem med hvem som helst, og se andres oppskrifter.
 
@@ -22,24 +22,6 @@ npm run serve
 
 ```
 npm run build
-```
-
-### Kjør tester
-
-```
-npm run test
-```
-
-### Linter og fikser filer
-
-```
-npm run lint
-```
-
-### Kjør unit-tester
-
-```
-npm run test:unit
 ```
 
 ### Tilpass konfigurasjon

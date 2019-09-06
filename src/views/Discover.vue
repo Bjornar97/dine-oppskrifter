@@ -2,7 +2,7 @@
   <div>
     <welcome-screen v-if="!loggedIn"></welcome-screen>
     <v-divider v-if="!loggedIn" class="mt-8"></v-divider>
-    <v-btn text color="primary" @click="$router.push('ny-oppskrift')">
+    <v-btn color="primary" v-if="loggedIn" @click="$router.push('ny-oppskrift')">
       <v-icon>mdi-plus</v-icon>Lag en ny oppskrift
     </v-btn>
     <recipe-list></recipe-list>
@@ -31,7 +31,7 @@ export default {
   },
   components: {
     "welcome-screen": () => import("@/components/WelcomeScreen"),
-    "recipe-list": () => import("@/components/RecipeList")
+    "recipe-list": () => import("@/components/recipes/RecipeList")
   }
 };
 </script>

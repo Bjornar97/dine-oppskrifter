@@ -1,6 +1,6 @@
 <template>
   <v-container class="container">
-    <div class="div text-left">
+    <div class="div">
       <h1 class="primary--text mb-6 mainHeading">Vilkår for bruk</h1>
       <p>Sist endret: 15.08.2019</p>
       <h3 class="accent--text title mb-2 mt-4">Innledning</h3>
@@ -218,8 +218,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container {
+  text-align: left;
+  display: flex;
+  justify-content: center;
+}
+
+.div {
+  max-width: 1200px;
+}
+
 .mainHeading {
   font-size: 1.9rem;
   font-weight: 400;
+}
+
+@media only screen and (min-width: 800px) {
+  .div {
+    margin: 30px;
+  }
 }
 </style>

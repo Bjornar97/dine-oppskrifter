@@ -10,8 +10,14 @@ const currentRecipeModule = {
       category: "",
       portions: "",
       totalTime: "",
+      author: {
+        id: "",
+        name: "",
+        profilePictureUrl: ""
+      },
+      difficulty: "",
       ingredients: [],
-      steps: [],
+      steps: "",
       visibility: "Private"
     },
     recipeStepNumber: 1,
@@ -71,6 +77,13 @@ const currentRecipeModule = {
       if (visibility == null) return;
       state.recipe.visibility = visibility;
     },
+    setRecipeDifficulty(state, difficulty) {
+      if (difficulty == null) return;
+      state.recipe.difficulty = difficulty;
+    },
+    setRecipeAuthor(state, author) {
+      state.recipe.author = author;
+    },
     setRecipeIngredients(state, ingredients) {
       if (ingredients == null) return;
       state.recipe.ingredients = ingredients;
@@ -87,15 +100,6 @@ const currentRecipeModule = {
     setRecipeSteps(state, steps) {
       if (steps == null) return;
       state.recipe.steps = steps;
-    },
-    addRecipeStep(state, step) {
-      state.recipe.steps.push(step);
-    },
-    editRecipeStep(state, { index, step }) {
-      state.recipe.steps.splice(index, 1, step);
-    },
-    removeRecipeStep(state, index) {
-      state.recipe.steps.splice(index, 1);
     },
     setActiveStep(state, newStep) {
       state.activeStep = newStep;
@@ -127,8 +131,10 @@ const currentRecipeModule = {
         category: "",
         portions: "",
         totalTime: "",
+        difficulty: "",
         ingredients: [],
-        steps: [],
+        steps: "",
+        author: null,
         visibility: "Private"
       };
     },
@@ -161,9 +167,14 @@ const currentRecipeModule = {
       commit("setRecipeIngredients", data.ingredients);
       commit("setRecipeSteps", data.steps);
       commit("setRecipeVisibility", data.visibility);
-      commit("setRecipePortions", data.portions);
-      commit("setRecipeTotalTime", data.totalTime);
+      if (data.portions) {
+        commit("setRecipePortions", data.portions.toString());
+      }
+      if (data.totalTime) {
+        commit("setRecipeTotalTime", data.totalTime.toString());
+      }
       commit("setRecipeCategory", data.category);
+      commit("setRecipeDifficulty", data.difficulty);
     },
     saveNewRecipe({ state, commit, dispatch }) {
       dispatch("deleteRecipe");

@@ -2,8 +2,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /recipes/{recipe} {
-      allow read: if resource.data.visibility == 'public' || request.auth.uid == resource.data.authorID;
-      allow update, delete: if resource.data.authorID == request.auth.uid;
+      allow get: if resource.data.visibility == 'Public' || resource.data.visibility == "OnlyLink" || request.auth.uid == resource.data.author.id;
+      allow list: if resource.data.visibility == 'Public' || request.auth.uid == resource.data.author.id;
+      allow update, delete: if resource.data.author.id == request.auth.uid;
       allow create: if request.auth.uid != null;
     }
   }

@@ -95,7 +95,7 @@ export default {
 .smallText {
   opacity: 0;
   transition: opacity 0.5s ease-out;
-  transition-delay: 4s;
+  transition-delay: 3s;
 }
 
 .headline1Container {

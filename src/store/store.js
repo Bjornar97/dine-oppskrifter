@@ -6,6 +6,7 @@ import VuexPersistence from "vuex-persist";
 import accountModule from "./modules/accountModule";
 import featuresModule from "./modules/featuresModule";
 import currentRecipeModule from "./modules/currentRecipeModule";
+import recipesModule from "./modules/recipesModule";
 
 Vue.use(Vuex);
 const vuexLocal = new VuexPersistence({
@@ -20,8 +21,9 @@ const vuexLocal = new VuexPersistence({
       facebookAccessToken: state.accountModule.facebookAccessToken
     },
     currentRecipeModule: state.currentRecipeModule,
+    recipesModule: state.recipesModule,
     hideBrowserWarning: state.hideOldBrowserWarning,
-    acceptCookies: state.acceptedCookies
+    acceptedTerms: state.acceptedTerms
   })
 });
 
@@ -29,7 +31,8 @@ export default new Vuex.Store({
   modules: {
     accountModule,
     featuresModule,
-    currentRecipeModule
+    currentRecipeModule,
+    recipesModule
   },
   plugins: [vuexLocal.plugin],
   state: {
@@ -38,19 +41,30 @@ export default new Vuex.Store({
     onLine: navigator.onLine,
     showBackOnline: false,
     hideOldBrowserWarning: false,
-    acceptedCookies: null,
-    closedCookies: false,
-    currentTitle: "Utforsk"
+    acceptedTerms: false,
+    showTerms: false,
+    currentTitle: "Utforsk",
+    multiTabs: false,
+    persistence: false
   },
   mutations: {
-    acceptCookies(state) {
-      state.acceptedCookies = true;
+    acceptTerms(state) {
+      state.acceptedTerms = true;
     },
-    denyCookies(state) {
-      state.acceptedCookies = false;
+    multiTabs(state) {
+      state.multiTabs = true;
     },
-    closeCookies(state) {
-      state.closedCookies = true;
+    noMultiTabs(state) {
+      state.multiTabs = false;
+    },
+    persistenceOn(state) {
+      state.persistence = true;
+    },
+    persistenceOff(state) {
+      state.persistence = false;
+    },
+    setShowTerms(state, v) {
+      state.showTerms = v;
     },
     startLoading(state) {
       state.loading = true;

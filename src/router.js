@@ -1,11 +1,26 @@
 import Vue from "vue";
 import Router from "vue-router";
+import VueMeta from "vue-meta";
+
+Vue.use(VueMeta, {
+  keyName: "metaInfo",
+  attribute: "data-vue-meta",
+  tagIDKeyName: "vmid",
+  refreshOnceOnNavigation: true
+});
 
 Vue.use(Router);
 
 export default new Router({
   mode: "history",
   base: "/",
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return { selector: to.hash };
+    } else {
+      return { x: 0, y: 0 };
+    }
+  },
   routes: [
     {
       path: "/",
@@ -30,6 +45,12 @@ export default new Router({
       name: "editRecipe",
       component: () =>
         import(/* webpackChunkName: "editRecipe" */ "./views/NewRecipe.vue")
+    },
+    {
+      path: "/oppskrift/:id",
+      name: "recipe",
+      component: () =>
+        import(/* webpackChunkName: "recipe" */ "./views/Recipe.vue")
     },
     {
       path: "/ingrediens-kalkulator",
@@ -64,6 +85,12 @@ export default new Router({
         import(
           /* webpackChunkName: "termsOfService" */ "./views/TermsOfService.vue"
         )
+    },
+    {
+      path: "*",
+      name: "404NotFound",
+      component: () =>
+        import(/* webpackChunkName: "404NotFound" */ "./views/404NotFound.vue")
     }
   ]
 });

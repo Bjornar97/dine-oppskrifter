@@ -7,7 +7,7 @@ service firebase.storage {
       }
       
       match /{recipeId}/{imageName} {
-        allow read: if resource.metadata.visibility == "public" || request.auth.uid == resource.metadata.userID;
+        allow read: if resource.metadata.visibility == "Public" || request.auth.uid == resource.metadata.userID;
       }
     }
   }

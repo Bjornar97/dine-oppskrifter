@@ -18,6 +18,7 @@
               label="Mengde*"
               persistent-hint
               required
+              type="number"
               v-model="amount"
               :rules="[rules.required, rules.onlyNumber, rules.counter5]"
               counter="5"
@@ -28,6 +29,7 @@
               label="Enhet"
               v-model="unit"
               counter="10"
+              autocapitalize="none"
               :rules="[rules.counter10]"
               hint="Hvilken enhet som skal brukes. For eksempel dl for desiliter, eller ss for spiseskjeer"
               persistent-hint

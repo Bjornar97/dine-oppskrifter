@@ -20,6 +20,9 @@ module.exports = {
       start_url: "/",
       display: "standalone",
       themeColor: "#49A84D"
+    },
+    workboxOptions: {
+      skipWaiting: true
     }
   }
 };
