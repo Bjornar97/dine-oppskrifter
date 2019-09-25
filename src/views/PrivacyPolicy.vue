@@ -106,10 +106,11 @@
 
       <h2 class="secondary--text headline mb-4 mt-8">Kontakt oss</h2>
       <p>
-        Dersom du har spørsmål om denne personverkerklæringen eller noe annet knyttet til Dine Oppskrifter, kan du kontakte oss på epost:
+        Dersom du har spørsmål om denne personverkerklæringen eller noe annet tilknyttet Dine Oppskrifter, kan du sende en e-post til
         <a
           href="mailto:brukerstotte@dine-oppskrifter.no"
-        >brukerstotte@dine-oppskrifter.no</a>
+        >brukerstotte@dine-oppskrifter.no</a> eller besøke
+        <router-link class="mr-1" to="/kontakt-oss">kontakt oss siden</router-link>for flere måter å kontakte oss.
       </p>
     </div>
   </v-container>

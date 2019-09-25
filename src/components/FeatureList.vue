@@ -1,5 +1,5 @@
 <template>
-  <v-card class="featureList">
+  <v-card class="featureList ma-2">
     <v-list three-line disabled>
       <v-list-item>
         <v-list-item-avatar>

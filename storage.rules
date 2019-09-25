@@ -3,7 +3,7 @@ service firebase.storage {
 
     match /recipeImages/{userID} {
       match /{allImages=**} {
-        allow write: if request.auth.uid == userID;
+        allow read, write: if request.auth.uid == userID;
       }
       
       match /{recipeId}/{imageName} {

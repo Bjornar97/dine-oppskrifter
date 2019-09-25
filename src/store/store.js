@@ -7,6 +7,7 @@ import accountModule from "./modules/accountModule";
 import featuresModule from "./modules/featuresModule";
 import currentRecipeModule from "./modules/currentRecipeModule";
 import recipesModule from "./modules/recipesModule";
+import feedbackModule from "./modules/feedbackModule";
 
 Vue.use(Vuex);
 const vuexLocal = new VuexPersistence({
@@ -21,9 +22,9 @@ const vuexLocal = new VuexPersistence({
       facebookAccessToken: state.accountModule.facebookAccessToken
     },
     currentRecipeModule: state.currentRecipeModule,
-    recipesModule: state.recipesModule,
     hideBrowserWarning: state.hideOldBrowserWarning,
-    acceptedTerms: state.acceptedTerms
+    acceptedTerms: state.acceptedTerms,
+    feedbackModule: state.feedbackModule
   })
 });
 
@@ -32,7 +33,8 @@ export default new Vuex.Store({
     accountModule,
     featuresModule,
     currentRecipeModule,
-    recipesModule
+    recipesModule,
+    feedbackModule
   },
   plugins: [vuexLocal.plugin],
   state: {

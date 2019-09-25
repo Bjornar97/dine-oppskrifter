@@ -212,7 +212,6 @@ export default {
       return this.$store.state.accountModule.loggedIn;
     },
     activeRoute() {
-      console.log(this.$route.name);
       return this.$route.path;
     },
     loading() {
@@ -225,7 +224,6 @@ export default {
       return this.$store.state.underConstruction;
     },
     canGoBack() {
-      console.log("HistoryLength: " + window.history.length);
       const routeName = this.$route.name;
       if (window.history.length > 0) {
         if (
@@ -249,8 +247,6 @@ export default {
     "terms-accept": () => import("@/components/TermsAccept")
   },
   created() {
-    console.log("Checking status");
-
     // Event listner for login and logout
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -264,7 +260,7 @@ export default {
 
     firebase
       .firestore()
-      .enablePersistence()
+      .enablePersistence({ synchronizeTabs: true })
       .then(() => {
         this.$store.commit("noMultiTabs");
         this.$store.commit("persistenceOn");

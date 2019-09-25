@@ -1,12 +1,12 @@
 <template>
-  <v-container>
+  <v-container class="px-lg-12">
     <v-row>
-      <h2 class="headline secondary--text text-left my-auto ml-4">Finn Oppskrifter</h2>
+      <h2 class="headline secondary--text mx-auto text-left my-auto ml-4">Finn Oppskrifter</h2>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
         <v-icon id="refreshBtn">mdi-refresh</v-icon>
       </v-btn>
     </v-row>
-    <recipe-filter></recipe-filter>
+    <recipe-filter class="recipeFilter mx-auto"></recipe-filter>
     <div id="mx-auto">
       <h4
         class="subtitle-2 mt-2"
@@ -29,6 +29,14 @@
       <div class="recipeList mt-4">
         <recipe-card v-for="recipe in recipes" :key="recipe.id" :recipe="recipe"></recipe-card>
       </div>
+      <p v-if="end && !recipesLoading" class="mt-4 subtitle-2">Ikke flere oppskrifter å vise</p>
+      <v-btn
+        v-if="!end && !recipesLoading"
+        @click="getNextBatch"
+        color="success"
+        class="mt-4"
+        rounded
+      >Last flere</v-btn>
     </div>
   </v-container>
 </template>
@@ -66,6 +74,9 @@ export default {
       setTimeout(() => {
         refreshBtn.classList.remove("refreshing");
       }, 1600);
+    },
+    getNextBatch() {
+      this.$store.dispatch("getNextRecipeBatch");
     }
   },
   computed: {
@@ -80,6 +91,9 @@ export default {
     },
     recipeError() {
       return this.$store.state.recipesModule.error;
+    },
+    end() {
+      return this.$store.state.recipesModule.end;
     }
   },
   created() {
@@ -95,6 +109,10 @@ export default {
   animation-play-state: running;
   animation-delay: 0ms;
   animation-timing-function: ease;
+}
+
+.recipeFilter {
+  max-width: 800px;
 }
 
 @keyframes spin {

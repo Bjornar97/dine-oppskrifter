@@ -156,7 +156,6 @@ export default {
   },
   methods: {
     calculate() {
-      console.log("Calculating");
       this.ingredients = [];
       this.fields.forEach(ingredient => {
         if (ingredient.show && ingredient.name.trim() != "") {
@@ -186,8 +185,6 @@ export default {
       this.lastId = 0;
     },
     changeEvent(ingredient) {
-      console.log("Checking");
-
       if (ingredient.name.trim() != "") {
         this.empty[ingredient.id] = false;
       } else {
@@ -195,11 +192,8 @@ export default {
       }
 
       if (ingredient.id != this.lastId) {
-        console.log("id is wrong");
       } else {
-        console.dir(ingredient);
         if (ingredient.name.trim() != "") {
-          console.log("Pushing new");
           this.fields.push({
             id: this.lastId + 1,
             name: "",

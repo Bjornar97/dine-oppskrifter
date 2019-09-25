@@ -59,7 +59,6 @@ const accountModule = {
   },
   actions: {
     loginWithFacebook({ _, commit }) {
-      console.log("logging in");
       commit("startLoading");
       let provider = new firebase.auth.FacebookAuthProvider();
       provider.addScope("email");
@@ -72,8 +71,6 @@ const accountModule = {
           commit("setFacebookAccessToken", result.credential.accessToken);
           // The signed-in user info.
           let user = result.user;
-          console.log("Logged in user: ");
-          console.dir(user);
           commit("addUserInfo", user);
           commit("stopLoading");
           commit("setLoginProcess", false);
@@ -108,7 +105,6 @@ const accountModule = {
         });
     },
     loggedOut({ _, commit }) {
-      console.log("Successfully logged out");
       commit("resetAccount");
       commit("stopLoading");
       commit("setLoginProcess", false);

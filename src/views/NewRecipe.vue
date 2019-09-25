@@ -71,8 +71,8 @@
               v-model="inputImage"
               :disabled="loading || disableAll"
               :loading="imageLoading"
-              :success="imageSuccess"
-              :success-messages="imageSuccess ? 'Bildet er lagt til': ''"
+              :success="imageSuccess && !imageLoading"
+              :success-messages="(imageSuccess && !imageLoading) ? 'Bildet er lagt til': ''"
               :error="imageError"
               accept="image/png, image/jpeg"
               placeholder="Legg til Bilde"
@@ -129,7 +129,7 @@
             ></v-text-field>
             <v-select
               :disabled="loading || disableAll"
-              :items="['Enkel', 'Medium', 'Vanskelig']"
+              :items="['Enkel', 'Middels', 'Vanskelig']"
               :rules="[rules.required]"
               :menu-props="{offsetY: true, closeOnClick: true}"
               v-model="recipeDifficulty"
@@ -143,7 +143,7 @@
             <h3 class="ml-2 subtitle-1 text-left grey--text">Visning</h3>
             <v-radio-group
               row
-              hint="Ved privat vil ingen andre enn deg kunne se oppskriften. Ved offentlig kan alle se oppskriften"
+              :hint="visibilityText"
               mandatory
               :disabled="loading || disableAll"
               v-model="visibility"
@@ -312,7 +312,7 @@
       v-if="!editing"
       color="info"
       class="my-2 mx-2"
-    >Lagre</v-btn>
+    >Lagre utkast</v-btn>
     <v-btn
       :disabled="loading || disableAll"
       @click="resetRecipeOriginal"
@@ -356,7 +356,7 @@ import "firebase/storage";
 var storage = firebase.storage();
 
 import imageCompression from "browser-image-compression";
-import { Promise } from "q";
+import "isomorphic-fetch";
 
 export default {
   name: "new-recipe",
@@ -439,6 +439,7 @@ export default {
         "Lunch",
         "Middag",
         "Tilbehør",
+        "Bakverk",
         "Småretter",
         "Dessert"
       ],
@@ -480,11 +481,24 @@ export default {
         this.$store.commit("setRecipeDescription", description);
       }
     },
-    imageCompressed() {
-      return this.$store.state.currentRecipeModule.recipe.imageCompressed;
+    imageCompressed: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.imageCompressed;
+      },
+      set(v) {
+        this.$store.commit("setRecipeImage", v);
+      }
     },
     imageJson() {
       return this.$store.state.currentRecipeModule.imageJson;
+    },
+    recipeDateCreated: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.dateCreated;
+      },
+      set(v) {
+        this.$store.commit("setRecipeDateCreated", v);
+      }
     },
     recipeImagePath: {
       get() {
@@ -492,6 +506,14 @@ export default {
       },
       set(path) {
         this.$store.commit("setRecipeImagePath", path);
+      }
+    },
+    recipeImageURL: {
+      get() {
+        return this.$store.state.currentRecipeModule.recipe.imageURL;
+      },
+      set(imageURL) {
+        this.$store.commit("setRecipeImageURL", imageURL);
       }
     },
     originalImage: {
@@ -516,6 +538,17 @@ export default {
       },
       set(newValue) {
         this.$store.commit("setRecipeVisibility", newValue);
+      }
+    },
+    visibilityText() {
+      if (this.visibility == "Public") {
+        return "Offentlig: Alle kan se oppskriften din, også de som ikke er logget inn.";
+      } else if (this.visibility == "OnlyLink") {
+        return "Ikke Oppført: Alle med linken til oppskriften kan se den, men den vises ikke på forsiden.";
+      } else if (this.visibility == "Private") {
+        return "Privat: Kun du kan se oppskriften.";
+      } else {
+        return "";
       }
     },
     recipePortions: {
@@ -599,8 +632,6 @@ export default {
       this.newIngredientOpen = false;
     },
     userChanged(user) {
-      console.log("User changed: ");
-      console.dir(user);
       if (user.loggedIn) {
         this.disableAll = false;
         this.accessError.error = false;
@@ -647,7 +678,6 @@ export default {
       }
 
       if (this.getValidator(currentStep)()) {
-        console.log("Validated");
         this.$store.dispatch("nextRecipeSection");
       } else {
         this.scrollToStep(currentStep);
@@ -729,7 +759,6 @@ export default {
             case "storage/unknown":
               // Unknown error occurred, inspect error.serverResponse
               this.displayError("En ukjent feil oppstod");
-              console.log(error.serverResponse);
               break;
 
             case "quota-exceeded":
@@ -775,7 +804,6 @@ export default {
         recipeRef
           .get()
           .then(doc => {
-            console.log("Got data, inserting...");
             const data = doc.data();
             if (data.status === "draft") {
               this.editing = false;
@@ -801,7 +829,23 @@ export default {
                       })
                       .then(imageBlob => {
                         storageRef.getMetadata().then(meta => {
-                          this.inputImage = new File([imageBlob], meta.name);
+                          function blobToFile(theBlob, fileName) {
+                            let b = theBlob;
+                            b.lastModified = new Date();
+                            b.name = fileName;
+                            return b;
+                          }
+                          if (!navigator.msSaveBlob) {
+                            this.inputImage = new File([imageBlob], meta.name);
+                          } else {
+                            let file;
+                            file = new Blob([imageBlob], {
+                              type: document.mimeType
+                            });
+                            file = blobToFile(imageBlob, meta.name);
+                            this.inputImage = file;
+                          }
+
                           this.originalImage = this.inputImage;
                           this.imageSuccess = true;
                           this.isCompressed = true;
@@ -811,6 +855,7 @@ export default {
                   });
                 } catch (error) {
                   console.log("Error while getting image");
+                  this.$store.commit("stopLoading");
                   console.dir(error);
                   this.imageLoading = false;
                   this.inputImage = undefined;
@@ -820,6 +865,7 @@ export default {
           })
           .catch(error => {
             console.log(`Error code: ${error}`);
+            this.$store.commit("stopLoading");
             switch (error.code) {
               case "unauthenticated":
                 this.displayAccessError(
@@ -861,7 +907,6 @@ export default {
       this.retrieveRecipe();
     },
     async saveRecipe() {
-      console.log("Saving recipe");
       const user = this.user;
       this.loading = true;
 
@@ -884,13 +929,14 @@ export default {
         ingredients: this.recipeIngredients,
         steps: this.recipeSteps,
         visibility: this.visibility,
+        difficulty: this.recipeDifficulty,
         status: "draft",
+        favourites: 0,
         category: this.recipeCategory,
         portions: this.recipePortions,
         totalTime: parseInt(this.recipeTotalTime),
         author: author
       };
-      console.dir(recipeData);
       const setData = ref => {
         ref
           .set(recipeData)
@@ -960,11 +1006,9 @@ export default {
         this.publishMessage = "Oppskriften ble publisert";
         this.$store.dispatch("saveNewRecipe");
       }
-      this.$router.go(-1);
+      this.$router.push("/dine-oppskrifter");
     },
     async publishRecipe(edit = false) {
-      console.log("Publishing recipe");
-      console.log(`Edit: ${edit}`);
       this.loading = true;
       this.publishing = true;
       this.error = false;
@@ -1044,16 +1088,21 @@ export default {
         let isImage = false;
         try {
           // Checks that there is an image, and that if it is an edit, it needs to have changed from the original
-          if (this.imageCompressed && (!edit || this.imageChanged)) {
+          if (
+            (this.imageCompressed && (!edit || this.imageChanged)) ||
+            typeof this.originalImage == "file"
+          ) {
             if (edit && this.imageChanged && this.recipeImagePath) {
-              console.log("ImagePath: " + this.recipeImagePath);
               const storageRef = storage.ref(this.recipeImagePath);
               await storageRef.delete();
+            }
+            if (!this.imageCompressed) {
+              this.imageCompressed = this.originalImage;
             }
             await this.uploadImage().then(() => {
               isImage = true;
             });
-          } else if (edit && this.originalImage) {
+          } else if (this.originalImage && !this.imageCompressed) {
             isImage = true;
           }
         } catch (error) {
@@ -1067,7 +1116,6 @@ export default {
         if (this.error) {
           return;
         }
-        console.log(this.visibility);
 
         let author = this.$store.state.currentRecipeModule.recipe.author;
         if (author == null) {
@@ -1082,7 +1130,8 @@ export default {
         let recipeData = {
           title: this.recipeTitle,
           description: this.recipeDescription,
-          imagePath: isImage ? this.recipeImagePath : null, // Adds the path if isImage is true, else it will be null
+          imagePath:
+            isImage && this.recipeImagePath ? this.recipeImagePath : null, // Adds the path if isImage is true, else it will be null
           ingredients: this.recipeIngredients,
           steps: this.recipeSteps,
           visibility: this.visibility,
@@ -1093,12 +1142,25 @@ export default {
           totalTime: parseInt(this.recipeTotalTime),
           author: author
         };
-        console.dir(recipeData);
 
         if (edit) {
-          recipeData = { ...recipeData, dateUpdated: Date.now() };
+          let dateCreated = this.$store.state.currentRecipeModule.recipe
+            .dateCreated;
+          if (dateCreated == undefined) {
+            dateCreated = Date.now();
+            this.recipeDateCreated = dateCreated;
+          }
+          recipeData = {
+            ...recipeData,
+            dateUpdated: Date.now(),
+            dateCreated: dateCreated
+          };
         } else {
-          recipeData = { ...recipeData, dateCreated: Date.now() };
+          recipeData = {
+            ...recipeData,
+            dateCreated: Date.now(),
+            favourites: 0
+          };
         }
 
         // Adding the recipe to the firestore
@@ -1156,7 +1218,7 @@ export default {
           try {
             db.collection("recipes")
               .doc(this.recipeId)
-              .set(recipeData)
+              .update(recipeData)
               .then(() => {
                 this.published(edit);
               });
@@ -1204,7 +1266,6 @@ export default {
         maxWidthOrHeight: 1000,
         useWebWorker: true
       };
-      console.log(`Size before compress: ${image.size / 1000} KB`);
 
       return imageCompression(image, options);
     },
@@ -1235,7 +1296,6 @@ export default {
         return;
       }
       if (newImage == undefined) {
-        console.log("Image is undefined");
         this.$store.commit("removeRecipeImage");
         return;
       }
@@ -1244,8 +1304,6 @@ export default {
 
       this.compressImage(newImage)
         .then(compressedImage => {
-          console.log(`Size after compress: ${compressedImage.size / 1000} KB`);
-
           this.$store.commit("setRecipeImage", compressedImage);
           this.imageLoading = false;
           this.imageSuccess = true;
@@ -1281,7 +1339,6 @@ export default {
         this.$store.commit("setRecipeAuthor", author);
       }
 
-      console.log(user);
       const data = {
         title: this.recipeTitle || null,
         description: this.recipeDescription,
@@ -1291,12 +1348,12 @@ export default {
         status: "draft",
         category: this.recipeCategory || null,
         difficulty: this.recipeDifficulty || null,
+        favourites: 0,
         portions: this.recipePortions || null,
         totalTime: this.recipeTotalTime || null,
         author: author
       };
 
-      console.dir(data);
       if (user.loggedIn) {
         db.collection("recipes")
           .add(data)
@@ -1304,9 +1361,11 @@ export default {
             this.recipeId = ref.id;
             this.loading = false;
             this.error = false;
+            this.$store.commit("stopLoading");
           })
           .catch(err => {
             console.log(err);
+            this.$store.commit("stopLoading");
             console.log(
               "An error occured while creating the recipe in firestore"
             );
@@ -1315,6 +1374,7 @@ export default {
             );
           });
       } else {
+        this.$store.commit("stopLoading");
         this.disableAll = true;
         this.accessError.error = true;
         this.accessError.type = "notLoggedIn";
@@ -1329,16 +1389,14 @@ export default {
         this.recipeNew = false;
       }
       this.retrieveRecipe();
-
-      console.log(this.recipeId);
     } else {
       if (this.recipeNew === false) {
         this.$store.dispatch("deleteRecipe");
         this.recipeNew = true;
       }
+      this.$store.commit("stopLoading");
       this.$store.commit("setRecipeImage", undefined);
     }
-    this.$store.commit("stopLoading");
   }
 };
 </script>
@@ -1422,7 +1480,7 @@ v-container {
     }
 
     .generalForm {
-      max-width: max-content;
+      max-width: 800px;
       grid-gap: 10px;
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
@@ -1430,6 +1488,10 @@ v-container {
         "moreInfo visibility"
         "moreInfo visibility"
         "nextButton nextButton";
+
+      @supports (width: max-content) {
+        max-width: max-content;
+      }
 
       @media only screen and (max-width: 1600px) {
         margin: 0 auto;

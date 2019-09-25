@@ -70,6 +70,7 @@ export default {
         "Lunch",
         "Middag",
         "Tilbehør",
+        "Bakverk",
         "Småretter",
         "Dessert"
       ],
@@ -147,6 +148,9 @@ export default {
       set(v) {
         this.$store.commit("setSortBy", v);
       }
+    },
+    lastFilterDate() {
+      return this.$store.state.recipesModule.lastFilterDate;
     }
   },
   methods: {
@@ -208,6 +212,12 @@ export default {
     }
   },
   created() {
+    // If the filter hasnt been used the last hour, it resets it to default values
+    if (Date.now() - this.lastFilterDate > 60 * 60 * 1000) {
+      this.$store.dispatch("clearFilter");
+    }
+
+    // Sets the sorting options based on if timeTo and timeFrom is set or not
     if (
       (this.filterTimeFrom == "" || this.filterTimeFrom == null) &&
       (this.filterTimeTo == "" || this.filterTimeTo == null)

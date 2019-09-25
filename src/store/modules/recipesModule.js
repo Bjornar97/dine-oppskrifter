@@ -9,9 +9,13 @@ const recipesModule = {
       difficulty: "",
       timeFrom: "",
       timeTo: "",
-      sortBy: "Tid",
+      sortBy: "Mest Likt",
       open: false
     },
+    lastFilterDate: null,
+    limit: 15,
+    lastDoc: null,
+    end: true,
     error: false,
     ref: undefined,
     loading: false
@@ -46,6 +50,9 @@ const recipesModule = {
     },
     stopRecipeLoading(state) {
       state.loading = false;
+    },
+    setFilterDate(state) {
+      state.lastFilterDate = Date.now();
     }
   },
   actions: {
@@ -58,17 +65,26 @@ const recipesModule = {
       dispatch("retrieveRecipes");
       //commit("stopRecipeLoading");
     },
+    clearFilter({ state, commit }) {
+      state.filter = {
+        category: "",
+        difficulty: "",
+        timeFrom: "",
+        timeTo: "",
+        sortBy: "Mest Likt",
+        open: state.filter.open
+      };
+    },
     retrieveRecipes({ state, commit }) {
       commit("startLoading");
+      commit("setFilterDate");
       let filter = state.filter;
-      console.log("Retrieving recipes");
       let db = firebase.firestore();
-      let ref = db
+      state.ref = db
         .collection("recipes")
         .where("status", "==", "published")
         .where("visibility", "==", "Public");
 
-      console.log("Made initial query");
       let sort = "dateCreated";
       let direction = "asc";
 
@@ -85,12 +101,9 @@ const recipesModule = {
         sort = "dateCreated";
         direction = "asc";
       } else if (filter.sortBy == "Mest Likt") {
-        // TODO: Change to favourites
-        sort = "totalTime";
+        sort = "favourites";
         direction = "desc";
       }
-
-      console.log(`Found sorting. Sort: ${sort}, Direction: ${direction}`);
 
       if (
         filter.category == "" &&
@@ -98,21 +111,22 @@ const recipesModule = {
         filter.timeFrom == "" &&
         filter.timeTo == ""
       ) {
-        console.log("No filter activated");
-        ref
+        state.ref
           .orderBy(sort, direction)
-          .limit(15)
+          .limit(state.limit)
           .get()
           .then(snapshot => {
             state.recipes = [];
-            console.log("Got snapshot");
-            console.dir(snapshot);
             snapshot.forEach(doc => {
-              console.log("Got a doc:");
-              console.dir(doc.data());
               state.recipes.push({ ...doc.data(), id: doc.id });
-              console.log(new Date(doc.data().dateCreated).toString());
             });
+            state.lastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+            if (snapshot.docs.length < state.limit) {
+              state.end = true;
+            } else {
+              state.end = false;
+            }
             state.error = false;
             filter.open = false;
             commit("stopLoading");
@@ -124,13 +138,12 @@ const recipesModule = {
             commit("stopLoading");
           });
       } else {
-        console.log("Filter is activated");
         if (filter.category) {
-          ref = ref.where("category", "==", filter.category);
+          state.ref = state.ref.where("category", "==", filter.category);
         }
 
         if (filter.difficulty) {
-          ref = ref.where("difficulty", "==", filter.difficulty);
+          state.ref = state.ref.where("difficulty", "==", filter.difficulty);
         }
 
         if (filter.timeFrom || filter.timeTo) {
@@ -139,27 +152,58 @@ const recipesModule = {
           if (!filter.timeTo) filter.timeTo = 999;
           else filter.timeTo = parseInt(filter.timeTo);
 
-          ref = ref
+          state.ref = state.ref
             .where("totalTime", "<=", filter.timeTo)
             .where("totalTime", ">=", filter.timeFrom);
         }
-
-        ref
+        // ref = ref.orderBy(sort, direction);
+        state.ref
           .orderBy(sort, direction)
-          .limit(15)
+          .limit(state.limit)
           .get()
           .then(snapshot => {
             state.recipes = [];
-            console.log("Got snapshot");
-            console.dir(snapshot);
             snapshot.forEach(doc => {
-              console.log("Got a doc:");
-              console.dir(doc.data());
               state.recipes.push({ ...doc.data(), id: doc.id });
-              console.log(new Date(doc.data().dateCreated).toString());
             });
             state.error = false;
             filter.open = false;
+            state.lastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+            if (snapshot.docs.length < state.limit) {
+              state.end = true;
+            } else {
+              state.end = false;
+            }
+            commit("stopLoading");
+          })
+          .catch(error => {
+            console.log("An error occured");
+            console.dir(error);
+            state.error = true;
+            commit("stopLoading");
+          });
+      }
+    },
+    getNextRecipeBatch({ state, commit }) {
+      commit("startLoading");
+      if (state.lastDoc != null) {
+        state.ref
+          .limit(state.limit)
+          .startAfter(state.lastDoc)
+          .get()
+          .then(snapshot => {
+            snapshot.forEach(doc => {
+              if (state.recipes[0].id != doc.id) {
+                state.recipes.push({ ...doc.data(), id: doc.id });
+              }
+            });
+            if (snapshot.docs.length < state.limit) {
+              state.end = true;
+            } else {
+              state.end = false;
+            }
+            state.lastDoc = snapshot.docs[snapshot.docs.length - 1];
             commit("stopLoading");
           })
           .catch(error => {

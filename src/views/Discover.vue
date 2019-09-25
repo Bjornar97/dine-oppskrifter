@@ -2,7 +2,7 @@
   <div>
     <welcome-screen v-if="!loggedIn"></welcome-screen>
     <v-divider v-if="!loggedIn" class="mt-8"></v-divider>
-    <v-btn color="primary" v-if="loggedIn" @click="$router.push('ny-oppskrift')">
+    <v-btn class="mt-4" color="primary" v-if="loggedIn" @click="goToNewRecipe">
       <v-icon>mdi-plus</v-icon>Lag en ny oppskrift
     </v-btn>
     <recipe-list></recipe-list>
@@ -27,6 +27,12 @@ export default {
     },
     loginFeature() {
       return this.$store.state.activeFeatures.login;
+    }
+  },
+  methods: {
+    goToNewRecipe() {
+      this.$store.commit("startLoading");
+      this.$router.push("ny-oppskrift");
     }
   },
   components: {

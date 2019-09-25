@@ -1,6 +1,6 @@
 <template>
   <v-container id="main" class="pt-2 px-4">
-    <v-row class="pa-3">
+    <v-row class="pa-3 pb-0 mb-0">
       <h2 class="headline text-left primary--text my-auto">
         Dine
         <span class="black--text">Oppskrifter</span>
@@ -32,6 +32,14 @@
       <div class="recipeList">
         <recipe-card v-for="recipe in published" :key="recipe.id" :recipe="recipe"></recipe-card>
       </div>
+      <v-btn
+        v-if="!publishedEnd && !loading"
+        color="success"
+        class="mt-4"
+        rounded
+        @click="getNextPublishedBatch"
+      >Last flere</v-btn>
+      <p v-if="publishedEnd && !loading" class="subtitle-2 mt-4">Ingen flere oppskrifter å vise</p>
     </v-container>
   </v-container>
 </template>
@@ -52,8 +60,10 @@ export default {
     return {
       drafts: [],
       draftLoading: [],
-      draftLimit: 5,
       published: [],
+      publishedLimit: 10,
+      publishedEnd: true,
+      lastPublishedDoc: null,
       recipesRef: undefined,
       unsubscribe: undefined
     };
@@ -61,6 +71,9 @@ export default {
   computed: {
     uid() {
       return this.$store.state.accountModule.uid;
+    },
+    loading() {
+      return this.$store.state.loading;
     },
     user() {
       return this.$store.state.accountModule;
@@ -77,14 +90,12 @@ export default {
       this.$store.commit("startLoading");
       let query = this.recipesRef
         .where("status", "==", "draft")
-        .where("author.id", "==", this.uid)
-        .limit(5);
+        .where("author.id", "==", this.uid);
+
       this.unsubscribe = query.onSnapshot(snapshot => {
         this.drafts = [];
         snapshot.forEach(doc => {
           this.drafts.push({ ...doc.data(), id: doc.id, loading: false });
-          console.log(`Got draft ${doc.data().title}:`);
-          console.dir({ ...doc.data(), docID: doc.id });
           this.$store.commit("stopLoading");
         });
       });
@@ -94,23 +105,69 @@ export default {
       let publishedQuery = this.recipesRef
         .where("status", "==", "published")
         .where("author.id", "==", this.uid)
-        .limit(10);
+        .limit(this.publishedLimit);
+
       publishedQuery
         .get()
         .then(snapshot => {
           this.published = [];
           snapshot.forEach(doc => {
-            console.log("Got published: ");
-            console.dir(doc);
             this.published.push({ ...doc.data(), id: doc.id });
+
+            this.lastPublishedDoc = snapshot.docs[snapshot.docs.length - 1];
+
+            if (snapshot.docs.length < this.publishedLimit) {
+              this.publishedEnd = true;
+            } else {
+              this.publishedEnd = false;
+            }
+
             this.$store.commit("stopLoading");
           });
         })
         .catch(error => {
           // Error handling
           console.log("Error:");
+          this.$store.commit("stopLoading");
+
           console.dir(error);
         });
+    },
+    getNextPublishedBatch() {
+      if (this.lastPublishedDoc) {
+        this.$store.commit("startLoading");
+        let publishedQuery = this.recipesRef
+          .where("status", "==", "published")
+          .where("author.id", "==", this.uid)
+          .limit(this.publishedLimit)
+          .startAfter(this.lastPublishedDoc);
+
+        publishedQuery
+          .get()
+          .then(snapshot => {
+            console.log("Got snapshot");
+            snapshot.forEach(doc => {
+              this.published.push({ ...doc.data(), id: doc.id });
+            });
+
+            this.lastPublishedDoc = snapshot.docs[snapshot.docs.length - 1];
+
+            if (snapshot.docs.length < this.publishedLimit) {
+              this.publishedEnd = true;
+            } else {
+              this.publishedEnd = false;
+            }
+
+            this.$store.commit("stopLoading");
+          })
+          .catch(error => {
+            console.log("Error:");
+            this.$store.commit("stopLoading");
+            console.dir(error);
+          });
+      } else {
+        this.publishedEnd = true;
+      }
     },
     deleteDraft(id, index) {
       this.recipesRef
@@ -146,8 +203,6 @@ export default {
   },
   watch: {
     loggedIn(newValue, oldValue) {
-      console.log("user changed");
-      console.dir(newValue);
       if (newValue == true) {
         this.$store.commit("startLoading");
         this.drafts = [];

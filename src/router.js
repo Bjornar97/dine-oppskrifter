@@ -53,6 +53,16 @@ export default new Router({
         import(/* webpackChunkName: "recipe" */ "./views/Recipe.vue")
     },
     {
+      path: "/o/:id",
+      redirect: "/oppskrift/:id"
+    },
+    {
+      path: "/favoritter",
+      name: "favourites",
+      component: () =>
+        import(/* webpackChuckName: "favourites" */ "./views/Favourites.vue")
+    },
+    {
       path: "/ingrediens-kalkulator",
       name: "ingredientsCalculator",
       component: () =>
@@ -65,6 +75,18 @@ export default new Router({
       name: "account",
       component: () =>
         import(/* webpackChunkName: "account" */ "./views/Account.vue")
+    },
+    {
+      path: "/tilbakemelding/:type?/:secondType?",
+      name: "feedback",
+      component: () =>
+        import(/* webpackChunkName: "feedback" */ "./views/Feedback.vue")
+    },
+    {
+      path: "/kontakt-oss",
+      name: "contactUs",
+      component: () =>
+        import(/* webpackChunkName: "contactUs" */ "./views/ContactUs.vue")
     },
     {
       path: "/personvern-erklaering",

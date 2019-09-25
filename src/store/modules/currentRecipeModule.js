@@ -3,10 +3,12 @@ const currentRecipeModule = {
     recipe: {
       recipeId: undefined,
       imagePath: undefined,
+      imageURL: undefined,
       title: "",
       description: "",
       status: "",
       imageCompressed: undefined,
+      dateCreated: undefined,
       category: "",
       portions: "",
       totalTime: "",
@@ -18,7 +20,7 @@ const currentRecipeModule = {
       difficulty: "",
       ingredients: [],
       steps: "",
-      visibility: "Private"
+      visibility: "Public"
     },
     recipeStepNumber: 1,
     newRecipe: null,
@@ -39,6 +41,9 @@ const currentRecipeModule = {
     setRecipeImagePath(state, imagePath) {
       if (imagePath == null) return;
       state.recipe.imagePath = imagePath;
+    },
+    setRecipeImageURL(state, imageURL) {
+      state.recipe.imageURL = imageURL;
     },
     setRecipeTitle(state, title) {
       if (title == null) return;
@@ -64,6 +69,9 @@ const currentRecipeModule = {
     setRecipeCategory(state, category) {
       if (category == null) return;
       state.recipe.category = category;
+    },
+    setRecipeDateCreated(state, date) {
+      state.recipe.dateCreated = date;
     },
     setRecipePortions(state, portions) {
       if (portions == null) return;
@@ -135,11 +143,10 @@ const currentRecipeModule = {
         ingredients: [],
         steps: "",
         author: null,
-        visibility: "Private"
+        visibility: "Public"
       };
     },
     resetSettings(state) {
-      console.log("Resetting settings");
       state.recipeStepNumber = 1;
       state.lastSaveTime = undefined;
       state.prevStep = 1;
@@ -159,13 +166,13 @@ const currentRecipeModule = {
       commit("resetSettings");
     },
     editRecipe({ _, commit }, data) {
-      console.log("VueX currentRecipeModule: Editing recipe");
       commit("setRecipeTitle", data.title);
       commit("setRecipeDescription", data.description);
       commit("setRecipeStatus", data.status);
       commit("setRecipeImagePath", data.imagePath);
       commit("setRecipeIngredients", data.ingredients);
       commit("setRecipeSteps", data.steps);
+      commit("setRecipeDateCreated", data.dateCreated);
       commit("setRecipeVisibility", data.visibility);
       if (data.portions) {
         commit("setRecipePortions", data.portions.toString());

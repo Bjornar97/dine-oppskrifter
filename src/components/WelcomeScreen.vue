@@ -1,25 +1,17 @@
 <template>
-  <div class="welcomeContainer">
-    <div class="header white--text">
-      <p
-        :style="showText ? 'opacity: 1': 'opacity: 0'"
-        class="mb-8 smallText"
-      >En samleplass for oppskrifter</p>
-      <transition appear name="headline" v-on:after-appear="displayText">
-        <div class="headline1Container">
-          <h1>Velkommen til</h1>
-        </div>
-      </transition>
-      <div :style="showText ? 'opacity: 1': 'opacity: 0'" class="headline2Container">
-        <h1>
-          <span class="primary--text text--lighten-3 dineSpan">Dine</span> Oppskrifter
-        </h1>
-      </div>
+  <div class="welcomeContainer mx-auto">
+    <div class="text-left welcomeText pa-4">
+      <h3 class="subtitle-1 welcomeToText animation">Velkommen til</h3>
+      <h2 class="display-1 yourRecipes animation">
+        <span class="primary--text mr-1">Dine</span> Oppskrifter
+      </h2>
+      <h4 class="subtitle-2 mt-4 mb-2 allFunctionsText animation">For å få alle funksjoner</h4>
+      <facebook-login-button class="facebookButton animation" loginText="Fortsett"></facebook-login-button>
     </div>
-    <v-btn color="secondary" v-if="isRecipeListFeature" class="my-4" text>Gå til oppskrifter</v-btn>
-    <feature-list></feature-list>
-    <h3 class="info--text mt-6">Få tilgang til alle funksjoner:</h3>
-    <facebook-login-button loginText="Fortsett"></facebook-login-button>
+    <div class="pa-2 pa-sm-4 featureBox animation">
+      <h4 class="title mb-2 ml-3 secondary--text text-left">Funksjoner</h4>
+      <feature-list class="featureList"></feature-list>
+    </div>
   </div>
 </template>
 
@@ -51,72 +43,95 @@ export default {
 <style lang="scss" scoped>
 .welcomeContainer {
   padding: 0;
+  min-height: calc(100vh - 100px);
 }
 
-.dineSpan {
-  // background: rgba($color: #000, $alpha: 0.8);
-}
-
-.header {
-  background-image: linear-gradient(
-    to top,
-    var(--v-primary-darken1),
-    var(--v-primary-base)
-  );
-  background-repeat: repeat-y;
-  background-position: center;
-  background-size: contain;
+.welcomeText {
+  min-height: 40vh;
   position: relative;
-  top: -106px;
-  margin-bottom: -56px;
-  height: 350px;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-
-  clip-path: polygon(100% 0, 100% 90%, 50% 100%, 0 90%, 0 51%, 0 0);
-
-  animation-name: headerDown;
-  animation-delay: 3s;
-  animation-duration: 1s;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: forwards;
+  justify-content: center;
 }
 
-@keyframes headerDown {
+.welcomeToText {
+  opacity: 0;
+  animation-delay: 0.5s;
+}
+
+.allFunctionsText {
+  opacity: 0;
+  animation-delay: 3.5s;
+}
+
+.facebookButton {
+  opacity: 0;
+  animation-delay: 3.5s;
+}
+
+.animation {
+  animation-name: fade-in;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+.yourRecipes {
+  opacity: 0;
+  animation-delay: 1.5s;
+}
+
+@keyframes fade-in {
   from {
-    top: -106px;
+    opacity: 0;
   }
   to {
-    top: -56px;
+    opacity: 1;
   }
 }
 
-.smallText {
+.featureBox {
   opacity: 0;
-  transition: opacity 0.5s ease-out;
-  transition-delay: 3s;
+  max-width: 500px;
+  animation-delay: 2.5s;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.headline1Container {
-  position: relative;
-  top: 0;
-}
+@supports (display: grid) {
+  .welcomeContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "welcomeText"
+      "features";
+  }
 
-.headline2Container {
-  transition: opacity 0.5s ease-in-out;
-  margin-bottom: 40px;
-}
+  .welcomeText {
+    grid-area: welcomeText;
+  }
 
-.headline-enter-active,
-.headline-leave-active {
-  transition: opacity 0.5s ease-in, top 1s ease-out;
-  transition-delay: 0.5s;
-}
+  .featureBox {
+    grid-area: features;
+  }
 
-.headline-enter,
-.headline-leave-to {
-  opacity: 0;
-  top: -30px;
+  @media only screen and (min-width: 600px) {
+    .welcomeContainer {
+      grid-template-columns: 1fr 600px 1fr;
+      grid-template-areas:
+        ". welcomeText ."
+        ". features .";
+    }
+
+    @media only screen and (min-width: 1000px) {
+      .welcomeContainer {
+        grid-template-columns: 1fr minmax(500px, 3fr) minmax(500px, 3fr) 1fr;
+        grid-template-areas: ". welcomeText features .";
+      }
+    }
+  }
 }
 </style>
