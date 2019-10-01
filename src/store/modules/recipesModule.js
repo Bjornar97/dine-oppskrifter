@@ -12,6 +12,8 @@ const recipesModule = {
       sortBy: "Mest Likt",
       open: false
     },
+    sort: "",
+    sortDirection: "",
     lastFilterDate: null,
     limit: 15,
     lastDoc: null,
@@ -53,6 +55,30 @@ const recipesModule = {
     },
     setFilterDate(state) {
       state.lastFilterDate = Date.now();
+    },
+    getRecipeSorting(state) {
+      let sort = "dateCreated";
+      let direction = "asc";
+      let filter = state.filter;
+
+      if (filter.sortBy == "Lengst Tid") {
+        sort = "totalTime";
+        direction = "desc";
+      } else if (filter.sortBy == "Kortest Tid") {
+        sort = "totalTime";
+        direction = "asc";
+      } else if (filter.sortBy == "Nyeste først") {
+        sort = "dateCreated";
+        direction = "desc";
+      } else if (filter.sortBy == "Eldste først") {
+        sort = "dateCreated";
+        direction = "asc";
+      } else if (filter.sortBy == "Mest Likt") {
+        sort = "favourites";
+        direction = "desc";
+      }
+      state.sort = sort;
+      state.sortDirection = direction;
     }
   },
   actions: {
@@ -85,25 +111,10 @@ const recipesModule = {
         .where("status", "==", "published")
         .where("visibility", "==", "Public");
 
-      let sort = "dateCreated";
-      let direction = "asc";
+      commit("getRecipeSorting");
 
-      if (filter.sortBy == "Lengst Tid") {
-        sort = "totalTime";
-        direction = "desc";
-      } else if (filter.sortBy == "Kortest Tid") {
-        sort = "totalTime";
-        direction = "asc";
-      } else if (filter.sortBy == "Nyeste først") {
-        sort = "dateCreated";
-        direction = "desc";
-      } else if (filter.sortBy == "Eldste først") {
-        sort = "dateCreated";
-        direction = "asc";
-      } else if (filter.sortBy == "Mest Likt") {
-        sort = "favourites";
-        direction = "desc";
-      }
+      let sort = state.sort;
+      let direction = state.sortDirection;
 
       if (
         filter.category == "" &&
@@ -190,6 +201,7 @@ const recipesModule = {
       if (state.lastDoc != null) {
         state.ref
           .limit(state.limit)
+          .orderBy(state.sort, state.sortDirection)
           .startAfter(state.lastDoc)
           .get()
           .then(snapshot => {

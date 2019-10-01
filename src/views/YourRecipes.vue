@@ -145,8 +145,9 @@ export default {
         let publishedQuery = this.recipesRef
           .where("status", "==", "published")
           .where("author.id", "==", this.uid)
-          .limit(this.publishedLimit)
-          .startAfter(this.lastPublishedDoc);
+          .orderBy("dateCreated", "desc")
+          .startAfter(this.lastPublishedDoc)
+          .limit(this.publishedLimit);
 
         publishedQuery
           .get()
