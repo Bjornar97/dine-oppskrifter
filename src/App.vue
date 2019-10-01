@@ -7,7 +7,7 @@
         v-if="canGoBack"
         @click="goBack"
       >
-        <v-btn color="black" icon small>
+        <v-btn aria-label="Tilbake" color="black" icon small>
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
       </div>

@@ -188,7 +188,8 @@
               <div class="ml-4 portionsTextFieldContainer">
                 <v-text-field
                   class="portionsTextField"
-                  name="portions"
+                  name="Porsjoner"
+                  id="portionsField"
                   :rules="[rules.onlyNumber]"
                   type="number"
                   outlined
@@ -196,7 +197,9 @@
                 ></v-text-field>
               </div>
 
-              <p class="my-auto px-2 subtitle-1 font-weight-medium">Porsjoner</p>
+              <label for="portionsField" class="my-auto px-2">
+                <p class="my-auto subtitle-1 font-weight-medium">Porsjoner</p>
+              </label>
             </v-row>
             <v-list-item v-for="(ingredient, index) in recipe.ingredients" :key="index">
               <v-list-item-content>{{+(Math.round(((ingredient.amount / recipe.portions)*portions) + "e+2") + "e-2")}} {{ingredient.unit}} {{ingredient.name}}</v-list-item-content>
@@ -639,6 +642,14 @@ export default {
 }
 
 @media only screen and (max-width: 540px) {
+  .recipeTitle,
+  .recipeDescription {
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+    width: max-content;
+    max-width: 100%;
+  }
   .steps {
     max-width: 95%;
   }
