@@ -105,6 +105,7 @@ export default {
       let publishedQuery = this.recipesRef
         .where("status", "==", "published")
         .where("author.id", "==", this.uid)
+        .orderBy("dateCreated", "desc")
         .limit(this.publishedLimit);
 
       publishedQuery

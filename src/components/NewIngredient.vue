@@ -17,7 +17,6 @@
             <v-text-field
               label="Mengde*"
               persistent-hint
-              required
               type="number"
               v-model="amount"
               :rules="[rules.required, rules.onlyNumber, rules.counter5]"

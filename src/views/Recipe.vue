@@ -147,11 +147,17 @@
         </v-menu>
         <v-menu offset-y>
           <template v-slot:activator="{ on }">
-            <v-btn text color="primary" :loading="printLoading" v-on="on">
+            <v-btn
+              text
+              color="primary"
+              @click="printRecipe(null)"
+              :loading="printLoading"
+              v-on="on"
+            >
               <v-icon class="mr-2">mdi-printer</v-icon>Skriv ut
             </v-btn>
           </template>
-          <v-list class="d-print-none">
+          <v-list v-show="printMenuShow" class="d-print-none">
             <v-list-item @click="printRecipe(true)">
               <v-list-item-title>
                 <v-icon color="primary">mdi-image</v-icon>Med bilde
@@ -184,6 +190,7 @@
                   class="portionsTextField"
                   name="portions"
                   :rules="[rules.onlyNumber]"
+                  type="number"
                   outlined
                   v-model="portions"
                 ></v-text-field>
@@ -262,6 +269,7 @@ export default {
       shareOpen: false,
       printImage: true,
       printLoading: false,
+      printMenuShow: true,
       portions: "",
       shareLinkOpen: false,
       error: false,
@@ -527,6 +535,16 @@ export default {
       console.dir(e);
     },
     async printRecipe(image) {
+      if (image === null) {
+        if (!this.imagePath) {
+          image = false;
+          this.printMenuShow = false;
+        } else {
+          this.printMenuShow = true;
+          return;
+        }
+      }
+
       if (image) {
         this.printImage = true;
         let logo = document.querySelector("#printLogo");
@@ -621,14 +639,6 @@ export default {
 }
 
 @media only screen and (max-width: 540px) {
-  .recipeTitle,
-  .recipeDescription {
-    text-align: left;
-    margin-left: auto;
-    margin-right: auto;
-    width: max-content;
-    max-width: 100%;
-  }
   .steps {
     max-width: 95%;
   }

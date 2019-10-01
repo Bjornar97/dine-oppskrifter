@@ -74,6 +74,9 @@
               :success="imageSuccess && !imageLoading"
               :success-messages="(imageSuccess && !imageLoading) ? 'Bildet er lagt til': ''"
               :error="imageError"
+              hint="NB: Fungerer for øyeblikket ikke i nettleseren Edge eller Internet Explorer"
+              persistent-hint
+              :readonly="false"
               accept="image/png, image/jpeg"
               placeholder="Legg til Bilde"
               :error-messages="imageErrorMessage"
@@ -339,7 +342,7 @@
     <p v-if="publishing && !error">{{publishMessage}}</p>
     <v-progress-linear
       v-model="imageUploadProgress"
-      class="my-4"
+      class="ma-4"
       v-if="(((publishing && !error) && (!editing || imageChanged))) && !disableAll"
       rounded
       color="primary"
@@ -1423,6 +1426,10 @@ v-container {
   max-width: 700px;
 }
 
+.recipeImage {
+  z-index: 99;
+}
+
 .recipeStepsCard {
   max-width: 1000px;
 }
@@ -1480,6 +1487,7 @@ v-container {
     }
 
     .generalForm {
+      max-width: intrinsic;
       max-width: 800px;
       grid-gap: 10px;
       grid-template-columns: 2fr 1fr;

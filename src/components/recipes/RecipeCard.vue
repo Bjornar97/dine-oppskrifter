@@ -19,10 +19,14 @@
             </template>
             <v-list>
               <v-list-item @click="editRecipe">
-                <v-list-item-title>Rediger</v-list-item-title>
+                <v-list-item-title>
+                  <v-icon color="warning" class="mr-1">mdi-pencil</v-icon>Rediger
+                </v-list-item-title>
               </v-list-item>
               <v-list-item @click="deleteDialogOpen = true">
-                <v-list-item-title>Slett</v-list-item-title>
+                <v-list-item-title>
+                  <v-icon color="error" class="mr-1">mdi-close</v-icon>Slett
+                </v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>

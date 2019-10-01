@@ -53,8 +53,16 @@ export default new Router({
         import(/* webpackChunkName: "recipe" */ "./views/Recipe.vue")
     },
     {
+      path: "/oppskrift",
+      redirect: "/"
+    },
+    {
       path: "/o/:id",
       redirect: "/oppskrift/:id"
+    },
+    {
+      path: "/o",
+      redirect: "/"
     },
     {
       path: "/favoritter",

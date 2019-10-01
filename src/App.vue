@@ -20,7 +20,7 @@
       elevation="4"
       collapse
     >
-      <router-link to="/">
+      <router-link to="/" id="logoLink">
         <div class="logoContainer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -298,6 +298,10 @@ export default {
   top: 10px;
   right: 10px;
   z-index: 12;
+}
+
+#logoLink {
+  text-decoration: none !important;
 }
 
 #bottomNav {
