@@ -122,6 +122,11 @@
 import ingredientsCalculation from "@/components/ingredientsCalculation.vue";
 export default {
   name: "ingredients-calculator",
+  metaInfo() {
+    return {
+      title: "Ingredienskalkulator - Dine Oppskrifter"
+    };
+  },
   components: {
     "ingredients-calculation": ingredientsCalculation
   },
@@ -359,9 +364,6 @@ export default {
 
   .submit {
     grid-column: span 2;
-  }
-
-  .calculation {
   }
 }
 </style>

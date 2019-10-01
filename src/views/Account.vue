@@ -86,6 +86,11 @@ var storage = firebase.storage();
 
 export default {
   name: "account",
+  metaInfo() {
+    return {
+      title: "Konto - Dine Oppskrifter"
+    };
+  },
   data() {
     return {
       confirmDialogOpen: false,

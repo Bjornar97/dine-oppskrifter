@@ -173,6 +173,14 @@
         <v-btn color="warning" :to="'/endre-oppskrift/' + recipe.id" text v-if="personal">
           <v-icon>mdi-pencil</v-icon>Rediger
         </v-btn>
+        <v-btn
+          color="error"
+          :to="'/tilbakemelding/rapportere/oppskrift/' + recipe.id"
+          text
+          v-if="!personal"
+        >
+          <v-icon>mdi-flag</v-icon>Rapporter
+        </v-btn>
       </div>
 
       <div class="ingredients">
@@ -328,7 +336,7 @@ export default {
     },
     personal() {
       if (this.recipe.author) {
-        return this.recipe.author.id == this.user.uid;
+        return this.recipe.author.id === this.user.uid;
       } else {
         return false;
       }
@@ -589,6 +597,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 .errorCard {
   width: max-content;
   max-width: 800px;

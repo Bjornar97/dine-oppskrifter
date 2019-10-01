@@ -12,6 +12,11 @@
 <script>
 export default {
   name: "Discover",
+  metaInfo() {
+    return {
+      title: "Forsiden - Dine Oppskrifter"
+    };
+  },
   computed: {
     loggedIn() {
       return this.$store.state.accountModule.loggedIn;

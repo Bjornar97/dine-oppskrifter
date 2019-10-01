@@ -7,6 +7,7 @@ const feedbackModule = {
     recipeId: "",
     reportType: "",
     userName: "",
+    userReportId: "",
     description: "",
     anonymous: false,
     containedRecipeId: false
@@ -38,6 +39,17 @@ const feedbackModule = {
     },
     setFeedbackAnonymous(state, value) {
       state.anonymous = value;
+    },
+    resetFeedback(state) {
+      state.title = "";
+      state.description = "";
+      state.type = "";
+      state.proposalType = "";
+      state.problemType = "";
+      state.reportType = "";
+      state.recipeId = "";
+      state.userName = "";
+      state.containedRecipeId = false;
     }
   },
   actions: {
@@ -52,14 +64,19 @@ const feedbackModule = {
 
       if (data.problemType) {
         state.problemType = data.problemType;
-      }
 
-      if (data.recipeId) {
-        state.recipeId = data.recipeId;
+        if (data.id && data.problemType == "En Oppskrift") {
+          state.recipeId = data.recipeId;
+        }
       }
 
       if (data.reportType) {
         state.reportType = data.reportType;
+        if (data.id && data.reportType == "Oppskrift") {
+          state.recipeId = data.id;
+        } else if (data.id && data.reportType == "Bruker") {
+          state.userReportId = data.id;
+        }
       }
 
       if (data.userName) {

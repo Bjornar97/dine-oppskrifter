@@ -363,6 +363,11 @@ import "isomorphic-fetch";
 
 export default {
   name: "new-recipe",
+  metaInfo() {
+    return {
+      title: "Ny Oppskrift - Dine Oppskrifter"
+    };
+  },
   data() {
     return {
       editing: false,

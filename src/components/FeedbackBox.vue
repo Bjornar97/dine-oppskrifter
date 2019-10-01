@@ -17,7 +17,7 @@
           class="Field"
           v-model="type"
           outlined
-          hint="Hvilken type tilbakemelding vil du sende. Dersom du er usikker, velg den du tror er mest rett, eller velg annet"
+          hint="Hvilken type tilbakemelding vil du sende? Dersom du er usikker, velg den du tror er mest rett, eller velg annet"
           persistent-hint
           :rules="[rules.required]"
           label="Type tilbakemelding"
@@ -45,7 +45,7 @@
           label="Problemområde"
           persistent-hint
           outlined
-          hint="Hvor ligger problemet. Dersom du er usikker, velg annet."
+          hint="Hvor ligger problemet? Dersom du er usikker, velg annet."
         ></v-select>
 
         <!-- For reporting -->
@@ -126,7 +126,7 @@
             v-if="sent"
             @click="newFeedback"
           >Ny Tilbakemelding</v-btn>
-          <v-btn color="info" class="my-2 mx-1" v-if="sent" @click="$router.push('/')">Forsiden</v-btn>
+          <v-btn color="info" class="my-2 mx-1" v-if="sent" @click="goTo('/')">Forsiden</v-btn>
         </div>
 
         <v-btn
@@ -321,8 +321,8 @@ export default {
         data = {
           type: this.type,
           reportType: this.reportType,
-          recipeId: this.recipeId,
-          userName: this.reportUserName,
+          recipeId: this.recipeId ? this.recipeId : "",
+          userName: this.reportUserName ? this.reportUserName : "",
           title: this.title ? this.title : "",
           description: this.description
         };
@@ -343,12 +343,26 @@ export default {
         };
       }
 
-      db.collection("feedback").add(data);
+      db.collection("feedback")
+        .add(data)
+        .catch(error => {
+          this.error = true;
+          this.errorMessage =
+            "Noe galt skjedde under sending, prøv igjen senere, eller kontakt oss.";
+          console.log("Error");
+          console.dir(error);
+          return;
+        });
+
       this.sent = true;
     },
     newFeedback() {
       this.$refs.feedbackForm.reset();
       this.sent = false;
+    },
+    goTo(url) {
+      this.$store.commit("resetFeedback");
+      this.$router.push(url);
     }
   },
   mounted() {

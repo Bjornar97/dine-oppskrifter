@@ -11,7 +11,12 @@
 
 <script>
 export default {
-  name: "not-found"
+  name: "not-found",
+  metaInfo() {
+    return {
+      title: "Ikke funnet - Dine Oppskrifter"
+    };
+  }
 };
 </script>
 

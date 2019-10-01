@@ -7,6 +7,11 @@
 <script>
 export default {
   name: "feedback",
+  metaInfo() {
+    return {
+      title: "Tilbakemelding - Dine Oppskrifter"
+    };
+  },
   data() {
     return {
       feedbackData: null
@@ -18,6 +23,7 @@ export default {
   created() {
     let type = this.$route.params.type;
     let secondType = this.$route.params.secondType;
+    let id = this.$route.params.thingId;
 
     let secondString = "";
     if (secondType) {
@@ -37,7 +43,8 @@ export default {
     if (type.toLowerCase() == "problem") {
       this.feedbackData = {
         type: "Problem",
-        problemType: secondString
+        problemType: secondString,
+        id: id
       };
     } else if (type.toLowerCase() == "forslag") {
       this.feedbackData = {
@@ -46,8 +53,9 @@ export default {
       };
     } else if (type.toLowerCase() == "rapportere") {
       this.feedbackData = {
-        type: "Forslag",
-        reportType: secondString
+        type: "Rapportere",
+        reportType: secondString,
+        id: id
       };
     }
   }

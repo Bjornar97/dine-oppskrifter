@@ -214,7 +214,12 @@
 
 <script>
 export default {
-  name: "termsOfService"
+  name: "termsOfService",
+  metaInfo() {
+    return {
+      title: "Vilkår for bruk - Dine Oppskrifter"
+    };
+  }
 };
 </script>
 

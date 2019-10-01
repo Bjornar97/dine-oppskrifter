@@ -34,7 +34,12 @@
 
 <script>
 export default {
-  name: "contact-us"
+  name: "contact-us",
+  metaInfo() {
+    return {
+      title: "Kontakt Oss - Dine Oppskrifter"
+    };
+  }
 };
 </script>
 

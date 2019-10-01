@@ -33,6 +33,11 @@ var db = firebase.firestore();
 
 export default {
   name: "favourites",
+  metaInfo() {
+    return {
+      title: "Favoritter - Dine Oppskrifter"
+    };
+  },
   data() {
     return {
       favouritesList: [],

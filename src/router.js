@@ -85,7 +85,7 @@ export default new Router({
         import(/* webpackChunkName: "account" */ "./views/Account.vue")
     },
     {
-      path: "/tilbakemelding/:type?/:secondType?",
+      path: "/tilbakemelding/:type?/:secondType?/:thingId?",
       name: "feedback",
       component: () =>
         import(/* webpackChunkName: "feedback" */ "./views/Feedback.vue")

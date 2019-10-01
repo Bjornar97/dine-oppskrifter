@@ -118,7 +118,12 @@
 
 <script>
 export default {
-  name: "privacyPolicy"
+  name: "privacyPolicy",
+  metaInfo() {
+    return {
+      title: "Personvernerklæring - Dine Oppskrifter"
+    };
+  }
 };
 </script>
 

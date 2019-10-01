@@ -51,6 +51,11 @@ var db = firebase.firestore();
 
 export default {
   name: "your-recipes",
+  metaInfo() {
+    return {
+      title: "Dine Oppskrifter"
+    };
+  },
   components: {
     "draft-card": () => import("@/components/recipes/DraftCard"),
     "recipe-card": () => import("@/components/recipes/RecipeCard"),
