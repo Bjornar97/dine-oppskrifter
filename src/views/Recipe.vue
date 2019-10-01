@@ -536,7 +536,7 @@ export default {
     },
     async printRecipe(image) {
       if (image === null) {
-        if (!this.imagePath) {
+        if (!this.recipe.imagePath) {
           image = false;
           this.printMenuShow = false;
         } else {
