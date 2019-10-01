@@ -88,6 +88,10 @@
         Kunne ikke slette oppskriften akkurat nå, prøv igjen senere
         <v-btn text color="primary" @click.native="error = false">Lukk</v-btn>
       </v-snackbar>
+      <v-snackbar v-model="deleteSuccess">
+        Oppskriften ble slettet
+        <v-btn text color="primary" @click.native="error = false">Lukk</v-btn>
+      </v-snackbar>
       <v-dialog v-model="deleteDialogOpen" max-width="500px" transition="dialog-transition">
         <v-card>
           <v-card-title>Slette oppskriften {{recipe.title}}</v-card-title>
@@ -127,7 +131,8 @@ export default {
       imageSrc: "",
       deleteDialogOpen: false,
       loading: false,
-      error: false
+      error: false,
+      deleteSuccess: false
     };
   },
   computed: {
@@ -203,7 +208,11 @@ export default {
         .delete()
         .then(() => {
           this.loading = false;
-          this.$emit("deletedRecipe");
+          this.deleteSuccess = true;
+          setTimeout(() => {
+            this.$emit("deletedRecipe");
+            this.deleteSuccess = false;
+          }, 5000);
         })
         .catch(error => {
           this.error = true;

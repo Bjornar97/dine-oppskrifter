@@ -30,7 +30,12 @@
       <h3 class="title text-left secondary--text">Publisert</h3>
       <v-divider></v-divider>
       <div class="recipeList">
-        <recipe-card v-for="recipe in published" :key="recipe.id" :recipe="recipe"></recipe-card>
+        <recipe-card
+          v-for="recipe in published"
+          :key="recipe.id"
+          :recipe="recipe"
+          v-on:deletedRecipe="recipeDeleted"
+        ></recipe-card>
       </div>
       <v-btn
         v-if="!publishedEnd && !loading"
@@ -138,6 +143,9 @@ export default {
 
           console.dir(error);
         });
+    },
+    recipeDeleted() {
+      this.refresh();
     },
     getNextPublishedBatch() {
       if (this.lastPublishedDoc) {

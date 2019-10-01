@@ -27,7 +27,12 @@
       ></v-progress-circular>-->
 
       <div class="recipeList mt-4">
-        <recipe-card v-for="recipe in recipes" :key="recipe.id" :recipe="recipe"></recipe-card>
+        <recipe-card
+          v-for="recipe in recipes"
+          :key="recipe.id"
+          :recipe="recipe"
+          v-on:deletedRecipe="recipeDeleted"
+        ></recipe-card>
       </div>
       <p v-if="end && !recipesLoading" class="mt-4 subtitle-2">Ikke flere oppskrifter å vise</p>
       <v-btn
@@ -77,6 +82,9 @@ export default {
     },
     getNextBatch() {
       this.$store.dispatch("getNextRecipeBatch");
+    },
+    recipeDeleted() {
+      this.refresh();
     }
   },
   computed: {

@@ -520,7 +520,8 @@ export default {
       FB.ui(
         {
           method: "share",
-          href: this.url
+          href: this.url,
+          quote: `Oppskrift fra Dine Oppskrifter: ${this.recipe.title}`
         },
         response => {}
       );
