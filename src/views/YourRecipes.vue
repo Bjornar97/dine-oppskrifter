@@ -106,8 +106,8 @@ export default {
         this.drafts = [];
         snapshot.forEach(doc => {
           this.drafts.push({ ...doc.data(), id: doc.id, loading: false });
-          this.$store.commit("stopLoading");
         });
+        this.$store.commit("stopLoading");
       });
     },
     retrievePublished() {
@@ -132,9 +132,8 @@ export default {
             } else {
               this.publishedEnd = false;
             }
-
-            this.$store.commit("stopLoading");
           });
+          this.$store.commit("stopLoading");
         })
         .catch(error => {
           // Error handling

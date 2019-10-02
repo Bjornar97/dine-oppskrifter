@@ -480,6 +480,7 @@ export default {
           name: this.user.name,
           profilePictureUrl: this.user.profilePictureUrl
         },
+        dateFavourited: Date.now(),
         recipeId: this.recipe.id
       };
       db.collection("favourites")

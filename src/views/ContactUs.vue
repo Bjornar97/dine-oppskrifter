@@ -1,5 +1,5 @@
 <template>
-  <v-container class="my-8 text-left">
+  <v-container class="my-8 text-left mainContainer">
     <h2 class="headline primary--text mb-6">Kontakt Oss</h2>
     <h4 class="subtitle-1 mr-4">
       Dersom du har forslag til forbedringer eller noe ikke er helt som det skal, send oss først tilbakemelding:
@@ -44,4 +44,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mainContainer {
+  max-width: 1000px;
+}
 </style>

@@ -65,6 +65,7 @@ export default {
       db.collection("favourites")
         .where("user.id", "==", this.user.uid)
         .limit(this.limit)
+        .orderBy("dateFavourited", "desc")
         .get()
         .then(snapshot => {
           this.favouritesList = [];
