@@ -15,7 +15,7 @@
       <h4
         class="subtitle-2 mt-2"
         v-if="recipes.length == 0 && !recipesLoading && recipeError"
-      >Kunne ikke laste inn oppskriftenen, prøv igjen</h4>
+      >Kunne ikke laste inn oppskriftene, prøv igjen</h4>
 
       <!-- <v-progress-circular
         v-show="recipesLoading"
@@ -34,7 +34,10 @@
           v-on:deletedRecipe="recipeDeleted"
         ></recipe-card>
       </div>
-      <p v-if="end && !recipesLoading" class="mt-4 subtitle-2">Ikke flere oppskrifter å vise</p>
+      <p
+        v-if="end && !recipesLoading && !recipeError && recipes.length > 0"
+        class="mt-4 subtitle-2"
+      >Ikke flere oppskrifter å vise</p>
       <v-btn
         v-if="!end && !recipesLoading"
         @click="getNextBatch"
@@ -102,9 +105,16 @@ export default {
     },
     end() {
       return this.$store.state.recipesModule.end;
+    },
+    lastFilterDate() {
+      return this.$store.state.recipesModule.lastFilterDate;
     }
   },
   created() {
+    // If the filter hasnt been used the last hour, it resets it to default values
+    if (Date.now() - this.lastFilterDate > 60 * 60 * 1000) {
+      this.$store.dispatch("clearFilter");
+    }
     this.$store.dispatch("retrieveRecipes");
   }
 };

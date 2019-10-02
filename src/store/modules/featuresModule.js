@@ -3,7 +3,8 @@ const featuresModule = {
     login: true,
     ingredients: true,
     facebookPage: true,
-    recipeList: false
+    recipeList: false,
+    autoDeleteAccount: false
   }
 };
 

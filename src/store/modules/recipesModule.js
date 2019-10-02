@@ -100,6 +100,7 @@ const recipesModule = {
         sortBy: "Mest Likt",
         open: state.filter.open
       };
+      commit("setFilterDate");
     },
     retrieveRecipes({ state, commit }) {
       commit("startLoading");

@@ -128,7 +128,7 @@
         <v-btn to="/" exact color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
 
         <v-btn
-          href="https://www.facebook.com/DineOppskrifter"
+          href="https://facebook.com/DineOppskrifter"
           target="_blank"
           color="primary darken-2"
           text

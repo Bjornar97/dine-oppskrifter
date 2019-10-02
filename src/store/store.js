@@ -21,6 +21,12 @@ const vuexLocal = new VuexPersistence({
       profilePictureUrl: state.accountModule.profilePictureUrl,
       facebookAccessToken: state.accountModule.facebookAccessToken
     },
+    recipesModule: {
+      filter: state.recipesModule.filter,
+      lastFilterDate: state.recipesModule.lastFilterDate,
+      sort: state.recipesModule.sort,
+      sortDirection: state.recipesModule.sortDirection
+    },
     currentRecipeModule: state.currentRecipeModule,
     hideBrowserWarning: state.hideOldBrowserWarning,
     acceptedTerms: state.acceptedTerms,

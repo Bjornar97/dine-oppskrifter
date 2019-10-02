@@ -22,7 +22,12 @@
         class="text-left ma-2 pa-4"
       >All informasjon vi har om deg (bortsett fra oppskriftene dine og favorittene dine) vises på denne siden</p>
 
-      <v-expansion-panels popout class="deletePanel">
+      <p class="text-left ma-2 pa-4">
+        Dersom du ønsker å slette kontoen din, vennligst
+        <router-link to="/kontakt-oss">kontakt oss</router-link>
+      </p>
+
+      <v-expansion-panels popout class="deletePanel" v-if="isAutoDeleteAccountFeature">
         <v-expansion-panel>
           <v-expansion-panel-header>Slett konto</v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -37,7 +42,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <v-dialog v-model="confirmDialogOpen" max-width="500">
+      <v-dialog v-model="confirmDialogOpen" v-if="isAutoDeleteAccountFeature" max-width="500">
         <v-card>
           <v-btn icon @click="confirmDialogOpen = false" class="dialogClose" color="black">
             <v-icon>mdi-close</v-icon>
@@ -60,7 +65,7 @@
             <p class="primary--text" v-if="deleteSuccess === true">Kontoen din er slettet</p>
           </v-card-text>
 
-          <v-card-actions>
+          <v-card-actions v-if="isAutoDeleteAccountFeature">
             <div class="flex-grow-1"></div>
             <v-btn
               color="warning"
@@ -112,6 +117,9 @@ export default {
     },
     small() {
       return this.$vuetify.breakpoint.smAndDown;
+    },
+    isAutoDeleteAccountFeature() {
+      return this.$store.state.featuresModule.autoDeleteAccount;
     }
   },
   methods: {

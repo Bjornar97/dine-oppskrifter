@@ -73,8 +73,8 @@
       <h2 class="secondary--text headline mb-4 mt-8">Overførsel av data</h2>
       <p>Din informasjon, inkludert din personlige informasjon, kan bli overført til, og vedlikeholdt på, datamaskiner utenfor ditt land eller annen myndighetens jurisdiksjon hvor databeskyttelseslover kan være forskjellig.</p>
       <p>Dersom du befinner deg utenfor Norge og velger å gi oss informasjon, vær oppmersom på at vi kan overføre din data (inkludert personlig informasjon) til Norge og behandle det der.</p>
-      <p>Ved å akseptere denne personverkerklæringen etterfulgt av å logge inn og gi oss din informasjon, representerer din godkjennelse for denne overføringen</p>
-      <p>Dine Oppskrifter vil ta alle nødvendige steg nødvendig for å sikre at din informasjon blir behandlet og lagret sikkert og i henhold til denne personvernerklæringen, og ingen overføring av din personlige informasjon vil forekomme til organisasjoner eller myndigheter.</p>
+      <p>Ved å akseptere denne personverkerklæringen etterfulgt av å logge inn og gi oss din informasjon, representerer det din godkjennelse for denne overføringen</p>
+      <p>Dine Oppskrifter vil ta alle nødvendige steg nødvendig for å sikre at din informasjon blir behandlet og lagret sikkert og i henhold til denne personvernerklæringen, og ingen overføring av din personlige informasjon vil forekomme til andre organisasjoner eller myndigheter.</p>
 
       <h2 class="secondary--text headline mb-4 mt-8">Utlevering av data</h2>
       <p>
@@ -102,7 +102,7 @@
 
       <h2 class="secondary--text headline mb-4 mt-8">Endringer av denne personvernerklæringen</h2>
       <p>Vi vil kunne endre denne personverkerklæringen av og til. Den nye vil komme på denne siden, og ved oppdatering av personverkerklæringen vil det komme frem et varsel på forsiden neste gang du besøker den.</p>
-      <p>Vi anbefaler at du sjekker personverkerklæringen av of til for endringer. Endringene trer i kraft når de legges ut på denne siden.</p>
+      <p>Vi anbefaler at du sjekker personverkerklæringen av og til for endringer. Endringene trer i kraft når de legges ut på denne siden.</p>
 
       <h2 class="secondary--text headline mb-4 mt-8">Kontakt oss</h2>
       <p>
