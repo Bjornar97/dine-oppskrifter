@@ -1348,11 +1348,11 @@ export default {
   },
   created() {
     const route = this.$route;
+    if (route.name == "newRecipe" && this.recipeNew == false) {
+      this.$store.dispatch("deleteRecipe");
+      this.recipeNew = true;
+    }
     if (route.name == "newRecipe" && this.recipeId === undefined) {
-      if (this.recipeNew === false) {
-        this.$store.dispatch("deleteRecipe");
-        this.recipeNew = true;
-      }
       const user = this.user;
       let author = null;
       if (user.loggedIn) {

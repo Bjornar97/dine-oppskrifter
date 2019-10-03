@@ -23,7 +23,7 @@ const currentRecipeModule = {
       visibility: "Public"
     },
     recipeStepNumber: 1,
-    newRecipe: null,
+    newRecipe: true,
     lastSaveTime: undefined,
     prevStep: 1,
     activeStep: 1,
