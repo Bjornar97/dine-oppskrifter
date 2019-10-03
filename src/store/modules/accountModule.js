@@ -35,15 +35,13 @@ const accountModule = {
       state.uid = user.uid;
     },
     resetAccount(state) {
-      state = {
-        loginProcess: null,
-        loggedIn: null,
-        name: "",
-        email: "",
-        uid: null,
-        profilePictureUrl: "",
-        facebookAccessToken: ""
-      };
+      state.loginProcess = null;
+      state.loggedIn = null;
+      state.name = "";
+      state.email = "";
+      state.uid = null;
+      state.profilePictureUrl = "";
+      state.facebookAccessToken = "";
     },
     setFacebookAccessToken(state, facebookAccessToken) {
       state.facebookAccessToken = facebookAccessToken;
@@ -54,10 +52,13 @@ const accountModule = {
       state.loginError.email = error.email;
       state.loginError.credential = error.credential;
       state.loginError.error = true;
+    },
+    setLoginProcess(state, status) {
+      state.loginProcess = status;
     }
   },
   actions: {
-    loginWithFacebook({ state, commit }) {
+    loginWithFacebook({ _, commit }) {
       commit("startLoading");
       let provider = new firebase.auth.FacebookAuthProvider();
       provider.addScope("email");
@@ -67,35 +68,30 @@ const accountModule = {
         .signInWithPopup(provider)
         .then(result => {
           // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-          state.account.facebookAccessToken = result.credential.accessToken;
+          commit("setFacebookAccessToken", result.credential.accessToken);
           // The signed-in user info.
           let user = result.user;
-          console.log("Logged in user: ");
-          console.dir(user);
           commit("addUserInfo", user);
           commit("stopLoading");
+          commit("setLoginProcess", false);
         })
         .catch(error => {
           // Handle Errors here.
+          console.log("Error: ");
+          console.log(error);
           commit("setLoginError", error);
           commit("stopLoading");
+          commit("setLoginProcess", false);
           commit("resetAccount");
         });
     },
-    logout({ _, commit }) {
+    logout({ _, commit, dispatch }) {
       console.log("Logging out");
       commit("startLoading");
       firebase
         .auth()
         .signOut()
-        .then(() => {
-          console.log("Successfully logged out");
-          commit("resetAccount");
-
-          console.log("Logging out of facebook");
-          commit("showWelcome");
-          commit("stopLoading");
-        })
+        .then(() => {})
         .catch(error => {
           console.log("Something bad happened: " + error);
           let errorObject = {
@@ -105,7 +101,13 @@ const accountModule = {
           };
           commit("setLoginError", errorObject);
           commit("stopLoading");
+          commit("setLoginProcess", false);
         });
+    },
+    loggedOut({ _, commit }) {
+      commit("resetAccount");
+      commit("stopLoading");
+      commit("setLoginProcess", false);
     }
   }
 };

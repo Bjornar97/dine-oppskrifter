@@ -1,115 +1,120 @@
 <template>
-  <div v-if="isIngredientsTool" class="white ingredientsTool mb-8 pa-6 elevation-4">
-    <div class="titleContainer black--text">
-      <h2 class="subheader secondary--text" :class="showTutorial ? ' ml-5': ''">Ingredienskalkulator</h2>
-      <v-btn
-        color="info"
-        class="tutorialBtn"
-        @click="showTutorial = true"
-        v-if="!showTutorial"
-        small
-      >Vis tips</v-btn>
-      <v-btn
-        color="info"
-        class="tutorialBtn"
-        @click="showTutorial = false"
-        v-if="showTutorial"
-        small
-      >Gjem tips</v-btn>
+  <div id="IngredientsCalculator">
+    <div v-if="isIngredientsTool" class="white ingredientsTool mb-8 pa-6 elevation-4">
+      <div class="titleContainer black--text">
+        <h2
+          class="subheader secondary--text"
+          :class="showTutorial ? ' ml-5': ''"
+        >Ingredienskalkulator</h2>
+        <v-btn
+          color="info"
+          class="tutorialBtn"
+          @click="showTutorial = true"
+          v-if="!showTutorial"
+          small
+        >Vis tips</v-btn>
+        <v-btn
+          color="info"
+          class="tutorialBtn"
+          @click="showTutorial = false"
+          v-if="showTutorial"
+          small
+        >Gjem tips</v-btn>
+      </div>
+      <v-expand-transition>
+        <div class="howTo" v-if="showTutorial">
+          <p>Lurer du på hvor mye av hver ingrediens du trenger for 5, 3 eller 8 personer når oppskriften din kun passer til 4?</p>
+          <p>Da kan du prøve vår Ingredienskalkulator. Du legger inn ingrediensene og hvor mange posjoner oppskriften din er beregnet for, og voila, så kan du finne ut hvor mye du trenger for antallet personere dere blir.</p>
+          <p>Slik gjør du:</p>
+          <ol>
+            <li>Skriv inn ingrediens, mengde og enhet for hver ingrediens i oppskriften din</li>
+            <li>Velg antall porsjoner oppskriften din er beregnet for</li>
+            <li>Trykk Videre</li>
+            <li>Velg hvor mange porsjoner du trenger</li>
+            <li>Se hvor mye du trenger</li>
+          </ol>
+
+          <p class="mt-2">Resultatet kommer frem i en tabell, med navn på ingrediens og mengde.</p>
+        </div>
+      </v-expand-transition>
+      <v-expand-transition>
+        <v-container v-show="!showResults">
+          <div class="ingredientsContainer">
+            <v-form class="ingredientsForm elevation-2 pa-4" v-model="valid">
+              <p class="exampleIngredientText">Eksempel på ingrediens:</p>
+              <v-text-field label="Ingrediens" value="Hvetemel" disabled></v-text-field>
+
+              <v-text-field label="Mengde" value="4" :rules="amountRules" disabled></v-text-field>
+
+              <v-text-field label="Enhet" value="dl" disabled></v-text-field>
+            </v-form>
+          </div>
+          <div class="ingredientsContainer mt-8">
+            <v-form class="ingredientsForm elevation-2 pa-6" v-model="valid">
+              <h3 class="headline mb-4 primary--text writeHere">Skriv ingrediensene her</h3>
+              <h6 class="title">Navn på ingrediens</h6>
+              <h6 class="title">Mengde</h6>
+              <h6 class="title">Enhet</h6>
+              <template v-for="ingredient in fields">
+                <div class="flexBreak" :key="'flex' + ingredient.id"></div>
+                <v-text-field
+                  :name="'name' + ingredient.id"
+                  :id="'ingredient' + ingredient.id"
+                  @change="changeEvent(ingredient)"
+                  label="Ingrediens"
+                  v-model="ingredient.name"
+                  v-if="ingredient.show"
+                  :key="ingredient.id"
+                ></v-text-field>
+
+                <v-text-field
+                  :name="'amount' + ingredient.id"
+                  label="Mengde"
+                  v-model="ingredient.amount"
+                  v-if="ingredient.show"
+                  :rules="amountRules"
+                  :key="'amount' + ingredient.id"
+                ></v-text-field>
+
+                <v-text-field
+                  :name="'unit' + ingredient.id"
+                  label="Enhet"
+                  v-model="ingredient.unit"
+                  v-if="ingredient.show"
+                  :key="'unit' + ingredient.id"
+                ></v-text-field>
+              </template>
+              <div class="flexBreak"></div>
+              <p class="subheading portions fullCol">Hvor mange porsjoner gir disse ingrediensene?</p>
+              <div class="flexBreak"></div>
+              <v-slider
+                class="portionsSlider fullCol"
+                color="secondary"
+                thumb-color="secondary"
+                track-color="primary"
+                v-model="portions"
+                :thumb-size="36"
+                thumb-label="always"
+                max="24"
+                min="1"
+              ></v-slider>
+              <div class="flexBreak"></div>
+              <v-btn @click="calculate" class="submit" :disabled="!valid" color="success">Videre</v-btn>
+              <v-btn @click="reset" class="resetBtn" color="error">Tilbakestill</v-btn>
+            </v-form>
+          </div>
+        </v-container>
+      </v-expand-transition>
+      <v-expand-transition>
+        <div class="calculation" v-show="showResults">
+          <div class="flexBreak"></div>
+          <v-divider v-if="showTutorial" class="fullCol"></v-divider>
+          <div class="flexBreak"></div>
+          <ingredients-calculation :portions="portions" :ingredients="ingredients"></ingredients-calculation>
+          <v-btn @click="showResults = false" color="warning" class="editBtn">Endre Oppskrift</v-btn>
+        </div>
+      </v-expand-transition>
     </div>
-    <v-expand-transition>
-      <div class="howTo" v-if="showTutorial">
-        <p>Lurer du på hvor mye av hver ingrediens du trenger for 5, 3 eller 8 personer når oppskriften din kun passer til 4?</p>
-        <p>Da kan du prøve vår Ingredienskalkulator. Du legger inn ingrediensene og hvor mange posjoner oppskriften din er beregnet for, og voila, så kan du finne ut hvor mye du trenger for antallet personere dere blir.</p>
-        <p>Slik gjør du:</p>
-        <ol>
-          <li>Skriv inn ingrediens, mengde og enhet for hver ingrediens i oppskriften din</li>
-          <li>Velg antall porsjoner oppskriften din er beregnet for</li>
-          <li>Trykk Videre</li>
-          <li>Velg hvor mange porsjoner du trenger</li>
-          <li>Se hvor mye du trenger</li>
-        </ol>
-
-        <p class="mt-2">Resultatet kommer frem i en tabell, med navn på ingrediens og mengde.</p>
-      </div>
-    </v-expand-transition>
-    <v-expand-transition>
-      <v-container v-show="!showResults">
-        <div class="ingredientsContainer">
-          <v-form class="ingredientsForm elevation-2 pa-4" v-model="valid">
-            <p class="exampleIngredientText">Eksempel på ingrediens:</p>
-            <v-text-field label="Ingrediens" value="Hvetemel" disabled></v-text-field>
-
-            <v-text-field label="Mengde" value="4" :rules="amountRules" disabled></v-text-field>
-
-            <v-text-field label="Enhet" value="dl" disabled></v-text-field>
-          </v-form>
-        </div>
-        <div class="ingredientsContainer mt-8">
-          <v-form class="ingredientsForm elevation-2 pa-6" v-model="valid">
-            <h3 class="headline mb-4 primary--text writeHere">Skriv ingrediensene her</h3>
-            <h6 class="title">Navn på ingrediens</h6>
-            <h6 class="title">Mengde</h6>
-            <h6 class="title">Enhet</h6>
-            <template v-for="ingredient in fields">
-              <div class="flexBreak" :key="'flex' + ingredient.id"></div>
-              <v-text-field
-                :name="'name' + ingredient.id"
-                :id="'ingredient' + ingredient.id"
-                @change="changeEvent(ingredient)"
-                label="Ingrediens"
-                v-model="ingredient.name"
-                v-if="ingredient.show"
-                :key="ingredient.id"
-              ></v-text-field>
-
-              <v-text-field
-                :name="'amount' + ingredient.id"
-                label="Mengde"
-                v-model="ingredient.amount"
-                v-if="ingredient.show"
-                :rules="amountRules"
-                :key="'amount' + ingredient.id"
-              ></v-text-field>
-
-              <v-text-field
-                :name="'unit' + ingredient.id"
-                label="Enhet"
-                v-model="ingredient.unit"
-                v-if="ingredient.show"
-                :key="'unit' + ingredient.id"
-              ></v-text-field>
-            </template>
-            <div class="flexBreak"></div>
-            <p class="subheading portions fullCol">Hvor mange porsjoner gir disse ingrediensene?</p>
-            <div class="flexBreak"></div>
-            <v-slider
-              class="portionsSlider fullCol"
-              color="secondary"
-              thumb-color="secondary"
-              track-color="primary"
-              v-model="portions"
-              :thumb-size="36"
-              thumb-label="always"
-              max="24"
-              min="1"
-            ></v-slider>
-            <div class="flexBreak"></div>
-            <v-btn @click="calculate" class="submit" :disabled="!valid" color="success">Videre</v-btn>
-            <v-btn @click="reset" class="resetBtn" color="error">Tilbakestill</v-btn>
-          </v-form>
-        </div>
-      </v-container>
-    </v-expand-transition>
-    <v-expand-transition>
-      <div class="calculation" v-show="showResults">
-        <div class="flexBreak"></div>
-        <v-divider v-if="showTutorial" class="fullCol"></v-divider>
-        <div class="flexBreak"></div>
-        <ingredients-calculation :portions="portions" :ingredients="ingredients"></ingredients-calculation>
-        <v-btn @click="showResults = false" color="warning" class="editBtn">Endre Oppskrift</v-btn>
-      </div>
-    </v-expand-transition>
   </div>
 </template>
 
@@ -117,6 +122,11 @@
 import ingredientsCalculation from "@/components/ingredientsCalculation.vue";
 export default {
   name: "ingredients-calculator",
+  metaInfo() {
+    return {
+      title: "Ingredienskalkulator - Dine Oppskrifter"
+    };
+  },
   components: {
     "ingredients-calculation": ingredientsCalculation
   },
@@ -151,7 +161,6 @@ export default {
   },
   methods: {
     calculate() {
-      console.log("Calculating");
       this.ingredients = [];
       this.fields.forEach(ingredient => {
         if (ingredient.show && ingredient.name.trim() != "") {
@@ -181,8 +190,6 @@ export default {
       this.lastId = 0;
     },
     changeEvent(ingredient) {
-      console.log("Checking");
-
       if (ingredient.name.trim() != "") {
         this.empty[ingredient.id] = false;
       } else {
@@ -190,11 +197,8 @@ export default {
       }
 
       if (ingredient.id != this.lastId) {
-        console.log("id is wrong");
       } else {
-        console.dir(ingredient);
         if (ingredient.name.trim() != "") {
-          console.log("Pushing new");
           this.fields.push({
             id: this.lastId + 1,
             name: "",
@@ -222,8 +226,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#IngredientsCalculator {
+  display: flex;
+  justify-content: center;
+  text-align: left;
+  min-height: 90vh;
+  color: #000;
+}
+
 .ingredientsTool {
   max-width: 1000px;
+  text-align: left;
 }
 
 .ingredientsContainer {
@@ -351,9 +364,6 @@ export default {
 
   .submit {
     grid-column: span 2;
-  }
-
-  .calculation {
   }
 }
 </style>

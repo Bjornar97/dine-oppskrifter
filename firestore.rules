@@ -1,7 +1,26 @@
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+    match /recipes/{recipe} {
+      allow get: if resource.data.visibility != "Private" || personalRecipe();
+      allow list: if resource.data.visibility == 'Public' || request.auth.uid == resource.data.author.id;
+      allow update: if personalRecipe() && request.resource.data.favourites == resource.data.favourites || request.resource.data.favourites == 0;
+      allow delete: if personalRecipe();
+      allow create: if request.auth.uid != null && request.resource.data.favourites == 0;
+    }
+
+    function personalRecipe() {
+      return request.auth.uid == resource.data.author.id;
+    }
+
+    match /favourites/{favouritesId} {
+      allow create: if request.auth.uid != null;
+      allow update, delete: if resource.data.user.id == request.auth.uid;
+      allow read: if true;
+    }
+
+    match /feedback/{feedbackId} {
+      allow create: if request.auth.uid != null;
     }
   }
 }

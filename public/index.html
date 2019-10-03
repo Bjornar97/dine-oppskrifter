@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Dine Oppskrifter, Lag oppskrifter, del oppskrifter, opprett oppskrifter, finn oppskrifter, filtrer oppskrifter. Samleplass for oppskrifter."
+    />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title>Dine Oppskrifter</title>
     <link
@@ -14,20 +18,34 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"
     />
+    <meta property="og:title" content="Dine Oppskrifter" />
+    <meta
+      property="og:description"
+      content="En nettside for å lage, dele og finne matoppskrifter."
+    />
+    <meta
+      property="og:image"
+      content="dine-oppskrifter.no/img/ShorterLogo.svg"
+    />
+    <meta
+      property="og:image:secure_url"
+      content="https://dine-oppskrifter.no/img/ShorterLogo.svg"
+    />
+    <meta property="og:image:width" content="88" />
+    <meta property="og:image:height" content="139" />
+    <meta property="og:type" content="website" />
   </head>
   <body>
     <noscript>
       <strong
-        >We're sorry but dine-oppskrifter3 doesn't work properly without
-        JavaScript enabled. Please enable it to continue.</strong
-      >
+        >Beklager, men Dine Oppskrifter fungerer ikke uten JavaScript aktivert.
+        Vennligst aktiver det for å fortsette
+      </strong>
     </noscript>
+    <div id="fb-root"></div>
     <script src="//connect.facebook.net/nb_NO/sdk.js"></script>
     <script>
       FB.init({
-        /**********************************************************************
-         * TODO(Developer): Change the value below with your Facebook app ID. *
-         **********************************************************************/
         appId: "2303461373305622",
         status: true,
         xfbml: true,

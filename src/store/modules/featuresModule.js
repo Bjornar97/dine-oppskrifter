@@ -1,8 +1,10 @@
 const featuresModule = {
   state: {
-    login: false,
+    login: true,
     ingredients: true,
-    facebookPage: false
+    facebookPage: true,
+    recipeList: false,
+    autoDeleteAccount: false
   }
 };
 

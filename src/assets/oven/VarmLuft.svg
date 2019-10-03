@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 0 30 30">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        clip-path: url(#clip-path);
+      }
+
+      .cls-3, .cls-4, .cls-5 {
+        fill: #fff;
+        stroke: #000;
+      }
+
+      .cls-4 {
+        stroke-width: 3px;
+      }
+
+      .cls-5 {
+        stroke-width: 2px;
+      }
+
+      .cls-6 {
+        stroke: none;
+      }
+    </style>
+    <clipPath id="clip-path">
+      <rect class="cls-1" width="30" height="30"/>
+    </clipPath>
+  </defs>
+  <g id="VarmLuft" class="cls-2">
+    <g id="Component_1_5" data-name="Component 1 – 5" class="cls-2">
+      <g id="Rectangle_1" data-name="Rectangle 1" class="cls-3">
+        <rect class="cls-6" width="30" height="30" rx="6"/>
+        <rect class="cls-1" x="0.5" y="0.5" width="29" height="29" rx="5.5"/>
+      </g>
+      <g id="Rectangle_2" data-name="Rectangle 2" class="cls-4">
+        <rect class="cls-6" width="30" height="30" rx="6"/>
+        <rect class="cls-1" x="1.5" y="1.5" width="27" height="27" rx="4.5"/>
+      </g>
+      <g id="Ellipse_1" data-name="Ellipse 1" class="cls-5" transform="translate(5 5)">
+        <circle class="cls-6" cx="10" cy="10" r="10"/>
+        <circle class="cls-1" cx="10" cy="10" r="9"/>
+      </g>
+    </g>
+    <g id="Group_1" data-name="Group 1" transform="translate(-204.735 -353.375)">
+      <g id="Rectangle_3" data-name="Rectangle 3" class="cls-3" transform="translate(217.735 361)">
+        <rect class="cls-6" width="4" height="6" rx="2"/>
+        <rect class="cls-1" x="0.5" y="0.5" width="3" height="5" rx="1.5"/>
+      </g>
+      <g id="Rectangle_4" data-name="Rectangle 4" class="cls-3" transform="translate(227.068 370.143) rotate(120)">
+        <rect class="cls-6" width="4" height="6" rx="2"/>
+        <rect class="cls-1" x="0.5" y="0.5" width="3" height="5" rx="1.5"/>
+      </g>
+      <g id="Rectangle_5" data-name="Rectangle 5" class="cls-3" transform="translate(217.598 367.143) rotate(60)">
+        <rect class="cls-6" width="4" height="6" rx="2"/>
+        <rect class="cls-1" x="0.5" y="0.5" width="3" height="5" rx="1.5"/>
+      </g>
+    </g>
+  </g>
+</svg>

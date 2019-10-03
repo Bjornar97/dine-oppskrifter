@@ -30,6 +30,9 @@ export default new Vuetify({
         error: colors.red.accent3,
         warning: "FFB300"
       }
+    },
+    options: {
+      customProperties: true
     }
   }
 });

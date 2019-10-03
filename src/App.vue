@@ -1,7 +1,26 @@
 <template>
-  <v-app>
-    <v-app-bar class="topBar" app elevate-on-scroll collapse>
-      <router-link to="/">
+  <v-app class="appMe">
+    <v-expand-x-transition>
+      <div
+        class="goBackBtn elevation-4 d-print-none"
+        :class="$vuetify.breakpoint.smAndDown ? 'goBackSmall':''"
+        v-if="canGoBack"
+        @click="goBack"
+      >
+        <v-btn aria-label="Tilbake" color="black" icon small>
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+      </div>
+    </v-expand-x-transition>
+
+    <v-app-bar
+      class="topBar d-print-none"
+      :class="canGoBack ? 'appBarShift': ''"
+      app
+      elevation="4"
+      collapse
+    >
+      <router-link to="/" id="logoLink">
         <div class="logoContainer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -44,20 +63,13 @@
           </svg>
         </div>
       </router-link>
-
-      <h1 v-if="loginFeature" class="heading">{{ currentTitle }}</h1>
-
-      <div class="logout" v-if="loginFeature">
-        <v-btn v-if="loggedIn" @click="logout" text medium color="error">Logg ut</v-btn>
-        <v-btn v-if="!loggedIn" @click="login" text medium color="#3C5A99">Logg inn</v-btn>
-      </div>
     </v-app-bar>
 
-    <div class="loading">
-      <v-progress-linear indeterminate rounded color="primary" :active="loading"></v-progress-linear>
-    </div>
+    <event-line class="eventLine d-print-none"></event-line>
 
-    <v-container class="oldBrowserWarning">
+    <terms-accept></terms-accept>
+
+    <v-container class="oldBrowserWarning d-print-none">
       <v-banner
         v-if="!hideOldBrowserWarning"
         elevation="2"
@@ -76,14 +88,14 @@
     </v-container>
 
     <v-bottom-navigation
-      v-if="loginFeature"
       style="position: fixed;"
+      class="d-print-none"
       app
-      grow
+      id="bottomNav"
       :value="activeRoute"
       color="primary"
     >
-      <v-btn to="/">
+      <v-btn to="/" exact>
         <span>Utforsk</span>
         <v-icon>mdi-compass</v-icon>
       </v-btn>
@@ -103,69 +115,38 @@
       </v-btn>
     </v-bottom-navigation>
 
-    <v-content>
+    <v-content class="contentContainer">
       <div id="contentContainer">
-        <div
-          class="cookieContainer"
-          v-if="!acceptedCookies && !hiddenCookies && !loggedIn && loginFeature"
-        >
-          <v-sheet elevation="2" class="cookieSheet">
-            <div class="cookieAccept">
-              <h2 class="title">Akseptere bruk av informasjonskapsler?</h2>
-              <p class="cookieText">
-                For å gi deg den beste opplevelsen, ønsker vi å bruke infomasjonskapsler til å holde deg innlogget og huske valg du tar på dine-oppskrifter.no.
-                Aksepterer du bruk av informasjonskapsler? Du kan ikke logge inn dersom du ikke akspeterer.
-              </p>
-              <v-btn @click="acceptCookies" color="success">Ja</v-btn>
-              <v-btn @click="hideCookies" color="error">Nei</v-btn>
-            </div>
-          </v-sheet>
-        </div>
         <transition name="fade" mode="out-in">
           <router-view />
         </transition>
       </div>
     </v-content>
 
-    <v-footer color="white" class="elevation-4 mt-8" padless>
+    <v-footer color="white" class="elevation-4 mt-8 footer d-print-none" padless>
       <v-layout justify-center wrap>
-        <v-btn to="/" color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
+        <v-btn to="/" exact color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
 
         <v-btn
-          v-if="isFacebookPage"
+          href="https://facebook.com/DineOppskrifter"
+          target="_blank"
           color="primary darken-2"
           text
           rounded
           class="my-2"
         >Besøk Facebook-siden vår</v-btn>
         <v-btn
-          v-if="!construction"
+          to="/ingrediens-kalkulator"
           color="primary darken-2"
           text
           rounded
           class="my-2"
         >Ingredienskalkulator</v-btn>
-        <v-btn
-          v-if="construction"
-          color="primary darken-2"
-          href="mailto:brukerstotte@dine-oppskrifter.no"
-          target="_blank"
-          text
-          rounded
-          class="my-2"
-        >Send epost</v-btn>
-        <v-btn
-          v-if="!construction"
-          color="primary darken-2"
-          text
-          rounded
-          class="my-2"
-          to="/kontakt"
-        >Kontakt oss</v-btn>
+        <v-btn color="primary darken-2" text rounded class="my-2" to="/kontakt-oss">Kontakt oss</v-btn>
 
         <div class="footerDev py-8 text-center">
-          <p class="devText primary--text text--darken-2 ma-0 mr-4">Utviklet av</p>
-          <v-chip pill color="accent darken-2">
+          <p class="devText secondary--text text--darken-2 ma-0 mr-4">Utviklet av</p>
+          <v-chip pill color="secondary darken-2">
             <v-avatar left class="devAvatar">
               <v-img src="@/assets/dev-profile-pic.jpg"></v-img>
             </v-avatar>Bjørnar Hetlesæther
@@ -175,7 +156,7 @@
         <v-btn
           v-if="!construction"
           color="primary darken-2"
-          to="/personvernerklaering"
+          to="/personvern-erklaering"
           text
           rounded
           class="my-2"
@@ -186,13 +167,8 @@
           text
           rounded
           class="my-2"
-          to="/vilkarforbruk"
+          to="/vilkaar-for-bruk"
         >Vilkår for bruk</v-btn>
-
-        <v-flex grey lighten-4 py-4 text-center black--text xs12>
-          {{ new Date().getFullYear() }} —
-          <strong>Dine Oppskrifter</strong>
-        </v-flex>
       </v-layout>
     </v-footer>
   </v-app>
@@ -201,6 +177,7 @@
 <script>
 /* eslint-disable */
 import * as firebase from "firebase/app";
+import FacebookLoginButton from "./components/FacebookLoginButton.vue";
 
 // Add the Firebase services that you want to use
 import "firebase/auth";
@@ -216,105 +193,158 @@ export default {
     },
     acceptCookies() {
       this.$store.commit("acceptCookies");
-      this.$cookies.set("cookieAccept", true, new Date("2099"));
+    },
+    denyCookies() {
+      this.$store.commit("denyCookies");
     },
     hideCookies() {
-      this.hiddenCookies = true;
+      this.$store.commit("closeCookies");
     },
     hideBrowserWarning() {
       this.$store.commit("hideBrowserWarning");
+    },
+    goBack() {
+      this.$router.go(-1);
     }
-  },
-  data() {
-    return {
-      hiddenCookies: false
-    };
   },
   computed: {
     loggedIn() {
       return this.$store.state.accountModule.loggedIn;
     },
-    currentTitle() {
-      return this.$store.state.currentTitle;
-    },
-    acceptedCookies() {
-      return this.$store.state.acceptedCookies;
+    activeRoute() {
+      return this.$route.path;
     },
     loading() {
       return this.$store.state.loading;
     },
-    loginFeature() {
-      return this.$store.state.featuresModule.login;
-    },
     hideOldBrowserWarning() {
       return this.$store.state.hideOldBrowserWarning;
-    },
-    activeRoute() {
-      return this.$router.currentRoute;
     },
     construction() {
       return this.$store.state.underConstruction;
     },
-    isFacebookPage() {
-      return this.$store.state.featuresModule.facebookPage;
+    canGoBack() {
+      const routeName = this.$route.name;
+      if (window.history.length > 0) {
+        if (
+          routeName != "discover" &&
+          routeName != "yourRecipes" &&
+          routeName != "favourites" &&
+          routeName != "account"
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     }
   },
+  components: {
+    "facebook-login-button": FacebookLoginButton,
+    "event-line": () => import("@/components/EventLine"),
+    "terms-accept": () => import("@/components/TermsAccept")
+  },
   created() {
-    console.log("Checking status");
-    var user = firebase.auth().currentUser;
-    if (user) {
-      this.$store.commit("addUserInfo", user);
-      this.$store.commit("stopLoading");
-    } else {
-      this.$store.commit("showWelcome");
-    }
+    // Event listner for login and logout
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        // User is signed in.
+        this.$store.commit("addUserInfo", user);
+      } else {
+        // No user is signed in.
+        this.$store.dispatch("loggedOut");
+      }
+    });
+
+    firebase
+      .firestore()
+      .enablePersistence({ synchronizeTabs: true })
+      .then(() => {
+        this.$store.commit("noMultiTabs");
+        this.$store.commit("persistenceOn");
+      })
+      .catch(err => {
+        this.$store.commit("persistenceOff");
+        if (err.code == "failed-precondition") {
+          this.$store.commit("multiTabs");
+        } else if (err.code == "unimplemented") {
+          // The current browser does not support all of the
+          // features required to enable persistence
+          // ...
+        }
+      });
+  },
+  mounted() {
     this.$store.commit("stopLoading");
-    let cookieAccept = this.$cookies.get("cookieAccept");
-    if (cookieAccept == "true") {
-      this.hideCookies();
-    }
   }
 };
 </script>
 
 <style lang="scss">
 .topBar {
+  z-index: 30;
   #logoNew {
     width: 50px;
     margin-top: 10px;
     max-height: 100px;
     margin-left: 10px;
   }
+}
 
-  .logoContainer {
-    width: min-content;
-    grid-area: logoCont;
-    justify-self: center;
-  }
+.eventLine {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 12;
+}
 
-  .heading {
-    grid-area: title;
-    font-family: "Montserrat", sans-serif;
-    align-self: center;
-    justify-self: center;
-    font-size: 1.4em;
-  }
+#logoLink {
+  text-decoration: none !important;
+}
 
-  .logout {
-    grid-area: logout;
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-self: right;
-    margin-right: 10px;
+#bottomNav {
+  z-index: 50;
+}
+
+.goBackBtn {
+  position: fixed;
+  z-index: 30;
+  width: 50px;
+  height: 64px;
+  top: 0;
+  left: 0;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.goBackSmall {
+    height: 56px;
   }
 }
 
-.loading {
-  grid-area: loading;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+.appBarShift {
+  left: 50px !important;
+}
+
+.footer {
+  z-index: 20;
+  margin-bottom: 56px;
+}
+
+.fb_dialog {
+  width: 100% !important;
+  max-width: 600px;
+}
+
+.fb_dialog_content {
+  width: 100% !important;
+}
+
+.FB_UI_Dialog {
+  width: 100% !important;
 }
 
 .footerDev {
@@ -333,24 +363,6 @@ export default {
   font-weight: 500;
   align-self: center;
   text-transform: uppercase;
-}
-
-.cookieContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.cookieAccept {
-  padding: 20px;
-}
-
-.cookieSheet {
-  max-width: 800px;
-}
-
-.cookieText {
-  margin: 10px;
 }
 
 #contentContainer {
@@ -379,5 +391,25 @@ export default {
   .oldBrowserWarning {
     display: none;
   }
+}
+
+@media only screen and (min-width: 800px) {
+}
+
+@media print {
+  #contentContainer {
+    margin-top: -40px !important;
+  }
+
+  .appMe {
+    background-color: white !important;
+  }
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  color-adjust: exact !important;
 }
 </style>

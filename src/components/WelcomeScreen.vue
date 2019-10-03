@@ -1,0 +1,137 @@
+<template>
+  <div class="welcomeContainer mx-auto">
+    <div class="text-left welcomeText pa-4">
+      <h3 class="subtitle-1 welcomeToText animation">Velkommen til</h3>
+      <h2 class="display-1 yourRecipes animation">
+        <span class="primary--text mr-1">Dine</span> Oppskrifter
+      </h2>
+      <h4 class="subtitle-2 mt-4 mb-2 allFunctionsText animation">For å få alle funksjoner</h4>
+      <facebook-login-button class="facebookButton animation" loginText="Fortsett"></facebook-login-button>
+    </div>
+    <div class="pa-2 pa-sm-4 featureBox animation">
+      <h4 class="title mb-2 ml-3 secondary--text text-left">Funksjoner</h4>
+      <feature-list class="featureList"></feature-list>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "welcome-screen",
+  data() {
+    return {
+      showText: false
+    };
+  },
+  computed: {
+    isRecipeListFeature() {
+      return this.$store.state.featuresModule.recipeList;
+    }
+  },
+  components: {
+    "feature-list": () => import("@/components/FeatureList"),
+    "facebook-login-button": () => import("@/components/FacebookLoginButton")
+  },
+  methods: {
+    displayText() {
+      this.showText = true;
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.welcomeContainer {
+  padding: 0;
+  min-height: calc(100vh - 100px);
+}
+
+.welcomeText {
+  min-height: 40vh;
+  position: relative;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.welcomeToText {
+  opacity: 0;
+  animation-delay: 0.5s;
+}
+
+.allFunctionsText {
+  opacity: 0;
+  animation-delay: 3.5s;
+}
+
+.facebookButton {
+  opacity: 0;
+  animation-delay: 3.5s;
+}
+
+.animation {
+  animation-name: fade-in;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+.yourRecipes {
+  opacity: 0;
+  animation-delay: 1.5s;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.featureBox {
+  opacity: 0;
+  max-width: 500px;
+  animation-delay: 2.5s;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@supports (display: grid) {
+  .welcomeContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "welcomeText"
+      "features";
+  }
+
+  .welcomeText {
+    grid-area: welcomeText;
+  }
+
+  .featureBox {
+    grid-area: features;
+  }
+
+  @media only screen and (min-width: 600px) {
+    .welcomeContainer {
+      grid-template-columns: 1fr 600px 1fr;
+      grid-template-areas:
+        ". welcomeText ."
+        ". features .";
+    }
+
+    @media only screen and (min-width: 1000px) {
+      .welcomeContainer {
+        grid-template-columns: 1fr minmax(500px, 3fr) minmax(500px, 3fr) 1fr;
+        grid-template-areas: ". welcomeText features .";
+      }
+    }
+  }
+}
+</style>

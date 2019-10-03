@@ -2,8 +2,8 @@
   <div id="mainDiv">
     <div>
       <v-btn id="theButton" :disabled="disabled" @click="login" color="#3C5A99" :loading="loading">
-        <v-icon color="#FFF" class="fabButton">{{svgFacebook}}</v-icon>
-        <span id="facebookText">Fortsett med Facebook</span>
+        <v-icon color="#FFF" class="fabButton">mdi-facebook-box</v-icon>
+        <span id="facebookText">{{ loginText || "Fortsett" }} med Facebook</span>
       </v-btn>
     </div>
   </div>
@@ -12,31 +12,48 @@
 <script>
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import { mdiFacebookBox } from "@mdi/js";
 
 export default {
   name: "FacebookLogin",
-  props: ["disabled"],
+  props: ["disabled", "loginText"],
   data() {
-    return {
-      svgFacebook: mdiFacebookBox,
-      loading: false
-    };
+    return {};
+  },
+  computed: {
+    loading: {
+      get() {
+        return this.$store.state.accountModule.loginProcess;
+      },
+      set(loadingStatus) {
+        this.$store.commit("setLoginProcess", loadingStatus);
+      }
+    },
+    showTerms: {
+      get() {
+        return this.$store.state.showTerms;
+      },
+      set(v) {
+        this.$store.commit("setShowTerms", v);
+      }
+    },
+    acceptedTerms() {
+      return this.$store.state.acceptedTerms;
+    }
   },
   methods: {
     login() {
       this.loading = true;
-      this.$store.dispatch("loginWithFacebook");
+      if (this.acceptedTerms) {
+        this.$store.dispatch("loginWithFacebook");
+      } else {
+        this.showTerms = true;
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#mainDiv {
-  margin-top: 20px;
-}
-
 #facebookText {
   color: #fff;
   margin-left: 10px;

@@ -47,9 +47,7 @@
       </v-sheet>
     </v-parallax>
 
-    <div id="ingredientsContainer">
-      <ingredients-calculator class="Ingredients"></ingredients-calculator>
-    </div>
+    <ingredients-calculator class="Ingredients"></ingredients-calculator>
   </div>
 </template>
 
@@ -129,18 +127,6 @@ export default {
 .featureList {
   min-width: 350px;
 }
-
-#ingredientsContainer {
-  display: flex;
-  justify-content: center;
-  text-align: left;
-  min-height: 90vh;
-  color: #000;
-}
-.Ingredients {
-  text-align: left;
-}
-
 .constructionImage {
   width: 80%;
   max-width: 800px;
