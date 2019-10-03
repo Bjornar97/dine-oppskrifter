@@ -283,6 +283,16 @@ export default {
 </script>
 
 <style lang="scss">
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .topBar {
   z-index: 30;
   #logoNew {

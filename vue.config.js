@@ -13,9 +13,9 @@ module.exports = {
     name: "Dine Oppskrifter",
     themeColor: "#49A84D",
     msTileColor: "49A84D",
-    assetsVersion: "v3",
+    assetsVersion: "v5",
     manifestOptions: {
-      name: "Dine Oppskrifter - Lag, del og finn oppskrifter",
+      name: "Dine Oppskrifter",
       short_name: "Dine Oppskrifter",
       start_url: "/",
       display: "standalone",

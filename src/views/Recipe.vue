@@ -599,15 +599,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
 .errorCard {
   width: max-content;
   max-width: 800px;
