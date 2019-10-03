@@ -46,6 +46,10 @@
         rounded
       >Last flere</v-btn>
     </div>
+    <v-snackbar v-model="deleteSuccess" bottom class="mb-12">
+      Oppskriften ble slettet
+      <v-btn text color="primary" @click.native="error = false">Lukk</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -56,6 +60,11 @@ var db = firebase.firestore();
 
 export default {
   name: "recipe-list",
+  data() {
+    return {
+      deleteSuccess: false
+    };
+  },
   components: {
     "recipe-filter": () => import("@/components/recipes/RecipeFilter"),
     "recipe-card": () => import("@/components/recipes/RecipeCard")
@@ -88,6 +97,10 @@ export default {
     },
     recipeDeleted() {
       this.refresh();
+      this.deleteSuccess = true;
+      setTimeout(() => {
+        this.deleteSuccess = false;
+      }, 5000);
     }
   },
   computed: {

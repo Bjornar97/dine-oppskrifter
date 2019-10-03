@@ -43,6 +43,21 @@ exports.removeFavourite = functions
       });
   });
 
+exports.onRecipeDelete = functions
+  .region("europe-west2")
+  .firestore.document("recipes/{recipeId}")
+  .onDelete((snap, context) => {
+    const id = snap.id;
+    db.collection("favourites")
+      .where("recipeId", "==", id)
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          doc.ref.delete();
+        });
+      });
+  });
+
 exports.deleteAccount = functions
   .region("europe-west2")
   .https.onCall(async (data, context) => {

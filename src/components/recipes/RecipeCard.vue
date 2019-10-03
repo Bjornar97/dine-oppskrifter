@@ -84,12 +84,8 @@
         </div>
       </v-card-actions>
 
-      <v-snackbar v-model="error" multi-line>
+      <v-snackbar v-model="error" multi-line bottom class="mb-12">
         Kunne ikke slette oppskriften akkurat nå, prøv igjen senere
-        <v-btn text color="primary" @click.native="error = false">Lukk</v-btn>
-      </v-snackbar>
-      <v-snackbar v-model="deleteSuccess">
-        Oppskriften ble slettet
         <v-btn text color="primary" @click.native="error = false">Lukk</v-btn>
       </v-snackbar>
       <v-dialog v-model="deleteDialogOpen" max-width="500px" transition="dialog-transition">
@@ -207,12 +203,15 @@ export default {
         .doc(this.recipe.id)
         .delete()
         .then(() => {
+          storage
+            .ref(this.recipe.imagePath)
+            .delete()
+            .catch(error => {
+              console.log("error:");
+              console.dir(error);
+            });
           this.loading = false;
-          this.deleteSuccess = true;
-          setTimeout(() => {
-            this.$emit("deletedRecipe");
-            this.deleteSuccess = false;
-          }, 5000);
+          this.$emit("deletedRecipe");
         })
         .catch(error => {
           this.error = true;

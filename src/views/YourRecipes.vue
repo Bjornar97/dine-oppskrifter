@@ -14,6 +14,18 @@
       Ny Oppskrift
       <v-icon class="btnIcon">mdi-plus</v-icon>
     </v-btn>
+
+    <h4
+      v-if="published.length == 0 && drafts.length == 0 && !loading"
+      class="subtitle-1 ma-2 pt-4"
+    >Du har ikke lagt noen oppskrifter enda</h4>
+    <v-btn
+      v-if="published.length == 0 && drafts.length == 0 && !loading"
+      to="/ny-oppskrift"
+      color="success"
+      class="ma-2"
+    >Lag en oppskrift nå!</v-btn>
+
     <v-container class="pl-0" v-if="drafts.length != 0">
       <h3 class="title text-left secondary--text">Ikke Publisert</h3>
       <v-divider></v-divider>
@@ -46,6 +58,10 @@
       >Last flere</v-btn>
       <p v-if="publishedEnd && !loading" class="subtitle-2 mt-4">Ingen flere oppskrifter å vise</p>
     </v-container>
+    <v-snackbar v-model="deleteSuccess" bottom class="mb-12">
+      Oppskriften ble slettet
+      <v-btn text color="primary" @click.native="error = false">Lukk</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -75,7 +91,8 @@ export default {
       publishedEnd: true,
       lastPublishedDoc: null,
       recipesRef: undefined,
-      unsubscribe: undefined
+      unsubscribe: undefined,
+      deleteSuccess: false
     };
   },
   computed: {
@@ -145,6 +162,10 @@ export default {
     },
     recipeDeleted() {
       this.refresh();
+      this.deleteSuccess = true;
+      setTimeout(() => {
+        this.deleteSuccess = false;
+      }, 5000);
     },
     getNextPublishedBatch() {
       if (this.lastPublishedDoc) {

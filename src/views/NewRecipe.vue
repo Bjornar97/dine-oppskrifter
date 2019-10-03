@@ -1,8 +1,8 @@
 <template>
   <v-container class="px-0 px-md-8 px-lg-12" id="main">
-    <h2 class="headline ma-4 mb-8 text-left primary--text" v-if="!editing">Ny Oppskrift</h2>
+    <h2 class="headline topHeadline ma-4 mb-8 text-left primary--text" v-if="!editing">Ny Oppskrift</h2>
     <h2
-      class="headline ma-4 mb-8 text-left primary--text"
+      class="headline topHeadline ma-4 mb-8 text-left primary--text"
       v-if="editing"
     >Endre Oppskriften "{{recipeTitle}}"</h2>
 
@@ -268,24 +268,25 @@
         </v-form>
       </v-stepper-content>
     </v-stepper>
-    <v-layout row justify-center>
-      <v-dialog v-model="deleteDialogOpen" persistent max-width="290">
-        <v-card>
-          <v-card-title
-            class="headline"
-          >Sikker på at du vil {{editing ? "tilbakestille": "slette"}} oppskriften?</v-card-title>
-          <v-card-text v-if="editing">Dette vil slette oppskriften permanent.</v-card-text>
-          <v-card-text
-            v-if="!editing"
-          >Dette vil tilbakestille alle felt i oppskriften, og du må begynne på nytt</v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="error" text @click.native="closeDeleteDialog">Nei</v-btn>
-            <v-btn color="primary" text @click.native="deleteRecipe">Ja</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-layout>
+
+    <v-dialog v-model="deleteDialogOpen" persistent max-width="320">
+      <v-card>
+        <v-card-title
+          class="headline"
+        >Sikker på at du vil {{editing ? "slette": "tilbakestille"}} oppskriften?</v-card-title>
+        <v-card-text v-if="editing">Dette vil slette oppskriften permanent</v-card-text>
+        <v-card-text
+          v-if="!editing"
+        >Dette vil tilbakestille alle felt i oppskriften, og du må begynne på nytt</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="warning" text @click.native="closeDeleteDialog">Avbryt</v-btn>
+          <v-btn color="primary" text @click.native="closeDeleteDialog">Nei</v-btn>
+          <v-btn color="error" text @click.native="deleteRecipe(true)">Ja</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-expand-transition>
       <p
         class="mt-6"
@@ -365,7 +366,7 @@ export default {
   name: "new-recipe",
   metaInfo() {
     return {
-      title: "Ny Oppskrift - Dine Oppskrifter"
+      title: `${this.editing ? "Endre" : "Ny"} Oppskrift - Dine Oppskrifter`
     };
   },
   data() {
@@ -1250,16 +1251,32 @@ export default {
     openDeleteRecipe() {
       this.deleteDialogOpen = true;
     },
-    async deleteRecipe() {
-      if (this.recipeId) {
+    async deleteRecipe(reset = false) {
+      if (this.editing && this.recipeId) {
         const doc = db.collection("recipes").doc(this.recipeId);
-        await doc.delete().catch(error => {
-          console.log("Error occured while deleting recipe");
-          this.displayError("Noe galt skjedde under sletting av oppskrift");
-        });
+        await doc
+          .delete()
+          .then(() => {
+            storage
+              .ref(this.recipeImagePath)
+              .delete()
+              .catch(error => {
+                console.log("error:");
+                console.dir(error);
+              });
+          })
+          .catch(error => {
+            console.log("Error occured while deleting recipe");
+            this.displayError("Noe galt skjedde under sletting av oppskrift");
+            this.deleteDialogOpen = false;
+          });
+        this.$store.dispatch("deleteRecipe");
+        this.deleteDialogOpen = false;
+        this.$router.push("/dine-oppskrifter");
+      } else {
+        this.$store.dispatch("deleteRecipe");
+        this.deleteDialogOpen = false;
       }
-      this.$store.dispatch("deleteRecipe");
-      this.deleteDialogOpen = false;
     },
     closeDeleteDialog() {
       this.deleteDialogOpen = false;
@@ -1414,7 +1431,7 @@ export default {
   text-align: left;
 }
 
-.headline {
+.topHeadline {
   margin-top: 50px !important;
 }
 
