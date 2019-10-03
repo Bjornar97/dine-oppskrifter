@@ -42,8 +42,8 @@ export default {
   },
   methods: {
     login() {
-      this.loading = true;
       if (this.acceptedTerms) {
+        this.loading = true;
         this.$store.dispatch("loginWithFacebook");
       } else {
         this.showTerms = true;
