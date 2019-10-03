@@ -91,7 +91,9 @@ const accountModule = {
       firebase
         .auth()
         .signOut()
-        .then(() => {})
+        .then(() => {
+          dispatch("loggedOut");
+        })
         .catch(error => {
           console.log("Something bad happened: " + error);
           let errorObject = {
@@ -102,6 +104,7 @@ const accountModule = {
           commit("setLoginError", errorObject);
           commit("stopLoading");
           commit("setLoginProcess", false);
+          dispatch("loggedOut");
         });
     },
     loggedOut({ _, commit }) {

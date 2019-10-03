@@ -10,17 +10,24 @@
       </v-btn>
     </v-row>
     <not-logged-in-card v-if="!user.loggedIn"></not-logged-in-card>
-    <v-btn color="info" @click="$router.push('ny-oppskrift')" id="newRecipeBtn" fixed right>
+    <v-btn
+      color="info"
+      v-if="loggedIn"
+      @click="$router.push('ny-oppskrift')"
+      id="newRecipeBtn"
+      fixed
+      right
+    >
       Ny Oppskrift
       <v-icon class="btnIcon">mdi-plus</v-icon>
     </v-btn>
 
     <h4
-      v-if="published.length == 0 && drafts.length == 0 && !loading"
+      v-if="published.length == 0 && drafts.length == 0 && !loading && loggedIn"
       class="subtitle-1 ma-2 pt-4"
     >Du har ikke lagt noen oppskrifter enda</h4>
     <v-btn
-      v-if="published.length == 0 && drafts.length == 0 && !loading"
+      v-if="published.length == 0 && drafts.length == 0 && !loading && loggedIn"
       to="/ny-oppskrift"
       color="success"
       class="ma-2"

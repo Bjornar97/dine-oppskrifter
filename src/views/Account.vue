@@ -1,7 +1,13 @@
 <template>
   <v-container class="mainContainer">
+    <h3 v-if="!loggedIn" class="title">Du er ikke logget inn</h3>
     <facebook-login-button v-if="!loggedIn"></facebook-login-button>
-    <v-btn @click="logout" v-if="small" color="error" class="ml-auto logoutButton">Logg ut</v-btn>
+    <v-btn
+      @click="logout"
+      v-if="small && loggedIn"
+      color="error"
+      class="ml-auto logoutButton"
+    >Logg ut</v-btn>
     <div class="userBox d-flex mt-4 ml-sm-8" v-if="loggedIn">
       <img class="profilePicture" :src="account.profilePictureUrl" />
       <h4 class="title ml-2 userName">{{account.name}}</h4>

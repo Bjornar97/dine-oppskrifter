@@ -17,7 +17,7 @@
     <div class="text-center">
       <p v-if="end" class="font-weight-bold">Ingen flere oppskrifter å vise</p>
       <v-btn
-        v-if="!end && !loading"
+        v-if="!end && !loading && favouritesList.length != 0"
         @click="getNextBatch"
         color="success"
         class="mt-4"
