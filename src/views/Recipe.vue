@@ -51,7 +51,7 @@
         </v-chip>
 
         <v-chip label color="accent" class="mx-4 my-2 label font-weight-bold">
-          <v-icon left>mdi-clock-outline</v-icon>
+          <v-icon left>mdi-timer</v-icon>
           {{recipe.totalTime}} min
         </v-chip>
         <v-chip
