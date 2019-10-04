@@ -210,11 +210,11 @@ export default {
               console.log("error:");
               console.dir(error);
             });
-          this.loading = false;
           this.$emit("deletedRecipe");
         })
         .catch(error => {
           this.error = true;
+          this.loading = false;
           console.log("An error occured while deleting recipe");
           console.dir(error);
         });
