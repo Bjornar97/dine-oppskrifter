@@ -2,14 +2,14 @@
   <v-container class="container">
     <div class="div">
       <h1 class="primary--text mb-6 mainHeading">Vilkår for bruk</h1>
-      <p>Sist endret: 15.08.2019</p>
+      <p>Sist endret: 04.10.2019</p>
       <h3 class="accent--text title mb-2 mt-4">Innledning</h3>
       <p>Takk for at du bruker nettsiden vår, Dine Oppskrifter</p>
       <h3 class="accent--text title mb-2 mt-4">Tjenesten vår</h3>
       <p>
         Via Dine Oppskrifter(tjenesten) kan du lage oppskrifter, enten for deg selv eller gjøre dem offentlig slik at alle kan se dem.
         Du kan justere antall porsjoner du vil ha for enhver oppskrift.
-        Du kan også se alle oppskrifter som andre har valgt å offentiggjøre, og filtrere dem, slik at du finner den rette oppskriften for deg.
+        Du kan også se alle oppskrifter som andre har valgt å offentliggjøre, og filtrere dem, slik at du finner den rette oppskriften for deg.
       </p>
       <h3 class="accent--text title mb-2 mt-4">Gjeldene vilkår</h3>
       <p>
@@ -24,7 +24,7 @@
       <h3 class="accent--text title mb-2 mt-4">Innhold i tjenesten</h3>
       <p>
         Tjenesten omfatter bilder, tekst, interaktive funksjoner, programvare, beregninger og annet materiell(samlet omtalt som "innhold").
-        Brukerne kan laste opp innhold til tjenesten og distribuere det, og Dine Oppskrifter er en tilbyder av vertstjenester for dette innholdet
+        Brukerne kan laste opp innhold til tjenesten og distribuere det, og Dine Oppskrifter er en tilbyder av vertstjenester for dette innholdet.
         Det er personen som laster opp innholdet til tjeneste, som er ansvarlig for det.
         Hvis du ser innhold du mener ikke overholder disse vilkårene, kan du
         <router-link to="/tilbakemelding">rapportere det til oss</router-link>.
@@ -39,12 +39,12 @@
       <h3 class="accent--text title mb-2 mt-4">Informasjonen din</h3>
       <p>
         Vår
-        <router-link to="/personvern-erklaering">personvernerklæring</router-link>forklarer hvordan vi behandler personopplysningene dine, og hvordan vi beskytter personvernet ditt når du bruker tjenesten.
+        <router-link to="/personvern-erklaering" class="mr-1">personvernerklæring</router-link>forklarer hvordan vi behandler personopplysningene dine, og hvordan vi beskytter personvernet ditt når du bruker tjenesten.
       </p>
       <h3 class="accent--text title mb-2 mt-4">Tillatelser og begrensninger</h3>
       <p>
         Du gis tilgang til og kan bruke tjenesten slik den er gjort tilgjengelig for deg,
-        men dette forutsetter at du overholder denne avtalen samt gjeldene ov og rett.
+        men dette forutsetter at du overholder denne avtalen samt gjeldene lov og rett.
         Du kan se på innhold til personlig, ikke-kommersiell bruk.
       </p>Følgende begrensninger gjelder for bruken din av tjenesten. Du har ikke lov til å
       <ol>
@@ -73,7 +73,7 @@
       <h3 class="accent--text title mb-2 mt-4">Forbehold</h3>
       <p>
         Enhver rettighet du ikke uttrykkelig er gitt i denne avtalen, skal tilfalle Dine Oppskrifter eller de respektive rettighetsinnehaverne.
-        Dette betyr blant annet at bruk av tjenesten ikke gir deg eierskap til noen immaterielle rettigheter knyttet til innholdet fu for tilgang til.
+        Dette betyr blant annet at bruk av tjenesten ikke gir deg eierskap til noen immaterielle rettigheter knyttet til innholdet du får tilgang til.
       </p>
       <h3 class="accent--text title mb-2 mt-4">Endringer i tjenesten</h3>
       <p>
@@ -89,12 +89,12 @@
         med mindre du har innhentet tillatelse fra de aktuelle partene eller på andre måter er juridisk berettiget til å gjøre dette.
         Du står selv juridistk ansvarlig for innholder du laster opp til tjenesten.
       </p>
-      <h3 class="accent--text title mb-2 mt-4">Rettigheter du git til andre</h3>
-      <p>Du beholder selv alle eierrettigheter til innholdet ditt. Det som tilhører deg, forblir kort og godt ditt. Vi krever imidlertid at du gir visse rettigheter til DIne Oppskrifter og andre brukere av tjenesten som beskrevet nedenfor.</p>
+      <h3 class="accent--text title mb-2 mt-4">Rettigheter du gir til andre</h3>
+      <p>Du beholder selv alle eierrettigheter til innholdet ditt. Det som tilhører deg, forblir kort og godt ditt. Vi krever imidlertid at du gir visse rettigheter til Dine Oppskrifter og andre brukere av tjenesten som beskrevet nedenfor.</p>
       <h3 class="accent--text title mb-2 mt-4">Lisens til Dine Oppskrifter</h3>
       <p>
         Når du laster opp innhold til tjenesten, gir du Dine Oppskrifter en ikke-eksklusiv, royaltyfri, overførbar og viderelisensierbar lisens til å bruke dette innholdet (blant annet til å reprodusere,
-        distribuere, endre vise og fremfore det) for det formål å drifte promotere og forbedre tjenesten.
+        distribuere, endre, vise og fremføre det) for formålet om å drifte, promotere og forbedre tjenesten.
       </p>
       <h3 class="accent--text title mb-2 mt-4">Lisens til andre brukere</h3>
       <p>
@@ -109,24 +109,27 @@
       </p>
       <h3 class="accent--text title mb-2 mt-4">Fjerning av innholdet ditt</h3>
       <p>
-        Du kan når som helst fjerne ditt eget innhold fra tjenesten. Du kan også lage en kopi av innholdet ditt før du fjerner det.
-        Du må gjerne innholdet ditt hvis du ikke lenger innehar rettighetene som kreves i henhold til disse vilkårene.
+        Du kan når som helst fjerne ditt eget innhold fra tjenesten.
+        Du må fjerne innholdet ditt hvis du ikke lenger innehar rettighetene som kreves i henhold til disse vilkårene.
       </p>
       <h3 class="accent--text title mb-2 mt-4">Dine Oppskrifter sin fjerning av innhold</h3>
       <p>
         Hvis vi har rimelig grunn til å tro at innhold ikke er i samsvar med denne avtalen eller kan være skadelig for Dine Oppskrifter, brukerne våre eller tredjeparter,
-        kan vi fjerne hele eller deler av det akruelle innholdet. Vi vil varsle deg om årsaken bak tiltaket vi har iverksatt, med mindre vi med rimelighet mener at det kan
+        kan vi fjerne hele eller deler av det aktuelle innholdet. Vi vil varsle deg om årsaken bak tiltaket vi har iverksatt, med mindre vi med rimelighet mener at det kan
         (a) bryte loven eller et pålegg fra en rettslig myndighet eller på andre måter risikere å utsette Dine Oppskrifter for juridisk ansvar,
         (b) sette en etterforskning, integriteten til eller driften av tjensesten i fare eller (c) påføre brukere, andre tredjeparter eller Dine Oppskrifter skade.
       </p>
       <h3 class="accent--text title mb-2 mt-4">Opphavsrettsbeskyttelse</h3>
       <p>
         Dersom du mener at opphavsretten din er krenket i tjenesten, ber vi om at du
-        <router-link to="/tilbakemelding">kontakter oss</router-link>
+        <router-link to="/tilbakemelding">kontakter oss</router-link>.
       </p>
       <h2 class="secondary--text headline mb-4 mt-8">Suspensjon og oppsigelse av konto</h2>
       <h3 class="accent--text title mb-2 mt-4">Oppsigelser iverksatt av deg</h3>
-      <p>Du kan når som helst slutte å bruke tjenesten. Du kan også slette all informasjon om deg og ditt inhold. Du kan imidlertid lagre en kopi av innholdet ditt først</p>
+      <p>
+        Du kan når som helst slutte å bruke tjenesten. Du kan også slette all informasjon om deg og ditt inhold, ved å
+        <router-link to="/tilbakemelding">kontakte oss</router-link>.
+      </p>
       <h3
         class="accent--text title mb-2 mt-4"
       >Oppsigelser og suspensjoner iverksatt av Dine Oppskrifter av rimelige årsaker</h3>
@@ -156,7 +159,7 @@
       <h3 class="accent--text title mb-2 mt-4">Ansvarsfraskrivelse</h3>
       <p>
         I henhold til loven har forbrukere visse rettigheter som ikke kan settes til side eller endres gjennom kontrakt.
-        Ingenting i denne avtalen skal påvirke de rettighetene du mptte ha som forbruker. Dine Oppskrifter gir ingen spesifikke løfter vedrørende tjenesten
+        Ingenting i denne avtalen skal påvirke de rettighetene du måtte ha som forbruker. Dine Oppskrifter gir ingen spesifikke løfter vedrørende tjenesten
         utover det som uttrykkelig fremfår i denne avtalen eller er påkrevd ved lov.
         Vi gir for eksempel ingen løfter om innholdet som leveres via tjenesten,
         de bestemte funksjonene i tjenesten eller tjenestens nøyaktighet, pålitelighet, tilgjengelighet eller egnethet til å oppfylle behovene du måtte ha,
