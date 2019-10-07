@@ -1,5 +1,6 @@
 <template>
   <div>
+    <script v-html="jsonld" defer type="application/ld+json" />
     <v-expand-transition>
       <v-card v-if="error" class="mb-8 mt-12 mx-auto errorCard">
         <v-icon color="error" class="mt-2" size="56">{{errorIcon}}</v-icon>
@@ -15,19 +16,24 @@
       </v-card>
     </v-expand-transition>
     <v-container fluid class="mainContainer pt-0 mt-2" v-if="recipe != null">
-      <img src="@/assets/ShorterLogo.svg" width="150px" height="150px" id="printLogo" />
+      <img
+        src="@/assets/ShorterLogo.svg"
+        width="150px"
+        height="150px"
+        id="printLogo"
+        alt="Logoen til Dine Oppskrifter"
+      />
       <img
         v-if="recipe.id"
         :src="`https://api.qrserver.com/v1/create-qr-code/?data=${shortUrl}&size=100x100`"
         id="qrCode"
+        alt="QR-kode for oppskriften"
       />
-      <v-img
+      <img
         class="mx-auto recipeImage"
         :class="!printImage ? 'recipeImageNone': ''"
         :src="recipeImageURL"
-        max-height="500px"
-        max-width="800px"
-      ></v-img>
+      />
 
       <div class="my-4 labelRow">
         <v-chip
@@ -241,6 +247,7 @@ export default {
     if (this.recipe && this.url) {
       return {
         title: `${this.recipe.title} - Dine Oppskrifter`,
+        description: this.recipe.description,
         meta: [
           {
             property: "og:url",
@@ -248,21 +255,49 @@ export default {
           },
           {
             property: "og:type",
-            content: "article"
+            content: "article",
+            vmid: "type"
           },
           {
-            property: "title",
-            content: this.recipe ? this.recipe.title : ""
+            property: "article:author",
+            content: this.recipe.author.name
           },
           {
-            property: "description",
-            content: this.recipe ? this.recipe.description : ""
+            property: "article:published_time",
+            content: this.recipe.dateCreated
+          },
+          {
+            property: "article:modified_time",
+            content: this.recipe.dateUpdated ? this.recipe.dateUpdated : ""
+          },
+          {
+            property: "article:section",
+            content: this.recipe.category
+          },
+          {
+            property: "article:tag",
+            content: "Matoppskrift"
+          },
+          {
+            property: "article:tag",
+            content: "Mat"
+          },
+          {
+            property: "og:title",
+            content: this.recipe ? this.recipe.title : "",
+            vmid: "title"
+          },
+          {
+            property: "og:description",
+            content: this.recipe ? this.recipe.description : "",
+            vmid: "description"
           },
           {
             property: "og:image",
             content: this.recipeImage
               ? this.recipeImage
-              : import("@/assets/ShorterLogo.svg")
+              : import("@/assets/ShorterLogo.svg"),
+            vmid: "image"
           },
           {
             property: "og:locale",
@@ -300,6 +335,49 @@ export default {
     "facebook-login-button": () => import("@/components/FacebookLoginButton")
   },
   computed: {
+    jsonld() {
+      if (this.recipe != null && this.recipe != undefined) {
+        let ingredientsArray = [];
+        this.recipe.ingredients.forEach(ingredient => {
+          console.dir(ingredient);
+          ingredientsArray.push(
+            `${ingredient.amount} ${ingredient.unit} ${ingredient.name}`
+          );
+        });
+
+        let timeSpent;
+        if (this.recipe.totalTime < 20) {
+          timeSpent = "Rask";
+        } else if (this.recipe.totalTime < 60) {
+          timeSpent = "Passe rask";
+        } else {
+          timeSpent = "Litt lang tid men verdt det";
+        }
+
+        // prettier-ignore
+        return {
+        "@context": "https://schema.org/",
+        "@type": "Recipe",
+        "url": this.url,
+        "name": this.recipe.title,
+        "author": {
+          "name": this.recipe.author.name,
+          "image": this.recipe.author.profilePictureUrl
+        },
+        "image": this.recipeImageURL,
+        "description": this.recipe.description,
+        "totalTime": new Date(this.recipe.totalTime * 60 * 1000).toISOString(),
+        "datePublished": new Date(this.recipe.dateCreated).toISOString(),
+        "keywords": `${this.recipe.difficulty}, ${timeSpent}`,
+        "recipeCategory": this.recipe.category,
+        "recipeIngredients": ingredientsArray,
+        "recipeInstructions": [this.recipe.steps],
+        "recipeYield": this.recipe.portions.toString()
+      };
+      } else {
+        return {};
+      }
+    },
     recipeId() {
       return this.$route.params.id;
     },
@@ -611,6 +689,11 @@ export default {
 .portionsTextFieldContainer {
   width: 55px;
   height: 55px;
+}
+
+.recipeImage {
+  max-height: 500px;
+  max-width: 800px;
 }
 
 .favourite {

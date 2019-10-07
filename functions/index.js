@@ -1,6 +1,14 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-admin.initializeApp();
+
+var serviceAccount = require("./adminKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "dine-oppskrifter.appspot.com"
+});
+
+const fs = require("fs");
 
 const db = admin.firestore();
 
@@ -56,6 +64,145 @@ exports.onRecipeDelete = functions
           doc.ref.delete();
         });
       });
+  });
+
+exports.app = functions
+  .region("europe-west2")
+  .https.onRequest(async (req, res) => {
+    console.log("Path: " + req.path);
+
+    // Checks if facebook crawler is getting here
+    if (
+      req.headers["user-agent"].split(" ").includes("facebookexternalhit/1.1")
+    ) {
+      // Adds all the meta tags and stuff and sends it back to facebook crawler
+      let path = req.path.split("/");
+      console.log("pathArray: " + path);
+      let firstPart = path[1];
+      console.log(firstPart);
+
+      let responseText = `
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <meta http-equiv="X-UA-Compatible" content="ie=edge">
+              <meta property="og:locale" content="nb_NO" />
+              <meta property="fb:app_id" content="2303461373305622" />
+              <meta property="og:site_name" content="Dine Oppskrifter" />
+          `;
+
+      if (firstPart == "oppskrift") {
+        let recipeId = path[2];
+
+        if (recipeId != "") {
+          let recipe = await db
+            .collection("recipes")
+            .doc(recipeId)
+            .get();
+
+          const recipeData = recipe.data();
+
+          if (
+            recipeData.status != "draft" &&
+            recipeData.visibility != "Private"
+          ) {
+            const imagePath = recipeData.imagePath;
+            console.log("ImagePath: " + imagePath);
+
+            responseText += `
+            <meta property="og:url" content="${req.protocol}://${
+              req.hostname
+            }/oppskrift/${recipeId}" />
+            <meta property="og:type" content="article" />
+            <meta property="og:title" content="${
+              recipeData.title
+            } - Dine Oppskrifter" />
+            <meta property="og:description" content="${
+              recipeData.description
+            }" />
+            <meta property="article:published_time" content="${new Date(
+              recipeData.dateCreated
+            ).toISOString()}" /> 
+            <meta property="article:author" content="${
+              recipeData.author.name
+            }" />
+            <meta property="article:section" content="${recipeData.category}" />
+            <meta property="article:tag" content="Matoppskrift" />
+            <meta property="article:tag" content="Mat" />
+          `;
+
+            if (recipeData.dateUpdated) {
+              responseText += `<meta property="article:modified_time" content="${new Date(
+                recipeData.dateUpdated
+              ).toISOString()}" />`;
+            }
+
+            if (imagePath) {
+              if (imagePath != "") {
+                try {
+                  const imageRef = admin
+                    .storage()
+                    .bucket()
+                    .file(imagePath);
+
+                  const imageURL =
+                    "http://storage.googleapis.com/dine-oppskrifter/" +
+                    imagePath;
+                  console.log("imageUrl: " + imageURL);
+
+                  let sizeOf = require("image-size");
+
+                  let image = await imageRef.download();
+                  const dimensions = sizeOf(image[0]);
+                  const imageWidth = dimensions.width;
+                  const imageHeight = dimensions.height;
+
+                  responseText += `<meta property="og:image" content="${imageURL}" />
+                             <meta property="og:image:width" content="${imageWidth}" />
+                             <meta property="og:image:height" content="${imageHeight}" />
+                             <meta property="og:image:alt" content="Bilde av ${recipeData.title}" />`;
+                } catch (error) {
+                  console.error("An error occured while getting image!");
+                  console.dir(error);
+                }
+              }
+            }
+          } else {
+            res.sendStatus(403);
+          }
+        }
+
+        responseText += `</head>
+            <body>
+              
+            </body>
+          </html>`;
+
+        res.send(responseText);
+      } else {
+        // TODO: Implement for the other pages
+      }
+    } else {
+      console.log("Sending request");
+      try {
+        fs.readFile("./dist/index.html", function(err, data) {
+          if (err) {
+            throw err;
+          }
+          res.writeHead(200, {
+            "Content-Type": "text/html",
+            "Content-Length": data.length
+          });
+          res.write(data);
+          res.end();
+        });
+      } catch (error) {
+        console.log("Error occured:");
+        console.dir(error);
+      }
+    }
   });
 
 exports.deleteAccount = functions

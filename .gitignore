@@ -22,3 +22,6 @@ yarn-error.log*
 
 firebaseConfig.js
 /.firebase
+adminKey.json
+
+/functions/dist
