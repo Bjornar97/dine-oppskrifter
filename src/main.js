@@ -2,9 +2,23 @@ import Vue from "vue";
 
 import * as firebase from "firebase/app";
 import "firebase/performance";
+import "firebase/functions";
 
 import * as config from "@/firebaseConfig.js";
 firebase.initializeApp(config.firebaseConfig);
+
+var db = firebase.firestore();
+var functions = firebase.functions();
+if (location.hostname === "localhost") {
+  console.log("This is localhost");
+  // Note that the Firebase Web SDK must connect to the WebChannel port
+  db.settings({
+    host: "localhost:5026",
+    ssl: false
+  });
+
+  functions.useFunctionsEmulator("http://localhost:5001");
+}
 
 import "firebase/firestore";
 

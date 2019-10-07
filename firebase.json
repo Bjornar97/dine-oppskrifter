@@ -29,8 +29,12 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/(img|css/js)/**",
         "destination": "/index.html"
+      },
+      {
+        "source": "**",
+        "function": "app"
       }
     ]
   },
