@@ -339,7 +339,6 @@ export default {
       if (this.recipe != null && this.recipe != undefined) {
         let ingredientsArray = [];
         this.recipe.ingredients.forEach(ingredient => {
-          console.dir(ingredient);
           ingredientsArray.push(
             `${ingredient.amount} ${ingredient.unit} ${ingredient.name}`
           );
