@@ -194,7 +194,7 @@ export default {
     },
     goToRecipe() {
       this.$store.commit("startLoading");
-      this.$router.push(`oppskrift/${this.recipe.id}`);
+      this.$router.push({ path: `/oppskrift/${this.recipe.id}` });
     },
     deleteRecipe() {
       this.deleteDialogOpen = false;
