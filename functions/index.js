@@ -23,8 +23,6 @@ exports.addFavourite = functions
   .region("europe-west2")
   .firestore.document("favourites/{favouriteId}")
   .onCreate((snap, context) => {
-    // Get an object representing the document
-    // e.g. {'name': 'Marie', 'age': 66}
     const newValue = snap.data();
 
     // access a particular field as you would any JS property
@@ -75,6 +73,7 @@ exports.app = functions
     if (
       req.headers["user-agent"].split(" ").includes("facebookexternalhit/1.1")
     ) {
+      console.log("Facebook hit us");
       // Adds all the meta tags and stuff and sends it back to facebook crawler
       let path = req.path.split("/");
       console.log("pathArray: " + path);
@@ -96,6 +95,11 @@ exports.app = functions
       if (firstPart == "oppskrift") {
         let recipeId = path[2];
 
+        if (!recipeId || recipeId == "") {
+          res.send("Not found");
+          return;
+        }
+
         if (recipeId != "") {
           let recipe = await db
             .collection("recipes")
@@ -103,13 +107,19 @@ exports.app = functions
             .get();
 
           const recipeData = recipe.data();
+          if (!recipeData) {
+            res.send("Not Found");
+            return;
+          }
 
           if (
             recipeData.status != "draft" &&
             recipeData.visibility != "Private"
           ) {
             const imagePath = recipeData.imagePath;
+            const imageURL = recipeData.imageURL;
             console.log("ImagePath: " + imagePath);
+            console.log("ImageURL: " + imageURL);
 
             responseText += `
             <meta property="og:url" content="${req.protocol}://${
@@ -139,17 +149,14 @@ exports.app = functions
               ).toISOString()}" />`;
             }
 
-            if (imagePath) {
-              if (imagePath != "") {
+            if (imagePath && imageURL) {
+              if (imagePath != "" && imageURL != "") {
                 try {
                   const imageRef = admin
                     .storage()
                     .bucket()
                     .file(imagePath);
 
-                  const imageURL =
-                    "http://storage.googleapis.com/dine-oppskrifter/" +
-                    imagePath;
                   console.log("imageUrl: " + imageURL);
 
                   let sizeOf = require("image-size");
@@ -173,18 +180,82 @@ exports.app = functions
             res.sendStatus(403);
           }
         }
+      } else {
+        let titleText;
+        let descriptionText;
+        switch (firstPart) {
+          case "":
+            titleText = "Forsiden - ";
+            descriptionText =
+              "På Dine Oppskrifter kan du legge til oppskrifter, finne oppskrifter, dele oppskrifter, skrive ut oppskrifter osv.";
+            break;
 
-        responseText += `</head>
+          case "ny-oppskrift":
+            titleText = "Ny Oppskrift - ";
+            descriptionText = "Lag en ny oppskrift på Dine Oppskrifter.";
+            break;
+
+          case "vilkaar-for-bruk":
+            titleText = "Vilkår for bruk - ";
+            descriptionText = "Vilkårene for bruk av Dine Oppskrifter";
+            break;
+
+          case "personvernerklaering":
+            titleText = "Personvernerklæring - ";
+            descriptionText = "Personvernerklæringen til Dine Oppskrifter.";
+            break;
+
+          case "ingrediens-kalkulator":
+            titleText = "Ingredienskalkulator - ";
+            descriptionText =
+              "Kalkuler hvor mye av hver ingrediens du trenger for x antall porsjoner.";
+            break;
+
+          case "kontakt-oss":
+            titleText = "Kontakt Oss - ";
+            descriptionText = "Kontakt oss i Dine Oppskrifter.";
+            break;
+
+          case "favoritter":
+            titleText = "Favoritter";
+            descriptionText = "Dine favorittoppskrifter på Dine Oppskrifter.";
+            break;
+
+          case "dine-oppskrifter":
+            titleText = "";
+            descriptionText = "Oppskriftene dine på Dine Oppskrifter.";
+            break;
+
+          case "konto":
+            titleText = "Konto";
+            descriptionText = "Kontoen din på Dine Oppskrifter";
+            break;
+
+          default:
+            titleText = "";
+            descriptionText =
+              "På Dine Oppskrifter kan du legge til oppskrifter, finne oppskrifter, dele oppskrifter, skrive ut oppskrifter osv.";
+            break;
+        }
+
+        responseText += ` <meta property="og:url" content="${req.protocol}://${req.hostname}${req.path}" />
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content="${titleText}Dine Oppskrifter" />
+            <meta property="og:description" content="${descriptionText}" /> 
+            <meta property="og:image" content="https://dine-oppskrifter.no/img/DineOppskrifterLogo.png" />
+            <meta property="og:image:width" content="600" />
+            <meta property="og:image:height" content="600" />
+            <meta property="og:image:alt" content="Logoen til Dine Oppskrifter" />`;
+      }
+      responseText += `
+          </head>
             <body>
               
             </body>
-          </html>`;
-
-        res.send(responseText);
-      } else {
-        // TODO: Implement for the other pages
-      }
+        </html>`;
+      res.send(responseText);
     } else {
+      console.log("Someone not Facebook hit us");
       console.log("Sending request");
       try {
         fs.readFile("./dist/index.html", function(err, data) {

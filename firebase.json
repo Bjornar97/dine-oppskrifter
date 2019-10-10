@@ -4,7 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "site": "dine-oppskrifter",
+    "site": "dine-oppskrifter-dev",
     "public": "dist",
     "headers": [
       {
@@ -30,6 +30,10 @@
     "rewrites": [
       {
         "source": "/(img|css/js)/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/sitemap.xml",
         "destination": "/index.html"
       },
       {
