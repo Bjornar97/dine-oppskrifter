@@ -93,6 +93,7 @@ export default {
     return {
       drafts: [],
       draftLoading: [],
+      firstDone: false,
       published: [],
       publishedLimit: 10,
       publishedEnd: true,
@@ -131,7 +132,12 @@ export default {
         snapshot.forEach(doc => {
           this.drafts.push({ ...doc.data(), id: doc.id, loading: false });
         });
-        this.$store.commit("stopLoading");
+
+        if (this.firstDone) {
+          this.$store.commit("stopLoading");
+        } else {
+          this.firstDone = true;
+        }
       });
     },
     retrievePublished() {
@@ -157,7 +163,12 @@ export default {
               this.publishedEnd = false;
             }
           });
-          this.$store.commit("stopLoading");
+
+          if (this.firstDone) {
+            this.$store.commit("stopLoading");
+          } else {
+            this.firstDone = true;
+          }
         })
         .catch(error => {
           // Error handling
@@ -234,6 +245,7 @@ export default {
   created() {
     this.recipesRef = db.collection("recipes");
     if (this.user.loggedIn) {
+      this.firstDone = false;
       this.retrieveDrafts();
       this.retrievePublished();
     }
