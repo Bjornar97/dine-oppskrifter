@@ -65,7 +65,7 @@ exports.onRecipeDelete = functions
   });
 
 exports.app = functions
-  .region("europe-west2")
+  .region("us-central1")
   .https.onRequest(async (req, res) => {
     console.log("Path: " + req.path);
 
