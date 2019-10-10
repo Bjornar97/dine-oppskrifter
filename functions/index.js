@@ -238,7 +238,8 @@ exports.app = functions
             break;
         }
 
-        responseText += ` <meta property="og:url" content="${req.protocol}://${req.hostname}${req.path}" />
+        responseText += `
+            <meta property="og:url" content="${req.protocol}://${req.hostname}${req.path}" />
             <meta property="og:type" content="website" />
             <meta property="og:title" content="${titleText}Dine Oppskrifter" />
             <meta property="og:description" content="${descriptionText}" /> 

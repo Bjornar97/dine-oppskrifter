@@ -885,7 +885,6 @@ export default {
   }
 
   .recipeImage {
-    margin-top: -130px;
     max-height: 400px !important;
   }
 
