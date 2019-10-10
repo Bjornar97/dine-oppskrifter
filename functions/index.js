@@ -250,7 +250,7 @@ exports.app = functions
       responseText += `
           </head>
             <body>
-              
+              Velkommen til Dine Oppskrifter, Facbook-bot
             </body>
         </html>`;
       res.send(responseText);

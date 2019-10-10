@@ -6,7 +6,7 @@
           <v-icon color="primary">mdi-file-plus</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title>Lag Oppskrifter</v-list-item-title>
+          <v-list-item-title>Lag oppskrifter</v-list-item-title>
           <v-list-item-subtitle>Du kan lage nye oppskrifter på nettsiden</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -16,7 +16,7 @@
           <v-icon color="secondary">mdi-share</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title>Del Oppskrifter</v-list-item-title>
+          <v-list-item-title>Del oppskrifter</v-list-item-title>
           <v-list-item-subtitle>Oppskriftene du har laget kan du dele med hvem som helst</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
