@@ -366,7 +366,10 @@ export default {
   name: "new-recipe",
   metaInfo() {
     return {
-      title: `${this.editing ? "Endre" : "Ny"} Oppskrift - Dine Oppskrifter`
+      title: `${this.editing ? "Endre" : "Ny"} Oppskrift - Dine Oppskrifter`,
+      description: `${
+        this.editing ? "Error" : "Lag en ny oppskrift på Dine Oppskrifter"
+      }`
     };
   },
   data() {
@@ -1095,6 +1098,7 @@ export default {
         // User is signed in.
         // Uploading image
         let isImage = false;
+        let imageURL;
         try {
           // Checks that there is an image, and that if it is an edit, it needs to have changed from the original
           if (
@@ -1108,8 +1112,12 @@ export default {
             if (!this.imageCompressed) {
               this.imageCompressed = this.originalImage;
             }
-            await this.uploadImage().then(() => {
+            await this.uploadImage().then(async () => {
               isImage = true;
+              console.log(this.recipeImagePath);
+              imageURL = await storage
+                .ref(this.recipeImagePath)
+                .getDownloadURL();
             });
           } else if (this.originalImage && !this.imageCompressed) {
             isImage = true;
@@ -1141,6 +1149,7 @@ export default {
           description: this.recipeDescription,
           imagePath:
             isImage && this.recipeImagePath ? this.recipeImagePath : null, // Adds the path if isImage is true, else it will be null
+          imageURL: isImage && imageURL ? imageURL : null,
           ingredients: this.recipeIngredients,
           steps: this.recipeSteps,
           visibility: this.visibility,
@@ -1186,10 +1195,14 @@ export default {
                 if (this.imageCompressed) {
                   try {
                     // Since there is no recipeId from before, the image needs to be uploaded after getting the recipeId
-                    this.uploadImage().then(() => {
+                    this.uploadImage().then(async () => {
+                      let imageURL = await storage
+                        .ref(this.recipeImagePath)
+                        .getDownloadURL();
                       ref
                         .update({
-                          imagePath: this.recipeImagePath
+                          imagePath: this.recipeImagePath,
+                          imageURL: imageURL
                         })
                         .then(() => {
                           this.published();

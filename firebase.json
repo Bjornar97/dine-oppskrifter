@@ -33,6 +33,10 @@
         "destination": "/index.html"
       },
       {
+        "source": "/sitemap.xml",
+        "destination": "/index.html"
+      },
+      {
         "source": "**",
         "function": "app"
       }
