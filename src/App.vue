@@ -123,6 +123,17 @@
       </div>
     </v-content>
 
+    <v-snackbar v-model="loginError.error" :timeout="20000" multi-line bottom class="mb-12">
+      Noe gikk galt under innlogging, prøv igjen senere eller kontakt oss
+      <v-btn text color="warning" @click="closeLoginError">Lukk</v-btn>
+      <v-btn text color="primary" @click.native="goToContact">Kontakt oss</v-btn>
+    </v-snackbar>
+
+    <v-snackbar v-model="loginSuccess" multi-line bottom class="mb-12">
+      Du er innlogget som {{ user.name }}
+      <v-btn text color="primary" @click.native="loginSuccess = false">Lukk</v-btn>
+    </v-snackbar>
+
     <v-footer color="white" class="elevation-4 mt-8 footer d-print-none" padless>
       <v-layout justify-center wrap>
         <v-btn to="/" exact color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
@@ -205,11 +216,43 @@ export default {
     },
     goBack() {
       this.$router.go(-1);
+    },
+    goToContact() {
+      this.closeLoginError();
+      this.$router.push("/kontakt-oss");
+    },
+    closeLoginError() {
+      this.$store.commit("closeLoginError");
     }
   },
   computed: {
     loggedIn() {
       return this.$store.state.accountModule.loggedIn;
+    },
+    user() {
+      return this.$store.state.accountModule;
+    },
+    loginError() {
+      return this.$store.state.accountModule.loginError;
+    },
+    loginProcess() {
+      return this.$store.state.accountModule.loginProcess;
+    },
+    loginSuccess: {
+      get() {
+        return this.$store.state.accountModule.loginSuccess;
+      },
+      set(v) {
+        this.$store.commit("closeLoginSuccess");
+      }
+    },
+    wasLoggedIn: {
+      get() {
+        return this.$store.state.accountModule.wasLoggedIn;
+      },
+      set(v) {
+        this.$store.commit("setWasLoggedIn", v);
+      }
     },
     activeRoute() {
       return this.$route.path;
@@ -247,6 +290,7 @@ export default {
     "terms-accept": () => import("@/components/TermsAccept")
   },
   created() {
+    this.wasLoggedIn = this.loggedIn;
     // Event listner for login and logout
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -257,6 +301,40 @@ export default {
         this.$store.dispatch("loggedOut");
       }
     });
+
+    // If its a small screen, it uses redirect, so this gets the result
+    firebase
+      .auth()
+      .getRedirectResult()
+      .then(result => {
+        if (result.credential) {
+          this.$store.commit(
+            "setFacebookAccessToken",
+            result.credential.accessToken
+          );
+        }
+        // The signed-in user info.
+        let user = result.user;
+        if (user) {
+          this.$store.commit("addUserInfo", user);
+          if (!this.wasLoggedIn) {
+            this.$store.commit("loginSuccess");
+            this.$store.commit("setWasLoggedIn", true);
+          }
+        }
+
+        this.$store.commit("stopLoading");
+        this.$store.commit("setLoginProcess", false);
+      })
+      .catch(error => {
+        // Handle Errors here.
+        console.log("Error: ");
+        console.log(error);
+        this.$store.commit("setLoginError", error);
+        this.$store.commit("stopLoading");
+        this.$store.commit("setLoginProcess", false);
+        this.$store.commit("resetAccount");
+      });
 
     firebase
       .firestore()
@@ -277,7 +355,20 @@ export default {
       });
   },
   mounted() {
-    this.$store.commit("stopLoading");
+    if (!this.loginProcess) {
+      this.$store.commit("stopLoading");
+    } else {
+      setTimeout(() => {
+        if (this.loginProcess) {
+          const error = {
+            code: "Timeout",
+            message: "Login timed out"
+          };
+          this.$store.commit("setLoginError", error);
+          this.$store.commit("setLoginProcess", false);
+        }
+      }, 15000);
+    }
   }
 };
 </script>

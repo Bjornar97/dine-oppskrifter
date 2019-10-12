@@ -6,7 +6,9 @@ import "firebase/auth";
 const accountModule = {
   state: {
     loginProcess: null,
+    loginSuccess: false,
     loggedIn: null,
+    wasLoggedIn: null,
     name: "",
     email: "",
     uid: null,
@@ -33,6 +35,21 @@ const accountModule = {
       state.name = user.displayName;
       state.profilePictureUrl = user.photoURL;
       state.uid = user.uid;
+    },
+    loginSuccess(state) {
+      state.loginSuccess = true;
+      setTimeout(() => {
+        state.loginSuccess = false;
+      }, 5000);
+    },
+    closeLoginSuccess(state) {
+      state.loginSuccess = false;
+    },
+    closeLoginError(state) {
+      state.loginError.error = false;
+    },
+    setWasLoggedIn(state, value) {
+      state.wasLoggedIn = value;
     },
     resetAccount(state) {
       state.loginProcess = null;
@@ -63,27 +80,42 @@ const accountModule = {
       let provider = new firebase.auth.FacebookAuthProvider();
       provider.addScope("email");
       firebase.auth().languageCode = "nb_NO";
-      firebase
-        .auth()
-        .signInWithPopup(provider)
-        .then(result => {
-          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-          commit("setFacebookAccessToken", result.credential.accessToken);
-          // The signed-in user info.
-          let user = result.user;
-          commit("addUserInfo", user);
-          commit("stopLoading");
-          commit("setLoginProcess", false);
-        })
-        .catch(error => {
-          // Handle Errors here.
-          console.log("Error: ");
-          console.log(error);
-          commit("setLoginError", error);
-          commit("stopLoading");
-          commit("setLoginProcess", false);
-          commit("resetAccount");
-        });
+
+      let screenWidth = screen.width;
+      console.log("Screenwidth: " + screenWidth);
+      if (screenWidth > 1024) {
+        firebase
+          .auth()
+          .signInWithPopup(provider)
+          .then(result => {
+            if (result.credential) {
+              // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+              commit("setFacebookAccessToken", result.credential.accessToken);
+            }
+
+            // The signed-in user info.
+            let user = result.user;
+            if (user) {
+              commit("addUserInfo", user);
+              commit("loginSuccess");
+              commit("setWasLoggedIn", true);
+            }
+
+            commit("stopLoading");
+            commit("setLoginProcess", false);
+          })
+          .catch(error => {
+            // Handle Errors here.
+            console.log("Error: ");
+            console.log(error);
+            commit("setLoginError", error);
+            commit("stopLoading");
+            commit("setLoginProcess", false);
+            commit("resetAccount");
+          });
+      } else {
+        firebase.auth().signInWithRedirect(provider);
+      }
     },
     logout({ _, commit, dispatch }) {
       console.log("Logging out");

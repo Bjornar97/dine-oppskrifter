@@ -11,7 +11,7 @@
       <h4
         class="subtitle-2 mt-2"
         v-if="recipes.length == 0 && !recipesLoading && !recipeError"
-      >Det finnes dessverre ingen oppskrifter etter disse kriteriene enda</h4>
+      >Det finnes ingen oppskrifter etter disse kriteriene enda</h4>
       <h4
         class="subtitle-2 mt-2"
         v-if="recipes.length == 0 && !recipesLoading && recipeError"

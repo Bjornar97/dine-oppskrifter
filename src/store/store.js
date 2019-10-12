@@ -14,6 +14,7 @@ const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   reducer: state => ({
     accountModule: {
+      loginProcess: state.accountModule.loginProcess,
       loggedIn: state.accountModule.loggedIn,
       name: state.accountModule.name,
       email: state.accountModule.email,

@@ -606,7 +606,7 @@ export default {
     },
     recipeAuthor() {
       return this.$store.state.currentRecipeModule.recipe.author;
-    }
+    },
     lastSaveTime() {
       const timeMilliseconds = this.$store.state.currentRecipeModule
         .lastSaveTime;
