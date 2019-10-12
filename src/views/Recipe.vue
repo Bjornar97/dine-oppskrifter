@@ -17,6 +17,11 @@
     </v-expand-transition>
     <v-container fluid class="mainContainer pt-0 mt-2" v-if="recipe != null">
       <img
+        class="mx-auto recipeImage"
+        :class="!printImage ? 'recipeImageNone': ''"
+        :src="recipeImageURL"
+      />
+      <img
         src="@/assets/ShorterLogo.svg"
         width="150px"
         height="150px"
@@ -28,11 +33,6 @@
         :src="`https://api.qrserver.com/v1/create-qr-code/?data=${shortUrl}&size=100x100`"
         id="qrCode"
         alt="QR-kode for oppskriften"
-      />
-      <img
-        class="mx-auto recipeImage"
-        :class="!printImage ? 'recipeImageNone': ''"
-        :src="recipeImageURL"
       />
 
       <div class="my-4 labelRow">
@@ -294,8 +294,8 @@ export default {
           },
           {
             property: "og:image",
-            content: this.recipeImage
-              ? this.recipeImage
+            content: this.recipeImageURL
+              ? this.recipeImageURL
               : import("@/assets/ShorterLogo.svg"),
             vmid: "image"
           },

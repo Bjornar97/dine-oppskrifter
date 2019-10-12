@@ -20,8 +20,8 @@ var dateMixin = {
         let month = date.getMonth();
         let year = date.getFullYear();
 
-        let dateString = day < 10 ? `0${day}` : day;
-        let monthString = month < 10 ? `0${month}` : month;
+        let dateString = day < 9 ? `0${day + 1}` : day + 1;
+        let monthString = month < 9 ? `0${month + 1}` : month + 1;
         return `${dateString}.${monthString}.${year}`;
       }
     }

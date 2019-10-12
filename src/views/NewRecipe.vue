@@ -74,7 +74,7 @@
               :success="imageSuccess && !imageLoading"
               :success-messages="(imageSuccess && !imageLoading) ? 'Bildet er lagt til': ''"
               :error="imageError"
-              hint="NB: Fungerer for øyeblikket ikke i nettleseren Edge eller Internet Explorer"
+              hint="NB: Fungerer for øyeblikket ikke i nettleseren Edge"
               persistent-hint
               :readonly="false"
               accept="image/png, image/jpeg"
@@ -603,6 +603,9 @@ export default {
     },
     recipeData() {
       return {};
+    },
+    recipeAuthor() {
+      return this.$store.state.currentRecipeModule.recipe.author;
     },
     lastSaveTime() {
       const timeMilliseconds = this.$store.state.currentRecipeModule
@@ -1243,6 +1246,10 @@ export default {
               .update(recipeData)
               .then(() => {
                 this.published(edit);
+              }).catch(error => {
+                console.log("Something bad happened");
+                console.dir(error);
+                this.displayError("Noe gikk galt, prøv igjen");
               });
           } catch (error) {
             console.log("Something bad happened: 2");
@@ -1360,6 +1367,14 @@ export default {
     user(newData, oldData) {}
   },
   created() {
+    if (this.recipeAuthor) {
+      if (this.recipeAuthor.id != "") {
+        if (this.recipeAuthor != this.user.uid) {
+        this.$store.dispatch("deleteRecipe");
+        }
+      }
+    }
+    
     const route = this.$route;
     if (route.name == "newRecipe" && this.recipeNew == false) {
       this.$store.dispatch("deleteRecipe");

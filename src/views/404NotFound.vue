@@ -16,6 +16,9 @@ export default {
     return {
       title: "Ikke funnet - Dine Oppskrifter"
     };
+  },
+  created() {
+    this.$store.commit("stopLoading");
   }
 };
 </script>
