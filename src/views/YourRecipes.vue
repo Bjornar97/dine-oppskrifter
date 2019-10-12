@@ -34,7 +34,7 @@
     >Lag en oppskrift nå!</v-btn>
 
     <v-container class="pl-0" v-if="drafts.length != 0">
-      <h3 class="title text-left secondary--text">Ikke Publisert</h3>
+      <h3 class="title text-left secondary--text">Utkast</h3>
       <v-divider></v-divider>
       <div class="recipeList">
         <draft-card
@@ -46,7 +46,7 @@
       </div>
     </v-container>
     <v-container class="pl-0" v-if="published.length != 0">
-      <h3 class="title text-left secondary--text">Publisert</h3>
+      <h3 class="title text-left secondary--text">Oppskrifter</h3>
       <v-divider></v-divider>
       <div class="recipeList">
         <recipe-card

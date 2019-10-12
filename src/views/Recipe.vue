@@ -363,7 +363,7 @@ export default {
           "name": this.recipe.author.name,
           "image": this.recipe.author.profilePictureUrl
         },
-        "image": this.recipeImageURL,
+        "image": [this.recipeImageURL],
         "description": this.recipe.description,
         "totalTime": new Date(this.recipe.totalTime * 60 * 1000).toISOString(),
         "datePublished": new Date(this.recipe.dateCreated).toISOString(),
@@ -814,6 +814,7 @@ export default {
     .steps {
       grid-area: steps;
       max-width: 80%;
+      margin-top: 0 !important;
       margin-left: 30px !important;
       margin-right: 30px !important;
     }
@@ -838,7 +839,7 @@ export default {
           "title title title"
           "description description description"
           "ingredients buttonRow ."
-          "ingredients steps steps";
+          "ingredients steps .";
       }
 
       .recipeTitle,
@@ -856,6 +857,11 @@ export default {
         margin-left: auto !important;
         margin-right: auto !important;
         text-align: center !important;
+      }
+
+      .steps {
+        margin-left: auto !important;
+        margin-right: auto !important;
       }
     }
   }
@@ -885,6 +891,7 @@ export default {
   }
 
   .recipeImage {
+    margin-top: -130px;
     max-height: 400px !important;
   }
 
