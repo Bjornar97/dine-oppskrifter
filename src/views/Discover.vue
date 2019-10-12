@@ -1,6 +1,11 @@
 <template>
   <div>
-    <welcome-screen v-if="!loggedIn"></welcome-screen>
+    <v-expand-transition>
+      <v-container v-if="!wasLoggedIn" fluid>
+        <welcome-screen></welcome-screen>
+      </v-container>
+    </v-expand-transition>
+
     <v-divider v-if="!loggedIn" class="mt-8"></v-divider>
     <v-btn class="mt-4" color="primary" v-if="loggedIn" @click="goToNewRecipe">
       <v-icon>mdi-plus</v-icon>Lag en ny oppskrift
@@ -21,6 +26,9 @@ export default {
     loggedIn() {
       return this.$store.state.accountModule.loggedIn;
     },
+    wasLoggedIn() {
+      return this.$store.state.accountModule.wasLoggedIn;
+    },
     name() {
       return this.$store.state.accountModule.name;
     },
@@ -32,6 +40,9 @@ export default {
     },
     loginFeature() {
       return this.$store.state.activeFeatures.login;
+    },
+    loginProcess() {
+      return this.$store.state.accountModule.loginProcess;
     }
   },
   methods: {
