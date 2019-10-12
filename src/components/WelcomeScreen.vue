@@ -2,15 +2,19 @@
   <div class="welcomeContainer mx-auto">
     <div class="text-left welcomeText pa-4">
       <h3 class="subtitle-1 welcomeToText animation">Velkommen til</h3>
-      <h2 class="display-1 yourRecipes animation">
+      <h2 class="display-2 yourRecipes animation">
         <span class="primary--text mr-1">Dine</span> Oppskrifter
       </h2>
-      <h4 class="subtitle-2 mt-4 mb-2 allFunctionsText animation">For å få alle funksjoner</h4>
+      <h4 class="subtitle-1 mt-10 mb-4 allFunctionsText animation">For å få alle funksjoner</h4>
       <facebook-login-button class="facebookButton animation" loginText="Fortsett"></facebook-login-button>
     </div>
     <div class="pa-2 pa-sm-4 featureBox animation">
       <h4 class="title mb-2 ml-3 secondary--text text-left">Funksjoner</h4>
       <feature-list class="featureList"></feature-list>
+    </div>
+    <div class="scrollDownArrow animation mx-auto">
+      <p class="subtitle-1 mb-0">Bla ned for å se oppskrifter</p>
+      <v-icon x-large class="scrollArrow">mdi-chevron-down</v-icon>
     </div>
   </div>
 </template>
@@ -65,6 +69,38 @@ export default {
   animation-delay: 3.5s;
 }
 
+.scrollArrow {
+  height: 50px;
+  animation-name: arrow-animation;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-delay: 3.5s;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes arrow-animation {
+  0% {
+    height: 50px;
+    margin-top: 0;
+  }
+  25% {
+    height: 50px;
+    margin-top: 0;
+  }
+  100% {
+    height: 30px;
+    margin-top: 20px;
+  }
+}
+
+.scrollDownArrow {
+  min-width: 300px;
+  width: max-content;
+  opacity: 0;
+  animation-delay: 4.5s;
+}
+
 .facebookButton {
   opacity: 0;
   animation-delay: 3.5s;
@@ -107,11 +143,16 @@ export default {
     grid-template-columns: 1fr;
     grid-template-areas:
       "welcomeText"
-      "features";
+      "features"
+      "scrollArrow";
   }
 
   .welcomeText {
     grid-area: welcomeText;
+  }
+
+  .scrollDownArrow {
+    grid-area: scrollArrow;
   }
 
   .featureBox {
@@ -123,13 +164,20 @@ export default {
       grid-template-columns: 1fr 600px 1fr;
       grid-template-areas:
         ". welcomeText ."
-        ". features .";
+        ". features ."
+        ". scrollArrow .";
     }
 
     @media only screen and (min-width: 1000px) {
       .welcomeContainer {
         grid-template-columns: 1fr minmax(500px, 3fr) minmax(500px, 3fr) 1fr;
-        grid-template-areas: ". welcomeText features .";
+        grid-template-areas:
+          ". welcomeText features ."
+          ". scrollArrow scrollArrow .";
+      }
+
+      .scrollDownArrow {
+        margin-top: 50px;
       }
     }
   }

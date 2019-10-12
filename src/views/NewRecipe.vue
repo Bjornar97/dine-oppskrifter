@@ -302,14 +302,14 @@
       v-if="editing"
       color="error"
       class="my-2 mx-2"
-    >Slett</v-btn>
+    >Slett oppskriften</v-btn>
     <v-btn
       :disabled="loading || disableAll"
       @click="openDeleteRecipe"
       v-if="!editing"
       color="error"
       class="my-2 mx-2"
-    >Tilbakestill</v-btn>
+    >Begynn på nytt</v-btn>
     <v-btn
       :disabled="loading || disableAll"
       @click="saveRecipe"
@@ -331,7 +331,7 @@
       @click="publishRecipe(false)"
       color="success"
       class="my-2 mx-2"
-    >Publiser</v-btn>
+    >Ferdig</v-btn>
     <v-btn
       :disabled="(loading && !publishing) || disableAll"
       :loading="loading && publishing"
