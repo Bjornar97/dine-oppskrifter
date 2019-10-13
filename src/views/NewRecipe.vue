@@ -656,7 +656,7 @@ export default {
         this.accessError.type = "notLoggedIn";
         this.accessError.icon = "mdi-account-alert";
         this.accessError.message =
-          "Du er for øyeblikket ikke logget inn, vennligst logg inn";
+          "Du er ikke logget inn. For å få tilgang til denne siden, vennligst logg inn";
       }
     },
     closeIngredient() {
@@ -1246,7 +1246,8 @@ export default {
               .update(recipeData)
               .then(() => {
                 this.published(edit);
-              }).catch(error => {
+              })
+              .catch(error => {
                 console.log("Something bad happened");
                 console.dir(error);
                 this.displayError("Noe gikk galt, prøv igjen");
@@ -1370,11 +1371,11 @@ export default {
     if (this.recipeAuthor) {
       if (this.recipeAuthor.id != "") {
         if (this.recipeAuthor != this.user.uid) {
-        this.$store.dispatch("deleteRecipe");
+          this.$store.dispatch("deleteRecipe");
         }
       }
     }
-    
+
     const route = this.$route;
     if (route.name == "newRecipe" && this.recipeNew == false) {
       this.$store.dispatch("deleteRecipe");
@@ -1433,7 +1434,7 @@ export default {
         this.accessError.type = "notLoggedIn";
         this.accessError.icon = "mdi-account-alert";
         this.accessError.message =
-          "Du er for øyeblikket ikke logget inn, vennligst logg inn";
+          "Du er ikke logget inn. For å få tilgang til denne siden, vennligst logg inn";
       }
       this.$store.commit("setRecipeImage", undefined);
     } else if (route.name == "editRecipe") {

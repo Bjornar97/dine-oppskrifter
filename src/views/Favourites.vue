@@ -49,7 +49,8 @@ export default {
     };
   },
   components: {
-    "recipe-card": () => import("@/components/recipes/RecipeCard")
+    "recipe-card": () => import("@/components/recipes/RecipeCard"),
+    "not-logged-in-card": () => import("@/components/NotLoggedInCard")
   },
   computed: {
     user() {
