@@ -86,7 +86,6 @@ export default {
         "Mest Likt",
         "Nyeste først",
         "Eldste først",
-        "På vei opp",
         "Kortest Tid",
         "Lengst Tid"
       ],
