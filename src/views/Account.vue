@@ -1,6 +1,6 @@
 <template>
   <v-container class="mainContainer">
-    <h3 v-if="!loggedIn" class="title">Du er ikke logget inn</h3>
+    <h3 v-if="!loggedIn" class="title mb-4">Du er ikke logget inn</h3>
     <facebook-login-button v-if="!loggedIn"></facebook-login-button>
     <v-btn
       @click="logout"
