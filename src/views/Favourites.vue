@@ -1,21 +1,31 @@
 <template>
-  <v-container class="mt-4 text-left">
+  <v-container fluid class="mt-4 text-left favouriteContainer">
     <v-row>
       <h2 class="headline error--text pa-4">Favoritter</h2>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
         <v-icon id="refreshBtn">mdi-refresh</v-icon>
       </v-btn>
     </v-row>
-    <p v-if="error" class="warning--text">Kan ikke laste inn favoritter akkurat nå</p>
+    <p
+      v-if="error"
+      class="warning--text font-weight-bold text-center"
+    >Kan ikke laste inn favoritter akkurat nå</p>
+    <p
+      v-if="favouritesList.length <= 0 && !error && !loading"
+      class="font-weight-bold text-center"
+    >Du har ingen favoritter, klikk favoriser på en oppskrift for å legge den til her</p>
     <not-logged-in-card v-if="!user.loggedIn"></not-logged-in-card>
 
-    <v-container class="pl-0" v-if="favouritesList.length != 0">
+    <v-container fluid class="pl-0" v-if="favouritesList.length != 0">
       <div class="recipeList">
         <recipe-card v-for="recipe in favouritesList" :key="recipe.recipeId" :recipe="recipe"></recipe-card>
       </div>
     </v-container>
     <div class="text-center">
-      <p v-if="end" class="font-weight-bold">Ingen flere oppskrifter å vise</p>
+      <p
+        v-if="end && favouritesList.length > 0"
+        class="font-weight-bold"
+      >Ingen flere oppskrifter å vise</p>
       <v-btn
         v-if="!end && !loading && favouritesList.length != 0"
         @click="getNextBatch"
@@ -167,6 +177,17 @@ export default {
     grid-gap: 20px;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
+}
+
+@media only screen and (min-width: 600px) {
+  .favouriteContainer {
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+  }
+}
+
+.favouriteContainer {
+  max-width: 1300px;
 }
 
 .refreshing {

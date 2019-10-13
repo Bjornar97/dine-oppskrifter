@@ -1,5 +1,5 @@
 <template>
-  <v-container class="px-lg-12">
+  <v-container fluid class="recipeListContainer">
     <v-row>
       <h2 class="headline secondary--text mx-auto text-left my-auto ml-4">Finn Oppskrifter</h2>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
@@ -13,9 +13,9 @@
         v-if="recipes.length == 0 && !recipesLoading && !recipeError"
       >Det finnes ingen oppskrifter etter disse kriteriene enda</h4>
       <h4
-        class="subtitle-2 mt-2"
+        class="subtitle-2 mt-2 warning--text"
         v-if="recipes.length == 0 && !recipesLoading && recipeError"
-      >Kunne ikke laste inn oppskriftene, prøv igjen</h4>
+      >Kunne ikke laste inn oppskriftene, prøv å oppdatere med den grønne rundingen</h4>
 
       <!-- <v-progress-circular
         v-show="recipesLoading"
@@ -128,8 +128,14 @@ export default {
   animation-timing-function: ease;
 }
 
+.recipeListContainer {
+  max-width: 1230px;
+}
+
 .recipeFilter {
   max-width: 800px;
+  margin-bottom: 40px;
+  margin-top: 20px;
 }
 
 @keyframes spin {
@@ -140,6 +146,14 @@ export default {
     transform: rotate(360deg);
   }
 }
+
+@media only screen and (min-width: 600px) {
+  .recipeListContainer {
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+  }
+}
+
 @supports (display: grid) {
   .recipeList {
     display: grid;

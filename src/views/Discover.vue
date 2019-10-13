@@ -7,7 +7,7 @@
     </v-expand-transition>
 
     <v-divider v-if="!loggedIn" class="mt-8"></v-divider>
-    <v-btn class="mt-4" color="primary" v-if="loggedIn" @click="goToNewRecipe">
+    <v-btn class="mt-12 mb-4" color="primary" v-if="loggedIn" @click="goToNewRecipe">
       <v-icon>mdi-plus</v-icon>Lag en ny oppskrift
     </v-btn>
     <recipe-list></recipe-list>
