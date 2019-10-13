@@ -1,5 +1,5 @@
 <template>
-  <v-card class="card my-4">
+  <v-card class="card my-4 mx-auto">
     <v-img height="150px" v-if="image" :src="imageSrc"></v-img>
     <v-card-title primary-title>{{recipe.title || "Uten tittel"}}</v-card-title>
     <v-card-text class="text-left">{{recipe.description}}</v-card-text>

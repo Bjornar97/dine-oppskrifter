@@ -1,5 +1,5 @@
 <template>
-  <v-container id="main" class="pt-2 px-4">
+  <v-container fluid id="main" class="pt-2 px-4">
     <v-row class="pa-3 pb-0 mb-0">
       <h2 class="headline text-left primary--text my-auto">
         Dine
@@ -33,7 +33,7 @@
       class="ma-2"
     >Lag en oppskrift nå!</v-btn>
 
-    <v-container class="pl-0" v-if="drafts.length != 0">
+    <v-container fluid class="pl-0" v-if="drafts.length != 0">
       <h3 class="title text-left secondary--text">Utkast</h3>
       <v-divider></v-divider>
       <div class="recipeList">
@@ -45,7 +45,7 @@
         ></draft-card>
       </div>
     </v-container>
-    <v-container class="pl-0" v-if="published.length != 0">
+    <v-container fluid class="pl-0" v-if="published.length != 0">
       <h3 class="title text-left secondary--text">Oppskrifter</h3>
       <v-divider></v-divider>
       <div class="recipeList">
@@ -275,6 +275,7 @@ export default {
 <style lang="scss" scoped>
 #main {
   min-height: calc(100vh - 100px);
+  max-width: 1200px;
 }
 
 #newRecipeBtn {
@@ -301,6 +302,13 @@ export default {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  #main {
+    padding-left: 50px !important;
+    padding-right: 50px !important;
   }
 }
 
