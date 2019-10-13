@@ -118,7 +118,7 @@ export default {
     }
   },
   methods: {
-    retrieveDrafts() {
+    async retrieveDrafts() {
       if (this.unsubscribe) {
         this.unsubscribe();
       }
@@ -132,7 +132,6 @@ export default {
         snapshot.forEach(doc => {
           this.drafts.push({ ...doc.data(), id: doc.id, loading: false });
         });
-
         if (this.firstDone) {
           this.$store.commit("stopLoading");
         } else {
@@ -140,7 +139,7 @@ export default {
         }
       });
     },
-    retrievePublished() {
+    async retrievePublished() {
       this.$store.commit("startLoading");
       let publishedQuery = this.recipesRef
         .where("status", "==", "published")

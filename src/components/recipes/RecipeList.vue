@@ -70,20 +70,6 @@ export default {
     "recipe-card": () => import("@/components/recipes/RecipeCard")
   },
   methods: {
-    like(recipe) {
-      if (this.loggedIn) {
-        return;
-      }
-      if (recipe.liked) {
-        // TODO: Remove like from firebase
-        recipe.liked = false;
-        recipe.likes--;
-      } else {
-        // TODO: Send a like to firebase
-        recipe.liked = true;
-        recipe.likes++;
-      }
-    },
     refresh() {
       this.$store.dispatch("retrieveRecipes");
       let refreshBtn = document.querySelector("#refreshBtn");
