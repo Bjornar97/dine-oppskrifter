@@ -720,7 +720,6 @@ export default {
 }
 
 .steps {
-  width: max-content;
   max-width: 80%;
   margin-top: 40px;
   margin-left: auto;
