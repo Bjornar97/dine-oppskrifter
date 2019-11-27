@@ -74,7 +74,6 @@
               :success="imageSuccess && !imageLoading"
               :success-messages="(imageSuccess && !imageLoading) ? 'Bildet er lagt til': ''"
               :error="imageError"
-              hint="NB: Fungerer for øyeblikket ikke i nettleseren Edge"
               persistent-hint
               :readonly="false"
               accept="image/png, image/jpeg"
@@ -1365,7 +1364,6 @@ export default {
           return;
         });
     },
-    user(newData, oldData) {}
   },
   created() {
     if (this.recipeAuthor) {
