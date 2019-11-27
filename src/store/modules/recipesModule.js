@@ -103,6 +103,7 @@ const recipesModule = {
       commit("setFilterDate");
     },
     retrieveRecipes({ state, commit }) {
+      commit("startRecipeLoading");
       commit("startLoading");
       commit("setFilterDate");
       let filter = state.filter;
@@ -142,12 +143,14 @@ const recipesModule = {
             state.error = false;
             filter.open = false;
             commit("stopLoading");
+            commit("stopRecipeLoading");
           })
           .catch(error => {
             console.log("An error occured");
             console.dir(error);
             state.error = true;
             commit("stopLoading");
+            commit("stopRecipeLoading");
           });
       } else {
         if (filter.category) {
@@ -161,6 +164,7 @@ const recipesModule = {
         if (filter.timeFrom || filter.timeTo) {
           if (!filter.timeFrom) filter.timeFrom = 0;
           else filter.timeFrom = parseInt(filter.timeFrom);
+
           if (!filter.timeTo) filter.timeTo = 999;
           else filter.timeTo = parseInt(filter.timeTo);
 
@@ -168,7 +172,6 @@ const recipesModule = {
             .where("totalTime", "<=", filter.timeTo)
             .where("totalTime", ">=", filter.timeFrom);
         }
-        // ref = ref.orderBy(sort, direction);
         state.ref
           .orderBy(sort, direction)
           .limit(state.limit)
@@ -188,17 +191,21 @@ const recipesModule = {
               state.end = false;
             }
             commit("stopLoading");
+            commit("stopRecipeLoading");
           })
           .catch(error => {
             console.log("An error occured");
             console.dir(error);
             state.error = true;
             commit("stopLoading");
+            commit("stopRecipeLoading");
           });
       }
     },
     getNextRecipeBatch({ state, commit }) {
       commit("startLoading");
+      commit("startRecipeLoading");
+
       if (state.lastDoc != null) {
         state.ref
           .limit(state.limit)
@@ -218,12 +225,14 @@ const recipesModule = {
             }
             state.lastDoc = snapshot.docs[snapshot.docs.length - 1];
             commit("stopLoading");
+            commit("stopRecipeLoading");
           })
           .catch(error => {
             console.log("An error occured");
             console.dir(error);
             state.error = true;
             commit("stopLoading");
+            commit("stopRecipeLoading");
           });
       }
     }

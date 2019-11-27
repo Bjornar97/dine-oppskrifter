@@ -1,7 +1,9 @@
 <template>
   <v-container fluid class="recipeListContainer">
     <v-row>
-      <h2 class="headline secondary--text mx-auto text-left my-auto ml-4">Finn Oppskrifter</h2>
+      <h2 class="headline secondary--text mx-auto text-left my-auto ml-4">
+        Finn Oppskrifter
+      </h2>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
         <v-icon id="refreshBtn">mdi-refresh</v-icon>
       </v-btn>
@@ -11,20 +13,16 @@
       <h4
         class="subtitle-2 mt-2"
         v-if="recipes.length == 0 && !recipesLoading && !recipeError"
-      >Det finnes ingen oppskrifter etter disse kriteriene enda</h4>
+      >
+        Det finnes ingen oppskrifter etter disse kriteriene enda
+      </h4>
       <h4
         class="subtitle-2 mt-2 warning--text"
         v-if="recipes.length == 0 && !recipesLoading && recipeError"
-      >Kunne ikke laste inn oppskriftene, prøv å oppdatere med den grønne rundingen</h4>
-
-      <!-- <v-progress-circular
-        v-show="recipesLoading"
-        size="50"
-        width="5"
-        class="mt-6"
-        color="primary"
-        indeterminate
-      ></v-progress-circular>-->
+      >
+        Kunne ikke laste inn oppskriftene, prøv å oppdatere med den grønne
+        rundingen
+      </h4>
 
       <div class="recipeList mt-4">
         <recipe-card
@@ -37,14 +35,17 @@
       <p
         v-if="end && !recipesLoading && !recipeError && recipes.length > 0"
         class="mt-4 subtitle-2"
-      >Ikke flere oppskrifter å vise</p>
+      >
+        Ikke flere oppskrifter å vise
+      </p>
       <v-btn
         v-if="!end && !recipesLoading"
         @click="getNextBatch"
         color="success"
         class="mt-4"
         rounded
-      >Last flere</v-btn>
+        >Last flere</v-btn
+      >
     </div>
     <v-snackbar v-model="deleteSuccess" bottom class="mb-12">
       Oppskriften ble slettet
@@ -97,7 +98,7 @@ export default {
       return this.$store.state.recipesModule.recipes;
     },
     recipesLoading() {
-      return this.$store.state.loading;
+      return this.$store.state.recipesModule.loading;
     },
     recipeError() {
       return this.$store.state.recipesModule.error;

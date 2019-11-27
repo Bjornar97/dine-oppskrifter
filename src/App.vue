@@ -3,7 +3,7 @@
     <v-expand-x-transition>
       <div
         class="goBackBtn elevation-4 d-print-none"
-        :class="$vuetify.breakpoint.smAndDown ? 'goBackSmall':''"
+        :class="$vuetify.breakpoint.smAndDown ? 'goBackSmall' : ''"
         v-if="canGoBack"
         @click="goBack"
       >
@@ -15,7 +15,7 @@
 
     <v-app-bar
       class="topBar d-print-none"
-      :class="canGoBack ? 'appBarShift': ''"
+      :class="canGoBack ? 'appBarShift' : ''"
       app
       elevation="4"
       collapse
@@ -77,11 +77,11 @@
         icon-color="warning"
         max-width="95%"
       >
-        Vi ser at du bruker en eldre nettleser. Siden fungerer greit, men for å få den beste opplevelsen anbefaler vi å bruke en nyere nettleser, som for eksempel chrome eller firefox.
-        Eldre enheter fra Apple kan dessverre ikke oppgradere nettleseren (gjelder blant annet iPad 3 og eldre).
-        <template
-          v-slot:actions
-        >
+        Vi ser at du bruker en eldre nettleser. Siden fungerer greit, men for å
+        få den beste opplevelsen anbefaler vi å bruke en nyere nettleser, som
+        for eksempel chrome eller firefox. Eldre enheter fra Apple kan dessverre
+        ikke oppgradere nettleseren (gjelder blant annet iPad 3 og eldre).
+        <template v-slot:actions>
           <v-btn text @click="hideBrowserWarning" color="error">Lukk</v-btn>
         </template>
       </v-banner>
@@ -123,20 +123,36 @@
       </div>
     </v-content>
 
-    <v-snackbar v-model="loginError.error" :timeout="20000" multi-line bottom class="mb-12">
+    <v-snackbar
+      v-model="loginError.error"
+      :timeout="20000"
+      multi-line
+      bottom
+      class="mb-12"
+    >
       Noe gikk galt under innlogging, prøv igjen senere eller kontakt oss
       <v-btn text color="warning" @click="closeLoginError">Lukk</v-btn>
-      <v-btn text color="primary" @click.native="goToContact">Kontakt oss</v-btn>
+      <v-btn text color="primary" @click.native="goToContact"
+        >Kontakt oss</v-btn
+      >
     </v-snackbar>
 
     <v-snackbar v-model="loginSuccess" multi-line bottom class="mb-12">
       Du er innlogget som {{ user.name }}
-      <v-btn text color="primary" @click.native="loginSuccess = false">Lukk</v-btn>
+      <v-btn text color="primary" @click.native="loginSuccess = false"
+        >Lukk</v-btn
+      >
     </v-snackbar>
 
-    <v-footer color="white" class="elevation-4 mt-8 footer d-print-none" padless>
+    <v-footer
+      color="white"
+      class="elevation-4 mt-8 footer d-print-none"
+      padless
+    >
       <v-layout justify-center wrap>
-        <v-btn to="/" exact color="primary darken-2" text rounded class="my-2">Forsiden</v-btn>
+        <v-btn to="/" exact color="primary darken-2" text rounded class="my-2"
+          >Forsiden</v-btn
+        >
 
         <v-btn
           href="https://facebook.com/DineOppskrifter"
@@ -145,22 +161,33 @@
           text
           rounded
           class="my-2"
-        >Besøk Facebook-siden vår</v-btn>
+          >Besøk Facebook-siden vår</v-btn
+        >
         <v-btn
           to="/ingrediens-kalkulator"
           color="primary darken-2"
           text
           rounded
           class="my-2"
-        >Ingredienskalkulator</v-btn>
-        <v-btn color="primary darken-2" text rounded class="my-2" to="/kontakt-oss">Kontakt oss</v-btn>
+          >Ingredienskalkulator</v-btn
+        >
+        <v-btn
+          color="primary darken-2"
+          text
+          rounded
+          class="my-2"
+          to="/kontakt-oss"
+          >Kontakt oss</v-btn
+        >
 
         <div class="footerDev py-8 text-center">
-          <p class="devText secondary--text text--darken-2 ma-0 mr-4">Utviklet av</p>
+          <p class="devText secondary--text text--darken-2 ma-0 mr-4">
+            Utviklet av
+          </p>
           <v-chip pill color="secondary darken-2">
             <v-avatar left class="devAvatar">
-              <v-img src="@/assets/dev-profile-pic.jpg"></v-img>
-            </v-avatar>Bjørnar Hetlesæther
+              <v-img src="@/assets/dev-profile-pic.jpg"></v-img> </v-avatar
+            >Bjørnar Hetlesæther
           </v-chip>
         </div>
 
@@ -171,7 +198,8 @@
           text
           rounded
           class="my-2"
-        >Personvernerklæring</v-btn>
+          >Personvernerklæring</v-btn
+        >
         <v-btn
           v-if="!construction"
           color="primary darken-2"
@@ -179,7 +207,8 @@
           rounded
           class="my-2"
           to="/vilkaar-for-bruk"
-        >Vilkår for bruk</v-btn>
+          >Vilkår for bruk</v-btn
+        >
       </v-layout>
     </v-footer>
   </v-app>
