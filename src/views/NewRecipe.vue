@@ -1363,7 +1363,7 @@ export default {
             "Noe gikk galt under komprimering, prøv et annet bilde.";
           return;
         });
-    },
+    }
   },
   created() {
     if (this.recipeAuthor) {
@@ -1374,80 +1374,76 @@ export default {
       }
     }
 
-    const route = this.$route;
-    if (route.name == "newRecipe" && this.recipeNew == false) {
-      this.$store.dispatch("deleteRecipe");
-      this.recipeNew = true;
-    }
-    if (route.name == "newRecipe" && this.recipeId === undefined) {
-      const user = this.user;
-      let author = null;
-      if (user.loggedIn) {
-        author = {
-          id: user.uid,
-          name: user.name,
-          profilePictureUrl: user.profilePictureUrl
-        };
-        this.$store.commit("setRecipeAuthor", author);
-      }
+    let author = null;
 
-      const data = {
-        title: this.recipeTitle || null,
-        description: this.recipeDescription,
-        ingredients: this.recipeIngredients,
-        steps: this.recipeSteps,
-        visibility: this.visibility,
-        status: "draft",
-        category: this.recipeCategory || null,
-        difficulty: this.recipeDifficulty || null,
-        favourites: 0,
-        portions: this.recipePortions || null,
-        totalTime: this.recipeTotalTime || null,
-        author: author
+    if (this.user.loggedIn) {
+      author = {
+        id: this.user.uid,
+        name: this.user.name,
+        profilePictureUrl: this.user.profilePictureUrl
       };
 
-      if (user.loggedIn) {
-        db.collection("recipes")
-          .add(data)
-          .then(ref => {
-            this.recipeId = ref.id;
-            this.loading = false;
-            this.error = false;
-            this.$store.commit("stopLoading");
-          })
-          .catch(err => {
-            console.log(err);
-            this.$store.commit("stopLoading");
-            console.log(
-              "An error occured while creating the recipe in firestore"
-            );
-            this.displayError(
-              "Noe gikk galt under oppretting av oppskriften, prøv igjen senere"
-            );
-          });
-      } else {
-        this.$store.commit("stopLoading");
-        this.disableAll = true;
-        this.accessError.error = true;
-        this.accessError.type = "notLoggedIn";
-        this.accessError.icon = "mdi-account-alert";
-        this.accessError.message =
-          "Du er ikke logget inn. For å få tilgang til denne siden, vennligst logg inn";
-      }
-      this.$store.commit("setRecipeImage", undefined);
-    } else if (route.name == "editRecipe") {
-      if (this.recipeNew === true) {
-        this.$store.dispatch("deleteRecipe");
-        this.recipeNew = false;
-      }
+    }
+
+    const data = {
+      title: this.recipeTitle || null,
+      description: this.recipeDescription,
+      ingredients: this.recipeIngredients,
+      steps: this.recipeSteps,
+      visibility: this.visibility,
+      status: "draft",
+      category: this.recipeCategory || null,
+      difficulty: this.recipeDifficulty || null,
+      favourites: 0,
+      portions: this.recipePortions || null,
+      totalTime: this.recipeTotalTime || null,
+      author: author
+    };
+    const route = this.$route;
+
+    if (route.name === "editRecipe") {
+      this.recipeNew = false;
+      this.$store.dispatch("deleteRecipe");
       this.retrieveRecipe();
+    } else if (this.recipeId) {
+      db.collection("recipes")
+        .doc(this.recipeId)
+        .get()
+        .then(doc => {
+          if (doc.data().published) {
+            this.$store.dispatch("deleteRecipe");
+          }
+        });
+    } else if (this.loggedIn) {
+
+      this.$store.commit("setRecipeAuthor", author);
+      db.collection("recipes")
+        .add(data)
+        .then(doc => {
+          this.recipeId = doc.id;
+          this.loading = false;
+          this.error = false;
+          this.$store.commit("stopLoading");
+        })
+        .catch(error => {
+          console.log(error);
+          this.$store.commit("stopLoading");
+
+          console.log(
+            "An error occured while creating the recipe in firestore"
+          );
+          this.displayError(
+            "Noe gikk galt under oppretting av oppskriften, prøv igjen senere"
+          );
+        });
     } else {
-      if (this.recipeNew === false) {
-        this.$store.dispatch("deleteRecipe");
-        this.recipeNew = true;
-      }
       this.$store.commit("stopLoading");
-      this.$store.commit("setRecipeImage", undefined);
+      this.disableAll = true;
+      this.accessError.error = true;
+      this.accessError.type = "notLoggedIn";
+      this.accessError.icon = "mdi-account-alert";
+      this.accessError.message =
+        "Du er ikke logget inn. For å få tilgang til denne siden, vennligst logg inn";
     }
   }
 };
