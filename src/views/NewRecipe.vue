@@ -265,6 +265,11 @@
             hint="Skal være en fullstendig fremgangsmåte. Bruk gjerne tall og avsnitt for å gi leserne bedre oversikt"
           ></v-textarea>
         </v-form>
+        <!-- <v-btn @click="openPictureSteps" text color="success" class="px-0">
+          <v-icon>mdi-camera</v-icon>
+          Ta bilde av fremgangsmåten
+        </v-btn>
+        <picture-steps :open="pictureStepsOpen"></picture-steps> -->
       </v-stepper-content>
     </v-stepper>
 
@@ -455,6 +460,7 @@ export default {
         "Dessert"
       ],
       newIngredientOpen: false,
+      // pictureStepsOpen: false,
       newStepOpen: false,
       deleteDialogOpen: false
     };
@@ -638,7 +644,8 @@ export default {
   },
   components: {
     "new-ingredient": () => import("@/components/NewIngredient"),
-    "facebook-login-button": () => import("@/components/FacebookLoginButton")
+    "facebook-login-button": () => import("@/components/FacebookLoginButton"),
+    // "picture-steps": () => import("@/components/PictureSteps")
   },
   methods: {
     saveNewIngredient(ingredient) {
@@ -664,6 +671,9 @@ export default {
     openNewIngredient() {
       this.newIngredientOpen = true;
     },
+    // openPictureSteps() {
+    //   this.pictureStepsOpen = true;
+    // },
     editIngredient(index) {
       this.$refs.newIngredient.edit(this.recipeIngredients[index], index);
       this.newIngredientOpen = true;

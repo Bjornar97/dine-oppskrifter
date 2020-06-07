@@ -12,6 +12,13 @@ const fs = require("fs");
 
 const db = admin.firestore();
 
+const vision = require('@google-cloud/vision');
+
+const client = new vision.ImageAnnotatorClient();
+
+let bucket = admin.storage().bucket();
+
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -149,19 +156,24 @@ exports.app = functions
               ).toISOString()}" />`;
             }
 
-            if (imagePath && imageURL) {
-              if (imagePath != "" && imageURL != "") {
+            if (imagePath) {
+              if (imagePath != "") {
                 try {
-                  const imageRef = admin
-                    .storage()
-                    .bucket()
+                  const imageRef = bucket
                     .file(imagePath);
 
-                  console.log("imageUrl: " + imageURL);
+                  // console.log("imageUrl: " + imageURL);
 
                   let sizeOf = require("image-size");
 
                   let image = await imageRef.download();
+                  let imageURL = await imageRef.getSignedUrl({
+                    action: "read",
+                    expires: "03-09-2491",
+                  });
+
+                  console.log(`ImageURL: ${imageURL}`);
+
                   const dimensions = sizeOf(image[0]);
                   const imageWidth = dimensions.width;
                   const imageHeight = dimensions.height;
@@ -251,7 +263,7 @@ exports.app = functions
       responseText += `
           </head>
             <body>
-              Velkommen til Dine Oppskrifter, Facbook-bot
+              Velkommen til Dine Oppskrifter, Facebook-bot
             </body>
         </html>`;
       res.send(responseText);
@@ -272,7 +284,7 @@ exports.app = functions
         });
       } catch (error) {
         console.log("Error occured:");
-        console.dir(error);
+        console.log(error);
       }
     }
   });
@@ -392,4 +404,27 @@ exports.deleteAccount = functions
         stage: "tryCatch"
       });
     }
+  });
+
+
+  exports.pictureSteps = functions
+  .region("europe-west2")
+  .https.onCall(async (data, context) => {
+    try {
+      // Imports the Google Cloud client library
+      // Creates a client
+      const image = Buffer.from(data.image);
+      console.dir(image);
+
+      // Performs label detection on the image file
+      const [result] = await client.documentTextDetection(image);
+      console.dir(result);
+      return {
+        text: result.fullTextAnnotation.text
+      };
+    } catch (error) {
+      console.log("Error: " + error);
+      return null;
+    }
+      
   });

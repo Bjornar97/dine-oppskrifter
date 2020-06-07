@@ -26,7 +26,11 @@
         ]
       }
     ],
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "/(img|css/js)/**",
@@ -40,6 +44,9 @@
         "source": "**",
         "function": "app"
       }
+    ],
+    "predeploy": [
+      "npm run build"
     ]
   },
   "storage": {
@@ -49,5 +56,7 @@
     "firestore": {
       "port": "5025"
     }
+  },
+  "functions": {
   }
 }
