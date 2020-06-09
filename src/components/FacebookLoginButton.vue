@@ -2,7 +2,7 @@
   <div id="mainDiv">
     <div>
       <v-btn id="theButton" :disabled="disabled" @click="login" color="#3C5A99" :loading="loading">
-        <v-icon color="#FFF" class="fabButton">mdi-facebook-box</v-icon>
+        <v-icon color="#FFF" class="fabButton">mdi-facebook</v-icon>
         <span id="facebookText">{{ loginText || "Fortsett" }} med Facebook</span>
       </v-btn>
     </div>

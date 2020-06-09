@@ -44,9 +44,6 @@
         "source": "**",
         "function": "app"
       }
-    ],
-    "predeploy": [
-      "npm run build"
     ]
   },
   "storage": {

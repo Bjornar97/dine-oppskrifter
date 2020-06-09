@@ -12,7 +12,7 @@ module.exports = {
   pwa: {
     name: "Dine Oppskrifter",
     themeColor: "#49A84D",
-    msTileColor: "49A84D",
+    msTileColor: "#49A84D",
     assetsVersion: "v5",
     manifestOptions: {
       name: "Dine Oppskrifter",

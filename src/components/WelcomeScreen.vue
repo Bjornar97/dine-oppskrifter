@@ -1,18 +1,18 @@
 <template>
   <div class="welcomeContainer mx-auto">
     <div class="text-left welcomeText pa-4">
-      <h3 class="subtitle-1 welcomeToText animation">Velkommen til</h3>
-      <h2 class="display-2 yourRecipes animation">
+      <h3 class="subtitle-1 welcomeToText">Velkommen til</h3>
+      <h2 class="display-2 yourRecipes">
         <span class="primary--text mr-1">Dine</span> Oppskrifter
       </h2>
-      <h4 class="subtitle-1 mt-10 mb-4 allFunctionsText animation">For å få alle funksjoner</h4>
-      <facebook-login-button class="facebookButton animation" loginText="Fortsett"></facebook-login-button>
+      <h4 class="subtitle-1 mt-10 mb-4 allFunctionsText">For å få alle funksjoner</h4>
+      <facebook-login-button class="facebookButton" loginText="Fortsett"></facebook-login-button>
     </div>
-    <div class="pa-2 pa-sm-4 featureBox animation">
+    <div class="pa-2 pa-sm-4 featureBox">
       <h4 class="title mb-2 ml-3 secondary--text text-left">Funksjoner</h4>
       <feature-list class="featureList"></feature-list>
     </div>
-    <div class="scrollDownArrow animation mx-auto">
+    <div class="scrollDownArrow mx-auto">
       <p class="subtitle-1 mb-0">Bla ned for å se oppskrifter</p>
       <v-icon x-large class="scrollArrow">mdi-chevron-down</v-icon>
     </div>
@@ -59,16 +59,6 @@ export default {
   justify-content: center;
 }
 
-.welcomeToText {
-  opacity: 0;
-  animation-delay: 0.5s;
-}
-
-.allFunctionsText {
-  opacity: 0;
-  animation-delay: 3.5s;
-}
-
 .scrollArrow {
   height: 50px;
   animation-name: arrow-animation;
@@ -97,41 +87,10 @@ export default {
 .scrollDownArrow {
   min-width: 300px;
   width: max-content;
-  opacity: 0;
-  animation-delay: 4.5s;
-}
-
-.facebookButton {
-  opacity: 0;
-  animation-delay: 3.5s;
-}
-
-.animation {
-  animation-name: fade-in;
-  animation-duration: 1s;
-  animation-fill-mode: forwards;
-  animation-timing-function: ease-out;
-}
-
-.yourRecipes {
-  opacity: 0;
-  animation-delay: 1.5s;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .featureBox {
-  opacity: 0;
   max-width: 500px;
-  animation-delay: 2.5s;
-
   display: flex;
   flex-direction: column;
   justify-content: center;

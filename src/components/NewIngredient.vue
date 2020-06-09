@@ -28,6 +28,7 @@
               label="Enhet"
               v-model="unit"
               counter="10"
+              @keyup.enter="save"
               autocapitalize="none"
               :rules="[rules.counter10]"
               hint="Hvilken enhet som skal brukes. For eksempel dl for desiliter, eller ss for spiseskjeer"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-expand-transition>
-      <v-container v-if="!wasLoggedIn" fluid>
+      <v-container v-if="!loggedIn" fluid>
         <welcome-screen></welcome-screen>
       </v-container>
     </v-expand-transition>
@@ -19,7 +19,7 @@ export default {
   name: "Discover",
   metaInfo() {
     return {
-      title: "Forsiden - Dine Oppskrifter"
+      title: "Dine Oppskrifter - Matoppskrifter på nett"
     };
   },
   computed: {
