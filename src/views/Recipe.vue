@@ -131,7 +131,7 @@
           <v-list v-show="shareOpen && recipe.visibility != 'Private'">
             <v-list-item @click="shareFacebook">
               <v-list-item-title class="d-flex">
-                <v-icon class="mr-2" color="#3C5A99">mdi-facebook-box</v-icon>
+                <v-icon class="mr-2" color="#3C5A99">mdi-facebook</v-icon>
                 <p class="my-auto body-1 font-weight-medium">Facebook</p>
               </v-list-item-title>
             </v-list-item>

@@ -27,7 +27,7 @@
       href="https://www.facebook.com/DineOppskrifter/"
       target="_blank"
     >
-      <v-icon color="white" class="mr-2">mdi-facebook-box</v-icon>Facebook-siden
+      <v-icon color="white" class="mr-2">mdi-facebook</v-icon>Facebook-siden
     </v-btn>
   </v-container>
 </template>

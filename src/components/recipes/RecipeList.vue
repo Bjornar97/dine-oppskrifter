@@ -1,9 +1,9 @@
 <template>
   <v-container fluid class="recipeListContainer">
     <v-row>
-      <h2 class="headline secondary--text mx-auto text-left my-auto ml-4">
+      <h1 class="headline secondary--text mx-auto text-left my-auto ml-4">
         Finn Oppskrifter
-      </h2>
+      </h1>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
         <v-icon id="refreshBtn">mdi-refresh</v-icon>
       </v-btn>

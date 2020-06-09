@@ -1,10 +1,10 @@
 <template>
   <v-container fluid id="main" class="pt-2 px-4">
     <v-row class="pa-3 pb-0 mb-0">
-      <h2 class="headline text-left primary--text my-auto">
+      <h1 class="headline text-left primary--text my-auto">
         Dine
         <span class="black--text">Oppskrifter</span>
-      </h2>
+      </h1>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
         <v-icon id="refreshBtn">mdi-refresh</v-icon>
       </v-btn>

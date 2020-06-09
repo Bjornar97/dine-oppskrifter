@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="mt-4 text-left favouriteContainer">
     <v-row>
-      <h2 class="headline error--text pa-4">Favoritter</h2>
+      <h1 class="headline error--text pa-4">Favoritter</h1>
       <v-btn color="success" icon x-large class="ml-auto" @click="refresh">
         <v-icon id="refreshBtn">mdi-refresh</v-icon>
       </v-btn>

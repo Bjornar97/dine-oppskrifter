@@ -2,9 +2,9 @@
   <div class="welcomeContainer mx-auto">
     <div class="text-left welcomeText pa-4">
       <h3 class="subtitle-1 welcomeToText">Velkommen til</h3>
-      <h2 class="display-2 yourRecipes">
+      <h1 class="display-2 yourRecipes">
         <span class="primary--text mr-1">Dine</span> Oppskrifter
-      </h2>
+      </h1>
       <h4 class="subtitle-1 mt-10 mb-4 allFunctionsText">For å få alle funksjoner</h4>
       <facebook-login-button class="facebookButton" loginText="Fortsett"></facebook-login-button>
     </div>
